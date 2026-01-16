@@ -1,0 +1,32 @@
+{
+  "results":{
+    "assay": "TAR",
+    "primary_cancer": "None",
+    "OncoTree code": "None",
+    "site_of_biopsy": "cfDNA",
+    "study": "CHARM2",
+    "project": "CHARM2PLAS",
+
+    "known_variants": "<em>MSH6<em> c.2057G>A (p.Gly686Asp)",
+    "cancer_content": "<10",
+    "raw_coverage": 31499,
+    "unique_coverage": 4081,
+
+    "Clinically relevant variants": 0,
+    "Total variants": 0,
+    "Has expression data": false,
+
+    "somatic mutations": null,
+    "coding sequence mutations": null,
+    "oncogenic mutations":null,
+
+
+    "Gene": null,
+    "protein": null,
+    "type": null,
+    "vaf": null,
+    "depth": null,
+    "LOH": null,
+    "Chromosome": null
+  }
+}

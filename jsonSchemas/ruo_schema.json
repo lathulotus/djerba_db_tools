@@ -26,7 +26,11 @@
                     "type": "string"
                 },
                 "study":{
-                    "description": "Research study",
+                    "description": "Research study name",
+                    "type": "string"
+                },
+                "project":{
+                    "description": "Specific project name",
                     "type": "string"
                 },
 
