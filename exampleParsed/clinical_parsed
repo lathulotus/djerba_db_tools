@@ -5,12 +5,14 @@
     "OncoTree code": "BRCA",
     "site_of_biopsy": "Soft Tissue"
   },
+
   "sample":{
     "Sample type": "Tissue",
     "Estimated Cancer Cell Content(%)": 64,
     "Estimated Ploidy": "1.78",
     "Callability": "91.9"
   },
+
   "results":{
     "genomic_landscape_info":{
         "Tumour Mutation Burden": 211,
