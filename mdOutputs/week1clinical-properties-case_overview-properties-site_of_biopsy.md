@@ -4,7 +4,7 @@
 Week1Clinical.schema.json#/properties/case_overview/properties/site_of_biopsy
 ```
 
-Biopsy type/location (cfDNA, Liver, Bone Marrow, Soft Tissue, Left Breast, Perihepatic)
+Biopsy type/location.
 
 | Abstract            | Extensible | Status         | Identifiable            | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                  |
 | :------------------ | :--------- | :------------- | :---------------------- | :---------------- | :-------------------- | :------------------ | :-------------------------------------------------------------------------- |

@@ -25,7 +25,7 @@ Sample information
 
 ## Sample type
 
-Fresh = Fresh unfrozen; FF = Fresh frozen; FFPE = Formalin-fixed, paraffin-embedded; Blood = Whole blood; Plasma = Plasma sample (ctDNA); Bone marrow = Bone marrow.
+Type of collected sample.
 
 `Sample type`
 

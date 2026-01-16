@@ -4,7 +4,7 @@
 Week1Clinical.schema.json#/properties/case_overview/properties/assay
 ```
 
-Type of assay used for sequencing (WGTS, WGS, TAR)
+Type of assay used for sequencing.
 
 | Abstract            | Extensible | Status         | Identifiable            | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                  |
 | :------------------ | :--------- | :------------- | :---------------------- | :---------------- | :-------------------- | :------------------ | :-------------------------------------------------------------------------- |
@@ -20,6 +20,6 @@ Type of assay used for sequencing (WGTS, WGS, TAR)
 
 | Value    | Explanation |
 | :------- | :---------- |
-| `"WGTS"` |"Whole genome and transcriptome sequencing"|
-| `"WGS"`  |"Whole genome sequencing"|
-| `"TAR"`  |"Targeted sequencing"|
+| `"WGTS"` |Whole genome and transcriptome sequencing|
+| `"WGS"`  |Whole genome sequencing|
+| `"TAR"`  |Targeted sequencing|

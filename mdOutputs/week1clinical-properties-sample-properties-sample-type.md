@@ -4,7 +4,7 @@
 Week1Clinical.schema.json#/properties/sample/properties/Sample type
 ```
 
-Fresh = Fresh unfrozen; FF = Fresh frozen; FFPE = Formalin-fixed, paraffin-embedded; Blood = Whole blood; Plasma = Plasma sample (ctDNA); Bone marrow = Bone marrow.
+Type of collected sample.
 
 | Abstract            | Extensible | Status         | Identifiable            | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                  |
 | :------------------ | :--------- | :------------- | :---------------------- | :---------------- | :-------------------- | :------------------ | :-------------------------------------------------------------------------- |
@@ -20,9 +20,6 @@ Fresh = Fresh unfrozen; FF = Fresh frozen; FFPE = Formalin-fixed, paraffin-embed
 
 | Value           | Explanation |
 | :-------------- | :---------- |
-| `"Fresh"`       |             |
-| `"FF"`          |             |
-| `"FFPE"`        |             |
-| `"Blood"`       |             |
-| `"Plasma"`      |             |
-| `"Bone marrow"` |             |
+| `"Fresh"`       |Fresh unfrozen|
+| `"FF"`          |Fresh frozen|
+| `"FFPE"`        |Formalin-fixed, paraffin-embedded|

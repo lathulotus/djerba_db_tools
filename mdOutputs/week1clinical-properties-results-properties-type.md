@@ -4,7 +4,7 @@
 Week1Clinical.schema.json#/properties/results/properties/type
 ```
 
-Missense Mutation = Variant causing amino acid change; Nonsense Mutation = Variant causing premature stop codon; Frame Shift Del = Deletion causing frameshift; Frame Shift Ins = Insertion causing frameshift; Splice Site = Variant affecting canonical splice sites; Splice Region = Variant in splice region outside canonical sites.
+Specific type of specific alteration (variant type).
 
 | Abstract            | Extensible | Status         | Identifiable            | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                  |
 | :------------------ | :--------- | :------------- | :---------------------- | :---------------- | :-------------------- | :------------------ | :-------------------------------------------------------------------------- |
@@ -20,9 +20,9 @@ Missense Mutation = Variant causing amino acid change; Nonsense Mutation = Varia
 
 | Value                 | Explanation |
 | :-------------------- | :---------- |
-| `"Missense Mutation"` |             |
-| `"Nonsense Mutation"` |             |
-| `"Frame Shift Del"`   |             |
-| `"Frame Shift Ins"`   |             |
-| `"Splice Site"`       |             |
-| `"Splice Region"`     |             |
+| `"Missense Mutation"` |Variant causing amino acid change|
+| `"Nonsense Mutation"` |Variant causing premature stop codon|
+| `"Frame Shift Del"`   |Deletion causing frameshift|
+| `"Frame Shift Ins"`   |Insertion causing frameshift|
+| `"Splice Site"`       |Variant affecting canonical splice sites|
+| `"Splice Region"`     |Variant in splice region outside canonical sites|

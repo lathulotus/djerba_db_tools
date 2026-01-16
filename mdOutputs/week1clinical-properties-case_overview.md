@@ -4,7 +4,7 @@
 Week1Clinical.schema.json#/properties/case_overview
 ```
 
-Overall case details
+Overall case details.
 
 | Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                  |
 | :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :-------------------------------------------------------------------------- |

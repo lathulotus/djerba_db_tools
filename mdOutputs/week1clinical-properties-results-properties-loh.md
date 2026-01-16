@@ -4,7 +4,7 @@
 Week1Clinical.schema.json#/properties/results/properties/LOH
 ```
 
-true = Loss of heterozygosity; false = No loss of heterozygosity.
+Whether loss of heterozygosity is exhibited.
 
 | Abstract            | Extensible | Status         | Identifiable            | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                  |
 | :------------------ | :--------- | :------------- | :---------------------- | :---------------- | :-------------------- | :------------------ | :-------------------------------------------------------------------------- |
@@ -20,5 +20,5 @@ true = Loss of heterozygosity; false = No loss of heterozygosity.
 
 | Value   | Explanation |
 | :------ | :---------- |
-| `true`  |             |
-| `false` |             |
+| `true`  |LOH is exhibited|
+| `false` |LOH not exhibited|

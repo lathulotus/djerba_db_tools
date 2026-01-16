@@ -25,7 +25,7 @@
                     "type": "string"
                 },
                 "site_of_biopsy": {
-                    "description": "Biopsy type/location (cfDNA, Liver, Bone Marrow, Soft Tissue, Left Breast, Perihepatic)",
+                    "description": "Biopsy type/location.",
                     "type": "string",
                     "enum": ["cfDNA", "Liver", "Bone Marrow", "Left 4th Rib - Soft Tissue", "Left Breast", "Perihepatic"]
                 }
@@ -38,10 +38,9 @@
             "type": "object",
             "properties":{
                 "Sample type": {
-                    "description": "Type of collected sample (Fresh frozen tissue block, Laser capture microdissected (LCM) tumor (fresh frozen), 10 x 10 uM air dried sections (FFPE), methanol fixed, Nucleic Acids Extracted from Tissue in a CLIA-certified Laboratory",
+                    "description": "Type of collected sample",
                     "type": "string",
-                    "enum": ["Fresh", "FF", "FFPE", "Blood", "Plasma", "Bone marrow"],
-                    "description": "Fresh = Fresh unfrozen; FF = Fresh frozen; FFPE = Formalin-fixed, paraffin-embedded; Blood = Whole blood; Plasma = Plasma sample (ctDNA); Bone marrow = Bone marrow."
+                    "enum": ["Fresh", "FF", "FFPE"]
                 },
                 "Estimated Cancer Cell Content (%)":{
                     "description": "Estimated percentage of cancer cell content",
@@ -154,8 +153,7 @@
                 "type":{
                     "description": "Type of specific alteration or biological event (Missense Mutation, Nonsense Mutation, Frame Shift Del, Frame Shift Ins, Splice Site, Splice Region)",
                     "type": "string",
-                    "enum": ["Missense Mutation", "Nonsense Mutation", "Frame Shift Del", "Frame Shift Ins", "Splice Site", "Splice Region"],
-                    "description": "Missense Mutation = Variant causing amino acid change; Nonsense Mutation = Variant causing premature stop codon; Frame Shift Del = Deletion causing frameshift; Frame Shift Ins = Insertion causing frameshift; Splice Site = Variant affecting canonical splice sites; Splice Region = Variant in splice region outside canonical sites."
+                    "enum": ["Missense Mutation", "Nonsense Mutation", "Frame Shift Del", "Frame Shift Ins", "Splice Site", "Splice Region"]
                 },
                 "vaf":{
                     "description": "Variant allele frequency",
@@ -172,7 +170,7 @@
                     }
                 },
                 "LOH":{
-                    "description": "Loss of heterozygosity exhibited",
+                    "description": "Whether loss of heterozygosity is exhibited",
                     "type": "array",
                     "items":{
                         "type": "boolean"
