@@ -14,11 +14,13 @@ case_overview
 * primary_cancer: string, cancer type
 * OncoTree code: string, code associated with cancer
 * site_of_biopsy: string, biopsy type/location
+
 sample
 *  Sample type: string, collection type
 *  Estimated Cancer Cell Content (%): integer, percent of cancer cell content
 *  Estimated Ploidy: string, estimated ploidy
 *  Callability (%): string, accuracy of call
+
 results
 *  Tumour Mutation Burden: integer, total TMB
 *  TMB per megabase: integer, relative TMB value
