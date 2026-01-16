@@ -42,25 +42,6 @@
     "Chromosome": ["3q26.32", "4q21.3", "16q22.1"],
     "percent genome altered": 47,
     "total variants": 20,
-    "clinically relevant variants": 8,
-  }
-  
-  "sample": {
-    "id": "S12345",
-    "tumorType": "Lung Adenocarcinoma"
-  },
-  "plugins": {
-    "variantCaller": {
-      "variants": [
-        {
-          "gene": "EGFR",
-          "chrom": "7",
-          "pos": 55249071,
-          "ref": "G",
-          "alt": "A",
-          "alleleFrequency": 0.42
-        }
-      ]
-    }
+    "clinically relevant variants": 8
   }
 }
