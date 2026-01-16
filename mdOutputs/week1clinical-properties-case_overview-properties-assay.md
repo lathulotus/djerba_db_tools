@@ -4,7 +4,7 @@
 Week1Clinical.schema.json#/properties/case_overview/properties/assay
 ```
 
-WGTS = Whole genome and transcriptome sequencing; WGS = Whole genome sequencing; TAR = Targeted sequencing.
+Type of assay used for sequencing (WGTS, WGS, TAR)
 
 | Abstract            | Extensible | Status         | Identifiable            | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                  |
 | :------------------ | :--------- | :------------- | :---------------------- | :---------------- | :-------------------- | :------------------ | :-------------------------------------------------------------------------- |
@@ -20,6 +20,6 @@ WGTS = Whole genome and transcriptome sequencing; WGS = Whole genome sequencing;
 
 | Value    | Explanation |
 | :------- | :---------- |
-| `"WGTS"` |             |
-| `"WGS"`  |             |
-| `"TAR"`  |             |
+| `"WGTS"` |"Whole genome and transcriptome sequencing"|
+| `"WGS"`  |"Whole genome sequencing"|
+| `"TAR"`  |"Targeted sequencing"|

@@ -8,7 +8,7 @@
 * sample: sample type, estimated cancer cell content, estimated ploidy, callability
 * results: genomic biomarkers (TMB, HRD, MSI), mutations (somatic, oncogenic, CDS), genes, protein-level change, variant type, VAF, depth, LOH, position
 
-## Variant fields
+## Variable Fields
 case_overview
 * assay: string, genomic sequencing assay
 * primary_cancer: string, cancer type
