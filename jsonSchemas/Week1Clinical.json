@@ -142,11 +142,17 @@
                 
                 "Gene":{
                     "description": "Gene containing identified variant",
-                    "type": "string"
+                    "type": "array",
+                    "items":{
+                        "type": "string"
+                    }
                 },
                 "protein":{
                     "description": "Protein alteration",
-                    "type": "string"
+                    "type": "array",
+                    "items":{
+                        "type": "string"
+                    }
                 },
                 "type":{
                     "description": "Type of specific alteration or biological event (Missense Mutation, Nonsense Mutation, Frame Shift Del, Frame Shift Ins, Splice Site, Splice Region)",
