@@ -1,8 +1,51 @@
 # README
 
 ## Top-level Schemas
+* [Clinical - Report Structure Schema](https://github.com/lathulotus/CGIWeek1_2/blob/main/jsonSchemas/Week1Clinical.json) – `Week1Clinical.schema.json`
 
-* [Clinical - Report Structure Schema](./week1clinical.md "Schema documentation of clinical report structures") – `Week1Clinical.schema.json`
+## Top-level Fields
+* case_overview: assay, primary cancer, oncotree code, site of biopsy
+* sample: sample type, estimated cancer cell content, estimated ploidy, callability
+* results: genomic biomarkers (TMB, HRD, MSI), mutations (somatic, oncogenic, CDS), genes, protein-level change, variant type, VAF, depth, LOH, position
+* treatment_option: tier, oncoKB level, treatments
+
+## Variant fields
+* case_overview
+  * assay: string, genomic sequencing assay
+  * primary_cancer: string, cancer type
+  * OncoTree code: string, code associated with cancer
+  * site_of_biopsy: string, biopsy type/location
+*  sample
+  *  Sample type: string, collection type
+  *  Estimated Cancer Cell Content (%): integer, percent of cancer cell content
+  *  Estimated Ploidy: string, estimated ploidy
+  *  Callability (%): string, accuracy of call
+*  results
+  *  genomic_landscape_info: object, tumour landscape
+    *  Tumour Mutation Burden: integer, total TMB
+    *  TMB per megabase: integer, relative TMB value
+  *  genomic_biomarkers: object, TMB/HRD/MSI values
+    *   Genomic biomarker value: integer, value per megabase
+    *   Genomic alteration actionable: boolean, actionability
+  *  somatic mutations: integer, number of somatic mutations
+  *  coding sequence mutations: integer, number of CDS mutations
+  *  oncogenic mutations: integer, number of oncogenic mutations
+  *  Gene: string, gene names
+  *  protein: string, protein alterations
+  *  type: string, variant classification
+  *  vaf: string, variant allele frequency
+  *  depth: string, variant read depth
+  *  LOH: boolean, loss of heterozygosity exhibited
+  *  Chromosome: string, position
+  *  percent genome altered: integer, alteration from variant
+  *  total variants: integer, number of variants
+  *  clinically relevant variants: integer, number of clinically relevant variants
+  *  has expression data: boolean, expression data
+  *  Expression Percentile: ineger, relative expression
+*  treatment_options
+  *  Tier: string, treatment status
+  *  OncoKB level: string, level of evidence
+  *  Treatments: string, potential therapies
 
 ## Other Schemas
 
