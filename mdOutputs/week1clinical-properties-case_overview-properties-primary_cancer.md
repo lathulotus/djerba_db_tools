@@ -4,7 +4,7 @@
 Week1Clinical.schema.json#/properties/case_overview/properties/primary_cancer
 ```
 
-Cancer type.
+Type of cancer.
 
 | Abstract            | Extensible | Status         | Identifiable            | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                  |
 | :------------------ | :--------- | :------------- | :---------------------- | :---------------- | :-------------------- | :------------------ | :-------------------------------------------------------------------------- |

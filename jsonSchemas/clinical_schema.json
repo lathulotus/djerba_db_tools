@@ -86,10 +86,6 @@
                             "Genomic biomarker value":{
                                 "description": "TMB value; same as 'TMB per megabase'",
                                 "type": "integer"
-                            },
-                            "Genomic alteration actionable":{
-                                "description": "Actionability of TMB",
-                                "type": "boolean"
                             }
                         }
                     },
@@ -100,10 +96,6 @@
                             "Genomic biomarker value":{
                                 "description": "HRD value",
                                 "type": "integer"
-                            },
-                            "Genomic alteration actionable":{
-                                "description": "Actionability of HRD",
-                                "type": "integer"
                             }
                         }
                     },
@@ -113,10 +105,6 @@
                         "property":{
                             "Genomic biomarker value":{
                                 "description": "MSI value",
-                                "type": "integer"
-                            },
-                            "Genomic alteration actionable":{
-                                "description": "Actionability of MSI",
                                 "type": "integer"
                             }
                         }
