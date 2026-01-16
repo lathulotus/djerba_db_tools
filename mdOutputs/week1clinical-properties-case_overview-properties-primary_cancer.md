@@ -4,7 +4,7 @@
 Week1Clinical.schema.json#/properties/case_overview/properties/primary_cancer
 ```
 
-Pancreatic adenocarcinoma = Pancreatic; Hepatobiliary Tumour = Hepatobiliary; Multiple Myeloma = Blood; Breast Cancer = Breast; Invasive breast carcinoma = Breast.
+Cancer type.
 
 | Abstract            | Extensible | Status         | Identifiable            | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                  |
 | :------------------ | :--------- | :------------- | :---------------------- | :---------------- | :-------------------- | :------------------ | :-------------------------------------------------------------------------- |
@@ -20,8 +20,8 @@ Pancreatic adenocarcinoma = Pancreatic; Hepatobiliary Tumour = Hepatobiliary; Mu
 
 | Value                         | Explanation |
 | :---------------------------- | :---------- |
-| `"Pancreatic adenocarcinoma"` |             |
-| `"Hepatobiliary Tumour"`      |             |
-| `"Multiple Myeloma"`          |             |
-| `"Breast Cancer"`             |             |
-| `"Invasive breast carcinoma"` |             |
+| `"Pancreatic adenocarcinoma"` |Pancreatic|
+| `"Hepatobiliary Tumour"`      |Hepatobiliary|
+| `"Multiple Myeloma"`          |Blood|
+| `"Breast Cancer"`             |Breast|
+| `"Invasive breast carcinoma"` |Breast|

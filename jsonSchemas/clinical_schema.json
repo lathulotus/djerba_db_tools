@@ -17,11 +17,9 @@
                     "enum": ["WGTS", "WGS", "TAR"]
                 },
                 "primary_cancer": {
-                    "description": "Cancer type (Hepatobiliary Tumour, Pancreatic Adenocarcinoma, Multiple Myeloma, Breast Cancer, Invasive Breast Carcinoma)",
+                    "description": "Cancer type.",
                     "type": "string",
-                    "enum": ["Pancreatic adenocarcinoma", "Hepatobiliary Tumour", "Multiple Myeloma", "Breast Cancer", "Invasive breast carcinoma"],
-                    "description": "Pancreatic adenocarcinoma = Pancreatic; Hepatobiliary Tumour = Hepatobiliary; Multiple Myeloma = Blood; Breast Cancer = Breast; Invasive breast carcinoma = Breast."
-                },
+                    "enum": ["Pancreatic adenocarcinoma", "Hepatobiliary Tumour", "Multiple Myeloma", "Breast Cancer", "Invasive breast carcinoma"]                },
                 "OncoTree code":{
                     "description": "OncoTree code associated with cancer type & subtype",
                     "type": "string"
