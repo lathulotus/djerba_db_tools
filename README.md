@@ -24,9 +24,7 @@ sample
 results
 *  Tumour Mutation Burden: integer, total TMB
 *  TMB per megabase: integer, relative TMB value
-*  genomic_biomarkers: object, TMB/HRD/MSI values
-    **   Genomic biomarker value: integer, value per megabase
-    **   Genomic alteration actionable: boolean, actionability
+*  genomic_biomarkers: object, TMB/HRD/MSI genomic biomarker values & alteration actionability
 *  somatic mutations: integer, number of somatic mutations
 *  coding sequence mutations: integer, number of CDS mutations
 *  oncogenic mutations: integer, number of oncogenic mutations
