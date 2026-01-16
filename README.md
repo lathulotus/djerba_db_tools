@@ -1,14 +1,15 @@
 # README
 
 ## Top-level Schemas
-* [Clinical - Report Structure Schema](https://github.com/lathulotus/CGIWeek1_2/blob/main/jsonSchemas/clinical_schema.json) – `Clinical.schema.json`
+* [Clinical - Report Structure Schema](https://github.com/lathulotus/CGIWeek1_2/blob/main/jsonSchemas/clinical_schema.json) – `clinical.schema.json`
+* [RUO - Report Structure Schema](https://github.com/lathulotus/CGIWeek1_2/blob/main/jsonSchemas/ruo_schema.json) – `ruo.schema.json`
 
-## Top-level Fields
+## Top-level Fields (Clinical)
 * case_overview: assay, primary cancer, oncotree code, site of biopsy
 * sample: sample type, estimated cancer cell content, estimated ploidy, callability
 * results: genomic biomarkers (TMB, HRD, MSI), mutations (somatic, oncogenic, CDS), genes, protein-level change, variant type, VAF, depth, LOH, position
 
-## Variable Fields
+## Variable Fields (Clinical)
 case_overview
 * assay: string, genomic sequencing assay
 * primary_cancer: string, cancer type
