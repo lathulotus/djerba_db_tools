@@ -39,7 +39,7 @@ results
 *  total variants: integer, number of variants
 *  clinically relevant variants: integer, number of clinically relevant variants
 
-![Report Structure Diagram](images/reportStructure.svg)
+![Report Structure Diagram](images/ReportStructure.png)
 
 ## Other Schemas
 
