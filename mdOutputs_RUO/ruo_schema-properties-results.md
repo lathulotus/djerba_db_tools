@@ -22,6 +22,7 @@ Results from testing; merged
 | [primary\_cancer](#primary_cancer)                            | `string`  | Optional | cannot be null | [RUO - Report Structure Schema](ruo_schema-properties-results-properties-primary_cancer.md "RUO.schema.json#/properties/results/properties/primary_cancer")                             |
 | [site\_of\_biopsy](#site_of_biopsy)                           | `string`  | Optional | cannot be null | [RUO - Report Structure Schema](ruo_schema-properties-results-properties-site_of_biopsy.md "RUO.schema.json#/properties/results/properties/site_of_biopsy")                             |
 | [study](#study)                                               | `string`  | Optional | cannot be null | [RUO - Report Structure Schema](ruo_schema-properties-results-properties-study.md "RUO.schema.json#/properties/results/properties/study")                                               |
+| [project](#project)                                           | `string`  | Optional | cannot be null | [RUO - Report Structure Schema](ruo_schema-properties-results-properties-project.md "RUO.schema.json#/properties/results/properties/project")                                           |
 | [known\_variants](#known_variants)                            | `string`  | Optional | cannot be null | [RUO - Report Structure Schema](ruo_schema-properties-results-properties-known_variants.md "RUO.schema.json#/properties/results/properties/known_variants")                             |
 | [cancer\_content](#cancer_content)                            | `integer` | Optional | cannot be null | [RUO - Report Structure Schema](ruo_schema-properties-results-properties-cancer_content.md "RUO.schema.json#/properties/results/properties/cancer_content")                             |
 | [raw\_coverage](#raw_coverage)                                | `integer` | Optional | cannot be null | [RUO - Report Structure Schema](ruo_schema-properties-results-properties-raw_coverage.md "RUO.schema.json#/properties/results/properties/raw_coverage")                                 |
@@ -118,7 +119,7 @@ Biopsy type/location (cfDNA)
 
 ## study
 
-Research study
+Research study name
 
 `study`
 
@@ -131,6 +132,24 @@ Research study
 * defined in: [RUO - Report Structure Schema](ruo_schema-properties-results-properties-study.md "RUO.schema.json#/properties/results/properties/study")
 
 ### study Type
+
+`string`
+
+## project
+
+Specific project name
+
+`project`
+
+* is optional
+
+* Type: `string`
+
+* cannot be null
+
+* defined in: [RUO - Report Structure Schema](ruo_schema-properties-results-properties-project.md "RUO.schema.json#/properties/results/properties/project")
+
+### project Type
 
 `string`
 
