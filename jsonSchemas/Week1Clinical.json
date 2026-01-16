@@ -172,12 +172,6 @@
                     "decription": "Chromosomal position of variant (ie 17p13.1)",
                     "type": "string"
                 },
-                "OncoKB":{
-                    "description": "OncoKB level of evidence",
-                    "type": "string",
-                    "enum": ["N1", "N2"],
-                    "description": "N1 = SoC evidence indicating lack of sensitivity/resistance; N2 = Clinical/biological evidence indicating lack of sensitivity/resistance."
-                },
 
                 "percent genome altered":{
                     "description": "Percentage of the genome altered by variant",
