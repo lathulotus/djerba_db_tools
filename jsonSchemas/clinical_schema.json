@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id":"Week1Clinical.schema.json",
+    "$id":"Clinical.schema.json",
     "$comment": "Latest report from 05/01/2026",
     "title": "Clinical - Report Structure Schema",
     "description": "Schema documentation of clinical report structures",
@@ -162,21 +162,31 @@
                 },
                 "vaf":{
                     "description": "Variant allele frequency",
-                    "type": "string"
+                    "type": "array",
+                    "items":{
+                        "type": "integer"
+                    }
                 },
                 "depth":{
                     "description": "Variant read depth",
-                    "type": "string"
+                    "type": "array",
+                    "items":{
+                        "type": "string"
+                    }
                 },
                 "LOH":{
                     "description": "Loss of heterozygosity exhibited",
-                    "type": "boolean",
-                    "enum": [true, false],
-                    "description": "true = Loss of heterozygosity; false = No loss of heterozygosity."
+                    "type": "array",
+                    "items":{
+                        "type": "boolean"
+                    }
                 },
                 "Chromosome":{
                     "decription": "Chromosomal position of variant (ie 17p13.1)",
-                    "type": "string"
+                    "type": "array",
+                    "items":{
+                        "type": "string"
+                    }
                 },
 
                 "percent genome altered":{
@@ -190,41 +200,7 @@
                 "clinically relevant variants":{
                     "description": "Number of clinically actionable/relevant variants",
                     "type": "integer"
-                },
-                "has expression data":{
-                    "description": "Whether there is expression data associated with genes/variants",
-                    "type": "boolean",
-                    "enum": [true, false],
-                    "description": "true = Has expression data; false = Does not have expression data."
-                },
-                "Expression Percentile":{
-                    "description": "Variant expression",
-                    "type": "integer"
-                }
-            }
-        },
-
-
-        "treatment_options_merger":{
-            "description": "Treatment options merged; plugin",
-            "type": "object",
-            "properties":{
-                "Tier":{
-                    "description": "Treatment status (investigational, approved)",
-                    "type": "string",
-                    "enum": ["Approved", "Investigational"],
-                    "description": "Approved = Therapy approved for clinical use; Investigational = Therapy under clinical investigation."
-                },
-                "OncoKB level":{
-                    "description": "OncoKB-defined level of evidence (3A, 3B, 4)",
-                    "type": "string",
-                    "enum": ["Level 1", "Level 2", "Level 3A", "Level 3B", "Level 4"],
-                    "description": "Level 1 = FDA-recognized biomarker predictive of response; Level 2 = Standard-of-care biomarker predictive of response; Level 3A = Clinical evidence supporting response in this indication; Level 3B = Clinical evidence supporting response in another indication; Level 4 = Biological evidence supporting response."
-                },
-                "Treatments":{
-                    "description": "Potential therapies and treatments for biological events",
-                    "type": "string"
-                }
+                                }
             }
         }
     }

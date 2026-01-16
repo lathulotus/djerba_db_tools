@@ -1,13 +1,12 @@
 # README
 
 ## Top-level Schemas
-* [Clinical - Report Structure Schema](https://github.com/lathulotus/CGIWeek1_2/blob/main/jsonSchemas/Week1Clinical.json) – `Week1Clinical.schema.json`
+* [Clinical - Report Structure Schema](https://github.com/lathulotus/CGIWeek1_2/blob/main/jsonSchemas/clinical_schema.json) – `Clinical.schema.json`
 
 ## Top-level Fields
 * case_overview: assay, primary cancer, oncotree code, site of biopsy
 * sample: sample type, estimated cancer cell content, estimated ploidy, callability
 * results: genomic biomarkers (TMB, HRD, MSI), mutations (somatic, oncogenic, CDS), genes, protein-level change, variant type, VAF, depth, LOH, position
-* treatment_option: tier, oncoKB level, treatments
 
 ## Variant fields
 * case_overview
@@ -33,19 +32,13 @@
   *  Gene: string, gene names
   *  protein: string, protein alterations
   *  type: string, variant classification
-  *  vaf: string, variant allele frequency
+  *  vaf: integer, variant allele frequency
   *  depth: string, variant read depth
   *  LOH: boolean, loss of heterozygosity exhibited
   *  Chromosome: string, position
   *  percent genome altered: integer, alteration from variant
   *  total variants: integer, number of variants
   *  clinically relevant variants: integer, number of clinically relevant variants
-  *  has expression data: boolean, expression data
-  *  Expression Percentile: ineger, relative expression
-*  treatment_options
-  *  Tier: string, treatment status
-  *  OncoKB level: string, level of evidence
-  *  Treatments: string, potential therapies
 
 ## Other Schemas
 

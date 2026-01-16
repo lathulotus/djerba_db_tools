@@ -1,0 +1,66 @@
+{
+  "case_overview":{
+    "assay": "WGTS",
+    "primary_cancer": "Breast cancer",
+    "OncoTree code": "BRCA",
+    "site_of_biopsy": "Soft Tissue"
+  },
+  "sample":{
+    "Sample type": "Tissue",
+    "Estimated Cancer Cell Content(%)": 64,
+    "Estimated Ploidy": "1.78",
+    "Callability": "91.9"
+  },
+  "results":{
+    "genomic_landscape_info":{
+        "Tumour Mutation Burden": 211,
+        "TMB per megabase": "5.66"
+    },
+    "genomic_biomarkers":{
+        "TMB":{
+            "Genomic biomarker value": 5.66,
+            "Genomic alteration actionable": false
+        },
+        "HRD":{
+            "Genomic biomarker value": 0.0887,
+            "Genomic alteration actionable": false
+        },
+        "MSI":{
+            "Genomic biomarker value": 0.805,
+            "Genomic alteration actionable": false
+        }
+    },
+    "somatic mutations": 309,
+    "coding sequence mutations": 211,
+    "oncogenic mutations": 3,
+    "Gene": ["Pik3CA", "PTPN13", "CDH1"],
+    "protein": ["p.H1047R", "p.? (c.2652G>A)", "p.T342Ifs*15"],
+    "type": ["Missense Mutation", "Splice Region", "Frame Shift Ins"],
+    "vaf": [30, 26, 45],
+    "depth": ["36/119", "32/123", "31/69"],
+    "LOH": [false, false, true],
+    "Chromosome": ["3q26.32", "4q21.3", "16q22.1"],
+    "percent genome altered": 47,
+    "total variants": 20,
+    "clinically relevant variants": 8,
+  }
+  
+  "sample": {
+    "id": "S12345",
+    "tumorType": "Lung Adenocarcinoma"
+  },
+  "plugins": {
+    "variantCaller": {
+      "variants": [
+        {
+          "gene": "EGFR",
+          "chrom": "7",
+          "pos": 55249071,
+          "ref": "G",
+          "alt": "A",
+          "alleleFrequency": 0.42
+        }
+      ]
+    }
+  }
+}
