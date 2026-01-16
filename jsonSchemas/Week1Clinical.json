@@ -1,0 +1,231 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id":"Week1Clinical.schema.json",
+    "$comment": "Latest report from 05/01/2026",
+    "title": "Clinical - Report Structure Schema",
+    "description": "Schema documentation of clinical report structures",
+    "type": "object",
+
+    "properties":{
+        "case_overview":{
+            "description": "Overall case details",
+            "type": "object",
+            "properties":{
+                "assay": {
+                    "description": "Type of assay used for sequencing (WGTS, TAR, WGS)",
+                    "type": "string",
+                    "enum": ["WGTS", "WGS", "TAR"],
+                    "description": "WGTS = Whole genome and transcriptome sequencing; WGS = Whole genome sequencing; TAR = Targeted sequencing."
+                },
+                "primary_cancer": {
+                    "description": "Cancer type (Hepatobiliary Tumour, Pancreatic Adenocarcinoma, Multiple Myeloma, Breast Cancer, Invasive Breast Carcinoma)",
+                    "type": "string",
+                    "enum": ["Pancreatic adenocarcinoma", "Hepatobiliary Tumour", "Multiple Myeloma", "Breast Cancer", "Invasive breast carcinoma"],
+                    "description": "Pancreatic adenocarcinoma = Pancreatic; Hepatobiliary Tumour = Hepatobiliary; Multiple Myeloma = Blood; Breast Cancer = Breast; Invasive breast carcinoma = Breast."
+                },
+                "OncoTree code":{
+                    "description": "OncoTree code associated with cancer type & subtype",
+                    "type": "string"
+                },
+                "site_of_biopsy": {
+                    "description": "Biopsy type/location (cfDNA, Liver, Bone Marrow, Soft Tissue, Left Breast, Perihepatic)",
+                    "type": "string",
+                    "enum": ["cfDNA", "Liver", "Bone Marrow", "Left 4th Rib - Soft Tissue", "Left Breast", "Perihepatic"]
+                }
+            }
+        },
+
+
+        "sample":{
+            "description": "Sample information",
+            "type": "object",
+            "properties":{
+                "Sample type": {
+                    "description": "Type of collected sample (Fresh frozen tissue block, Laser capture microdissected (LCM) tumor (fresh frozen), 10 x 10 uM air dried sections (FFPE), methanol fixed, Nucleic Acids Extracted from Tissue in a CLIA-certified Laboratory",
+                    "type": "string",
+                    "enum": ["Fresh", "FF", "FFPE", "Blood", "Plasma", "Bone marrow"],
+                    "description": "Fresh = Fresh unfrozen; FF = Fresh frozen; FFPE = Formalin-fixed, paraffin-embedded; Blood = Whole blood; Plasma = Plasma sample (ctDNA); Bone marrow = Bone marrow."
+                },
+                "Estimated Cancer Cell Content (%)":{
+                    "description": "Estimated percentage of cancer cell content",
+                    "type": "integer"
+                },
+                "Estimated Ploidy":{
+                    "description": "Estimated ploidy",
+                    "type": "string"
+                },
+                "Callability (%)":{
+                    "description": "Read call percentage",
+                    "type": "string"
+                }
+            }
+        },
+
+
+        "results":{
+            "description": "Results from testing; assay in report ID",
+            "type": "object",
+            "properties":{
+                "genomic_landscape_info":{
+                    "description": "Genomic landscape-- TMB, cohorts, percentiles",
+                    "type": "object",
+                    "properties":{
+                        "Tumour Mutation Burden":{
+                            "description": "Tumour mutation burden value",
+                            "type": "integer"
+                        },
+                        "TMB per megabase": {
+                            "description": "Tumour mutation burden per megabase; relative",
+                            "type": "integer"
+                        }
+                    }
+                },
+
+
+                "genomic_biomarkers":{
+                    "TMB":{
+                        "description": "Tumour mutation burden - high",
+                        "type": "object",
+                        "properties":{
+                            "Genomic biomarker value":{
+                                "description": "TMB value; same as 'TMB per megabase'",
+                                "type": "integer"
+                            },
+                            "Genomic alteration actionable":{
+                                "description": "Actionability of TMB",
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "HRD":{
+                        "description": "Homologous recombination defficiency",
+                        "type": "object",
+                        "property":{
+                            "Genomic biomarker value":{
+                                "description": "HRD value",
+                                "type": "integer"
+                            },
+                            "Genomic alteration actionable":{
+                                "description": "Actionability of HRD",
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "MSI":{
+                        "description": "Microsatellite instability",
+                        "type": "object",
+                        "property":{
+                            "Genomic biomarker value":{
+                                "description": "MSI value",
+                                "type": "integer"
+                            },
+                            "Genomic alteration actionable":{
+                                "description": "Actionability of MSI",
+                                "type": "integer"
+                            }
+                        }
+                    }
+                },
+            
+                "somatic mutations":{
+                    "description": "Number of somatic mutations identified",
+                    "type": "integer"
+                },
+                "coding sequence mutations":{
+                    "description": "Number of mutations in coding sequence",
+                    "type": "integer"
+                },
+                "oncogenic mutations":{
+                    "description": "Number of oncogenic mutations identified",
+                    "type": "integer"
+                },
+                
+                "Gene":{
+                    "description": "Gene containing identified variant",
+                    "type": "string"
+                },
+                "protein":{
+                    "description": "Protein alteration",
+                    "type": "string"
+                },
+                "type":{
+                    "description": "Type of specific alteration or biological event (Missense Mutation, Nonsense Mutation, Frame Shift Del, Frame Shift Ins, Splice Site, Splice Region)",
+                    "type": "string",
+                    "enum": ["Missense Mutation", "Nonsense Mutation", "Frame Shift Del", "Frame Shift Ins", "Splice Site", "Splice Region"],
+                    "description": "Missense Mutation = Variant causing amino acid change; Nonsense Mutation = Variant causing premature stop codon; Frame Shift Del = Deletion causing frameshift; Frame Shift Ins = Insertion causing frameshift; Splice Site = Variant affecting canonical splice sites; Splice Region = Variant in splice region outside canonical sites."
+                },
+                "vaf":{
+                    "description": "Variant allele frequency",
+                    "type": "string"
+                },
+                "depth":{
+                    "description": "Variant read depth",
+                    "type": "string"
+                },
+                "LOH":{
+                    "description": "Loss of heterozygosity exhibited",
+                    "type": "boolean",
+                    "enum": [true, false],
+                    "description": "true = Loss of heterozygosity; false = No loss of heterozygosity."
+                },
+                "Chromosome":{
+                    "decription": "Chromosomal position of variant (ie 17p13.1)",
+                    "type": "string"
+                },
+                "OncoKB":{
+                    "description": "OncoKB level of evidence",
+                    "type": "string",
+                    "enum": ["N1", "N2"],
+                    "description": "N1 = SoC evidence indicating lack of sensitivity/resistance; N2 = Clinical/biological evidence indicating lack of sensitivity/resistance."
+                },
+
+                "percent genome altered":{
+                    "description": "Percentage of the genome altered by variant",
+                    "type": "integer"
+                },
+                "total variants":{
+                    "description": "Total number of variants",
+                    "type": "integer"
+                },
+                "clinically relevant variants":{
+                    "description": "Number of clinically actionable/relevant variants",
+                    "type": "integer"
+                },
+                "has expression data":{
+                    "description": "Whether there is expression data associated with genes/variants",
+                    "type": "boolean",
+                    "enum": [true, false],
+                    "description": "true = Has expression data; false = Does not have expression data."
+                },
+                "Expression Percentile":{
+                    "description": "Variant expression",
+                    "type": "integer"
+                }
+            }
+        },
+
+
+        "treatment_options_merger":{
+            "description": "Treatment options merged; plugin",
+            "type": "object",
+            "properties":{
+                "Tier":{
+                    "description": "Treatment status (investigational, approved)",
+                    "type": "string",
+                    "enum": ["Approved", "Investigational"],
+                    "description": "Approved = Therapy approved for clinical use; Investigational = Therapy under clinical investigation."
+                },
+                "OncoKB level":{
+                    "description": "OncoKB-defined level of evidence (3A, 3B, 4)",
+                    "type": "string",
+                    "enum": ["Level 1", "Level 2", "Level 3A", "Level 3B", "Level 4"],
+                    "description": "Level 1 = FDA-recognized biomarker predictive of response; Level 2 = Standard-of-care biomarker predictive of response; Level 3A = Clinical evidence supporting response in this indication; Level 3B = Clinical evidence supporting response in another indication; Level 4 = Biological evidence supporting response."
+                },
+                "Treatments":{
+                    "description": "Potential therapies and treatments for biological events",
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
