@@ -89,10 +89,178 @@
             "description": "Findings associated with copy number variants",
             "type": "object",
             "propterties":{
-
                 
+                "results":{
+                    "description": "Results pertaining to CNV data",
+                    "type": "object",
+                    "properties":{
+
+                        "percent genome altered":{
+                            "description": "Percent of genome altered by CNV",
+                            "type": "integer"
+                        },
+                        "total variants":{
+                            "description": "Number of total variants",
+                            "type": "integer"
+                        },
+
+                        "body":{
+                            "description": "Details on each CNV",
+                            "type": "object",
+                            "properties":{
+                                "Gene":{
+                                    "description": "Names of CNV-containing genes",
+                                    "type": "string"
+                                },
+                                "Alteration":{
+                                    "description": "Type of CNV event",
+                                    "type": "string",
+                                    "enum": ["Amplification", "Deletion"]
+                                },
+                                "Chromosome":{
+                                    "description": "Position of CNV",
+                                    "type": "string"
+                                },
+                                "OncoKB":{
+                                    "description": "OncoKB level of evidence",
+                                    "type": "string",
+                                    "enum": ["1", "2", "3", "4", "N1", "N2"]
+                                }
+                            }
+                        }
+                    }
+                }
             }
-        }
+        },
+
+
+        "wgts.snv_indel":{
+            "description": "Findings associated with short nucleotide variants and indels",
+            "type": "object",
+            "propterties":{
+                
+                "results":{
+                    "description": "Results pertaining to SNV/indel data",
+                    "type": "object",
+                    "properties":{
+
+                        "somatic mutations":{
+                            "description": "Number of somatic mutations identified",
+                            "type": "integer"
+                        },
+                        "coding sequence mutations":{
+                            "description": "Number of mutations in coding sequence",
+                            "type": "integer"
+                        },
+                        "oncogenic mutations":{
+                            "description": "Number of oncogenic mutations identified",
+                            "type": "integer"
+                        },
+
+                        "body":{
+                            "description": "Details on each SNV",
+                            "type": "object",
+                            "properties":{
+                                "Gene":{
+                                    "description": "Names of SNV-containing genes",
+                                    "type": "string"
+                                },
+                                "protein":{
+                                    "description": "Protein alteration",
+                                    "type": "string"
+                                },
+                                "type":{
+                                    "description": "Type of SNV event",
+                                    "type": "string",
+                                    "enum": ["Frame Shift Ins", "Frame Shift Del"]
+                                },
+                                "vaf":{
+                                    "description": "Variant allele frequency (percentage)",
+                                    "type": "integer"
+                                },
+                                "Chromosome":{
+                                    "description": "Position of SNV/indel",
+                                    "type": "string"
+                                },
+                                "OncoKB":{
+                                    "description": "OncoKB level of evidence",
+                                    "type": "string",
+                                    "enum": ["1", "2", "3", "4", "N1", "N2"]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+
+        "fusion":{
+            "description": "Findings associated with gene fusions",
+            "type": "object",
+            "propterties":{
+                
+                "results":{
+                    "description": "Results pertaining to fusion data",
+                    "type": "object",
+                    "properties":{
+
+                        "Total variants":{
+                            "description": "Number of fusions identified",
+                            "type": "integer"
+                        },
+                        "Clinically relevant variants":{
+                            "description": "Number of relevant variants as per OncoKB",
+                            "type": "integer"
+                        },
+                        "nccn_relevant_variants":{
+                            "description": "Number of relevant variants as per NCCN",
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+
+
+        "genomic_landscape":{
+            "description": "Genomic Landscape and Biomarkers (TMB, MSI)",
+            "type": "object",
+            "propterties":{
+                
+                "results":{
+                    "description": "Results pertaining to landscape and biomarkers",
+                    "type": "object",
+                    "properties":{
+
+                        "genomic_landscape_info":{
+                            "description": "Genomic landscape",
+                            "type": "object",
+                            "properties":{
+                                
+                                "Tumour Mutation Burden":{
+                                    "description": "Total TMB value",
+                                    "type": "integer"
+                                },
+                                "TMB per megabase":{
+                                    "description": "TMB per megabase",
+                                    "type": "integer"
+                                },
+                                "Percent Genome Altered":{
+                                    "description": "Altered genome due to variants",
+                                    "type": "integer"
+                                },
+                                "Cancer-specific Percentile":{
+                                    "description": "",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
 
             "results":{
                 "description": "Results from testing; merged",
@@ -125,18 +293,7 @@
                     },
                     
 
-                    "somatic mutations":{
-                        "description": "Number of somatic mutations identified",
-                        "type": "integer"
-                    },
-                    "coding sequence mutations":{
-                        "description": "Number of mutations in coding sequence",
-                        "type": "integer"
-                    },
-                    "oncogenic mutations":{
-                        "description": "Number of oncogenic mutations identified",
-                        "type": "integer"
-                    },
+                    
                     
 
                     "Gene":{
