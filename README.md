@@ -3,32 +3,56 @@
 ## Top-level Schemas
 * [Clinical - Report Structure Schema](https://github.com/lathulotus/CGIWeek1_2/blob/main/jsonSchemas/clinical_schema.json) – `clinical.schema.json`
 * [RUO - Report Structure Schema](https://github.com/lathulotus/CGIWeek1_2/blob/main/jsonSchemas/ruo_schema.json) – `ruo.schema.json`
+* [Testing - Report Structure Schema](https://github.com/lathulotus/CGIWeek1_2/blob/main/jsonSchemas/testing_schema.json) – `testing.schema.json`
 
-## Top-level Fields (Clinical)
-* case_overview: assay, primary cancer, oncotree code, site of biopsy
-* sample: sample type, estimated cancer cell content, estimated ploidy, callability
-* results: genomic biomarkers (TMB, HRD, MSI), mutations (somatic, oncogenic, CDS), genes, protein-level change, variant type, VAF, depth, LOH, position
+## Top-level Fields
+* Case Overview: assay, primary cancer, site of biopsy, study
+* Sample Information: sample type, OncoTree code, estimated cancer cell content, estimated ploidy, callability
+* Genomic Landscape: percent genome altered, cancer-specific percentile, genomic biomarkers (TMB, HRD, MSI)
+* SNVs and Indels: mutations (somatic, coding, oncogenic), variant information (gene, chromosome, protein, SNV type, OncoKB)
+* CNVs: percent genome altered, variant information (gene, chromosome, CNV type, OncoKB)
+* Fusion: variant information
 
-## Variable Fields (Clinical)
-case_overview
+## Variable Fields
+Case Overview
 * assay: string, genomic sequencing assay
 * primary_cancer: string, cancer type
-* OncoTree code: string, code associated with cancer
 * site_of_biopsy: string, biopsy type/location
+* study: string, research study name
 
-sample
+Sample Information
+* OncoTree code: string, code associated with cancer
 *  Sample type: string, collection type
 *  Estimated Cancer Cell Content (%): integer, percent of cancer cell content
 *  Estimated Ploidy: string, estimated ploidy
 *  Callability (%): string, accuracy of call
+*  Coverage (mean): string, average coverage
 
-results
+Genomic Landscape
 *  Tumour Mutation Burden: integer, total TMB
 *  TMB per megabase: integer, relative TMB value
 *  genomic_biomarkers: object, TMB/HRD/MSI genomic biomarker values
-*  somatic mutations: integer, number of somatic mutations
-*  coding sequence mutations: integer, number of CDS mutations
+*   Cancer-specific Percentile: string, percentile within specific cohort
+*   purity: integer, fraction of cancer cells in tumour
+*   Genomic biomarker value: integer, TMB/MSI/HRD per megabase
+*   Genomic biomarker alteration: string, biomarker title
+
+
+SNV_Indel
+*   somatic mutations: integer, number of somatic variants
+*   coding sequence mutation: integer, number of coding variants
 *  oncogenic mutations: integer, number of oncogenic mutations
+
+CNV
+*   percent genome altered: integer, percent altered due to variant
+*   total variants: integer, total variants found
+
+Fusion
+*   Total variants: integer, total variants found
+*   Clinically relevant variants: integer, number of clinically relevant (OncoKB)
+*   nccn_relevant_variants: integer, number of NCCN-relevant variants
+
+SNV/Indel, CNV, Fusion
 *  Gene: string, gene names
 *  protein: string, protein alterations
 *  type: string, variant classification
@@ -36,35 +60,10 @@ results
 *  depth: string, variant read depth
 *  LOH: boolean, loss of heterozygosity exhibited
 *  Chromosome: string, position
-*  percent genome altered: integer, alteration from variant
-*  total variants: integer, number of variants
-*  clinically relevant variants: integer, number of clinically relevant variants
+
+
 
 ![Report Structure Diagram](images/ReportStructure.png)
-
-## Other Schemas
-
-### Objects
-
-* [Untitled object in Clinical - Report Structure Schema](./week1clinical-properties-case_overview.md "Overall case details") – `Week1Clinical.schema.json#/properties/case_overview`
-
-* [Untitled object in Clinical - Report Structure Schema](./week1clinical-properties-sample.md "Sample information") – `Week1Clinical.schema.json#/properties/sample`
-
-* [Untitled object in Clinical - Report Structure Schema](./week1clinical-properties-results.md "Results from testing; assay in report ID") – `Week1Clinical.schema.json#/properties/results`
-
-* [Untitled object in Clinical - Report Structure Schema](./week1clinical-properties-results-properties-genomic_landscape_info.md "Genomic landscape-- TMB, cohorts, percentiles") – `Week1Clinical.schema.json#/properties/results/properties/genomic_landscape_info`
-
-* [Untitled object in Clinical - Report Structure Schema](./week1clinical-properties-results-properties-genomic_biomarkers-tmb.md "Tumour mutation burden - high") – `Week1Clinical.schema.json#/properties/results/properties/genomic_biomarkers/TMB`
-
-* [Untitled object in Clinical - Report Structure Schema](./week1clinical-properties-results-properties-genomic_biomarkers-hrd.md "Homologous recombination defficiency") – `Week1Clinical.schema.json#/properties/results/properties/genomic_biomarkers/HRD`
-
-* [Untitled object in Clinical - Report Structure Schema](./week1clinical-properties-results-properties-genomic_biomarkers-msi.md "Microsatellite instability") – `Week1Clinical.schema.json#/properties/results/properties/genomic_biomarkers/MSI`
-
-* [Untitled object in Clinical - Report Structure Schema](./week1clinical-properties-treatment_options_merger.md "Treatment options merged; plugin") – `Week1Clinical.schema.json#/properties/treatment_options_merger`
-
-### Arrays
-
-
 
 ## Version Note
 

@@ -1,0 +1,80 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "Week1Testing.schema.json",
+    "$comment": "Latest report from DATE",
+    "title": "Testing Report Structure Schema",
+    "description": "Schema documentation of testing report structures",
+    "type": "object",
+
+    "properties":{
+        "assay": {
+            "description": "Assay used for sequencing",
+            "type": "string"
+        },
+
+        "gene_info": {
+            "description": "Information about the gene(s) flagged",
+            "type": "object",
+            "properties": {
+                "Chromosome": {
+                    "description": "Position along specified chromosome",
+                    "type": "string"
+                },
+                "Gene": {
+                    "description": "Gene name",
+                    "type": "string"
+                }
+            } 
+        },
+
+        "genomic_landscape_info": {
+            "description": "Information about cancer cohorts",
+            "type": "object",
+            "properties": {
+                "Cancer-specific Cohort": {
+                    "description": "Cohort of individual",
+                    "type": "string"
+                },
+                "Cancer-specific Percentile": {
+                    "description": "Percentile within cohort",
+                    "type": "integer"
+                },
+                "Pan-cancer Cohort": {
+                    "description": "Study details, year, sample size",
+                    "type": "string"
+                },
+                "Percent Genome Altered": {
+                    "description": "Percent of altered genome",
+                    "type": "integer"
+                },
+                "TMB per megabase": {
+                    "description": "Tumour mutation burden per megabase",
+                    "type": "integer"
+                },
+                "Tumour Mutation Burden": {
+                    "description": "Tumour mutation burden",
+                    "type": "integer"
+                }
+            }
+        },
+
+        "investigational_therapies": {
+            "description": "Clinical assessment of alterations for potential therapies",
+            "type": "object",
+            "properties": {
+                "Alteration": {
+                    "description": "Alteration event; copy number or point mutations",
+                    "type": "string"
+                },
+                "OncoKB" : {
+                    "description": "OncoKB level of alteration event",
+                    "type": "string"
+                },
+                "Treatment": {
+                    "description": "Therapies and treatments for biological events",
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
