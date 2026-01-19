@@ -124,7 +124,7 @@
                                 "OncoKB":{
                                     "description": "OncoKB level of evidence",
                                     "type": "string",
-                                    "enum": ["1", "2", "3", "4", "N1", "N2"]
+                                    "enum": ["1", "2", "3A", "3B", "4", "N1", "N2", "N3", "N4"]
                                 }
                             }
                         }
