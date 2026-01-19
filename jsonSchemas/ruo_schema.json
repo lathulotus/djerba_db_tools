@@ -86,7 +86,7 @@
         },
 
 
-        "cnv":{
+        "wgts.cnv_purple":{
             "description": "Findings associated with copy number variants",
             "type": "object",
             "propterties":{

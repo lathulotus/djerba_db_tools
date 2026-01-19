@@ -59,7 +59,7 @@
                         "Sample Type":{
                             "description": "Type of sample",
                             "type": "string",
-                            "enum": ["Fresh", "FF", "FFPE"]
+                            "enum": ["Fresh", "FF", "FFPE", "Nucleic Acids Extracted from Tissue in a CLIA-certified Laboratory"]
                         },
                         "Estimated Cancer Cell Content (%)":{
                             "description": "Estimated percentage of cancer cell content",
@@ -256,14 +256,6 @@
                                 },
                                 "TMB per megabase":{
                                     "description": "TMB per megabase",
-                                    "type": "integer"
-                                },
-                                "Cancer-specific Percentile":{
-                                    "description": "Percentile within specific cohort",
-                                    "type": "integer"
-                                },
-                                "purity":{
-                                    "description": "Fraction of cancer cells in tumour",
                                     "type": "integer"
                                 }
                             }
