@@ -20,8 +20,8 @@ Cancer type.
 
 | Value                         | Explanation |
 | :---------------------------- | :---------- |
-| `"Pancreatic adenocarcinoma"` |             |
-| `"Hepatobiliary Tumour"`      |             |
-| `"Multiple Myeloma"`          |             |
-| `"Breast Cancer"`             |             |
-| `"Invasive breast carcinoma"` |             |
+| `"Pancreatic adenocarcinoma"` |Pancreatic|
+| `"Hepatobiliary Tumour"`      |Hepatobiliary|
+| `"Multiple Myeloma"`          |Blood|
+| `"Breast Cancer"`             |Breast|
+| `"Invasive breast carcinoma"` |Breast|

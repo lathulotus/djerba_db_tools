@@ -20,12 +20,12 @@ OncoKB level of evidence
 
 | Value  | Explanation |
 | :----- | :---------- |
-| `"1"`  |             |
-| `"2"`  |             |
-| `"3A"` |             |
-| `"3B"` |             |
-| `"4"`  |             |
-| `"N1"` |             |
-| `"N2"` |             |
-| `"N3"` |             |
-| `"N4"` |             |
+| `"1"`  |FDA-recognized biomarker predictive of response to an FDA-approved drug in this indication|
+| `"2"`  |Standard care biomarker recommended by the NCCN or other expert panels predictive of response to an FDA-approved drug in this indication|
+| `"3A"` |Compelling clinical evidence supports the biomarker as being predictive of response to a drug in this indication|
+| `"3B"` |Standard care or investigational biomarker predictive of response to an FDA-approved or investigational drug in another indication|
+| `"4"`  |Compelling biological evidence supports the biomarker as being predictive of response to a drug|
+| `"N1"` |The biomarker is listed as "Oncogenic" by OncoKB, but is not in an actionable tier|
+| `"N2"` |The biomarker is listed as "Likely Oncogenic" by OncoKB, but is not in an actionable tier|
+| `"N3"` |The biomarker is listed as "Predicted Oncogenic" by OncoKB, but is not in an actionable tier|
+| `"N4"` |The biomarker is listed as "Likely Neutral" or "Inconclusive" by OncoKB|

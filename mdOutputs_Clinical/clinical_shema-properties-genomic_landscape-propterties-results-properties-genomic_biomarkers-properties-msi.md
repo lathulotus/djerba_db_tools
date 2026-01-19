@@ -63,5 +63,6 @@ Biomarker title
 
 | Value                           | Explanation |
 | :------------------------------ | :---------- |
-| `"MSS"`                         |             |
-| `"Microsatellite Stable (MSS)"` |             |
+| `"MSS"`                         |Microsatellite Stable|
+| `"MSI-H"` |High Microsatellite Instability|
+| `"MSI-L"` |Low Microsatellite Instability|

@@ -20,6 +20,6 @@ Type of assay used for sequencing (WGTS, WGS, TAR)
 
 | Value    | Explanation |
 | :------- | :---------- |
-| `"WGTS"` |             |
-| `"WGS"`  |             |
-| `"TAR"`  |             |
+| `"WGTS"` |Whole genome and transcriptome sequencing|
+| `"WGS"`  |Whole genome sequencing|
+| `"TAR"`  |Targeted sequencing|

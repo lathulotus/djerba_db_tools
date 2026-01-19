@@ -47,9 +47,9 @@ Type of assay used for sequencing (WGTS, WGS, TAR)
 
 | Value    | Explanation |
 | :------- | :---------- |
-| `"WGTS"` |             |
-| `"WGS"`  |             |
-| `"TAR"`  |             |
+| `"WGTS"` |Whole genome and transcriptome sequencing|
+| `"WGS"`  |Whole genome sequencing|
+| `"TAR"`  |Targeted sequencing|
 
 ## primary\_cancer
 
@@ -75,11 +75,11 @@ Cancer type.
 
 | Value                         | Explanation |
 | :---------------------------- | :---------- |
-| `"Pancreatic adenocarcinoma"` |             |
-| `"Hepatobiliary Tumour"`      |             |
-| `"Multiple Myeloma"`          |             |
-| `"Breast Cancer"`             |             |
-| `"Invasive breast carcinoma"` |             |
+| `"Pancreatic adenocarcinoma"` |Pancreatic|
+| `"Hepatobiliary Tumour"`      |Hepatobiliary|
+| `"Multiple Myeloma"`          |Blood|
+| `"Breast Cancer"`             |Breast|
+| `"Invasive breast carcinoma"` |Breast|
 
 ## site\_of\_biopsy
 

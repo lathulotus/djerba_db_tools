@@ -20,4 +20,5 @@ Biomarker title
 
 | Value              | Explanation |
 | :----------------- | :---------- |
-| `"HRD Proficient"` |             |
+| `"HRD Proficient"` |HRD Proficient; working|
+| `"HRD Deficient"` |HRD Deficient; not working|

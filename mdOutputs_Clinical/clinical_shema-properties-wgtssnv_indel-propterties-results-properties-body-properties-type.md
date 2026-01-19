@@ -20,9 +20,9 @@ Type of SNV event
 
 | Value                 | Explanation |
 | :-------------------- | :---------- |
-| `"Missense Mutation"` |             |
-| `"Nonsense Mutation"` |             |
-| `"Frame Shift Del"`   |             |
-| `"Frame Shift Ins"`   |             |
-| `"Splice Site"`       |             |
-| `"Splice Region"`     |             |
+| `"Missense Mutation"` |Variant causing amino acid change|
+| `"Nonsense Mutation"` |Variant causing premature stop codon|
+| `"Frame Shift Del"`   |Deletion causing frameshift|
+| `"Frame Shift Ins"`   |Insertion causing frameshift|
+| `"Splice Site"`       |Variant affecting canonical splice sites|
+| `"Splice Region"`     |Variant in splice region outside canonical sites|

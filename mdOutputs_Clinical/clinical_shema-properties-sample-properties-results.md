@@ -67,9 +67,9 @@ Type of sample
 
 | Value     | Explanation |
 | :-------- | :---------- |
-| `"Fresh"` |             |
-| `"FF"`    |             |
-| `"FFPE"`  |             |
+| `"Fresh"` |Fresh|
+| `"FF"`    |Fresh Frozen|
+| `"FFPE"`  |Formalin-Fixed Paraffin-Embedded|
 
 ## Estimated Cancer Cell Content (%)
 

@@ -20,5 +20,6 @@ Biomarker title
 
 | Value     | Explanation |
 | :-------- | :---------- |
-| `"TMB-L"` |             |
-| `"TMB-H"` |             |
+| `"TMB-L"` |Low Tumour Mutation Burden|
+| `"TMB-H"` |High Tumour Mutation Burden|
+| `"TMB-I"` |Intermediate Tumour Mutation Burden|

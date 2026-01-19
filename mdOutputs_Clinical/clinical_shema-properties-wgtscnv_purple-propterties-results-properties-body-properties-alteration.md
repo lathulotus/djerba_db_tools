@@ -20,5 +20,5 @@ Type of CNV event
 
 | Value             | Explanation |
 | :---------------- | :---------- |
-| `"Amplification"` |             |
-| `"Deletion"`      |             |
+| `"Amplification"` |Copy Number Gain|
+| `"Deletion"`      |Copy Number Loss|
