@@ -1,131 +1,190 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "RUO.schema.json",
-    "$comment": "Latest report from 13/01/2025",
+    "$comment": "Latest report from 24/12/2025",
     "title": "RUO - Report Structure Schema",
     "description": "Schema documentation of RUO report structures",
     "type": "object",
 
     "properties":{
-        "results":{
-            "description": "Results from testing; merged",
+        "case_overview":{
+            "description": "Case details: cancer type, site of biopsy, assay.",
             "type": "object",
             "properties":{
-                "assay": {
-                    "description": "Type of assay used for sequencing (WGTS, WGS, TAR)",
-                    "type": "string",
-                    "enum": ["WGTS", "WGS", "TAR"]
-                },
-                "primary_cancer": {
-                    "description": "Cancer type.",
-                    "type": "string",
-                    "enum": ["Pancreatic adenocarcinoma", "Hepatobiliary Tumour", "Multiple Myeloma", "Breast Cancer", "Invasive breast carcinoma"]
-                },
-                "site_of_biopsy":{
-                    "description": "Biopsy type/location (cfDNA)",
-                    "type": "string"
-                },
-                "study":{
-                    "description": "Research study name",
-                    "type": "string"
-                },
-                "project":{
-                    "description": "Specific project name",
-                    "type": "string"
-                },
-
-
-                "known_variants":{
-                    "description": "Previously known variants (<em>GENE</em> c.notation (p.notation)",
-                    "type": "string"
-                },
-                "cancer_content":{
-                    "description": "Amount of cancer cells",
-                    "type": "integer"
-                },
-                "raw_coverage":{
-                    "description": "Sequences read coverage",
-                    "type": "integer"
-                },
-                "unique_coverage":{
-                    "description": "Unique read coverage",
-                    "type": "integer"
-                },
-
-
-                "Clinically relevant variants":{
-                    "description": "Number of clinically relevant variants",
-                    "type": "integer"
-                },
-                "Total variants":{
-                    "description": "Number of total variants identified",
-                    "type": "integer"
-                },
-                "Has expression data":{
-                    "description": "Whether variant is expressed",
-                    "type": "boolean"
-                },
-                 
-
-                "somatic mutations":{
-                    "description": "Number of somatic mutations identified",
-                    "type": "integer"
-                },
-                "coding sequence mutations":{
-                    "description": "Number of mutations in coding sequence",
-                    "type": "integer"
-                },
-                "oncogenic mutations":{
-                    "description": "Number of oncogenic mutations identified",
-                    "type": "integer"
-                },
                 
+                "results":{
+                    "description": "Results covering case overview",
+                    "type": "object",
+                    "properties":{
 
-                "Gene":{
-                    "description": "Gene containing identified variant",
-                    "type": "array",
-                    "items":{
-                        "type": "string"
+                        "assay": {
+                            "description": "Type of assay used for sequencing (WGTS, WGS, TAR)",
+                            "type": "string",
+                            "enum": ["WGTS", "WGS", "TAR"]
+                        },
+                        "primary_cancer": {
+                            "description": "Cancer type.",
+                            "type": "string",
+                            "enum": ["Pancreatic adenocarcinoma", "Hepatobiliary Tumour", "Multiple Myeloma", "Breast Cancer", "Invasive breast carcinoma"]
+                        },
+                        "site_of_biopsy":{
+                            "description": "Biopsy type/location (cfDNA)",
+                            "type": "string"
+                        },
+                        "study":{
+                            "description": "Research study name",
+                            "type": "string"
+                        },
+                        "project":{
+                        "description": "Specific project name",                                "type": "string"
+                        }
                     }
-                },
-                "protein":{
-                    "description": "Protein alteration",
-                    "type": "array",
-                    "items":{
-                        "type": "string"
+                }
+            }
+        },
+
+
+        "samples":{
+            "description": "Sample details: cancer content, coverage.",
+            "type": "object",
+            "properties":{
+
+                "results":{
+                    "description": "Results covering sample details",
+                    "type": "object",
+                    "properties":{
+
+                        "OncoTree code":{
+                            "description": "OncoTree-standardized code for cancer identification",
+                            "type": "string"
+                        },
+                        "Sample Type":{
+                            "description": "Type of sample",
+                            "type": "string",
+                            "enum": ["Fresh frozen tissue block", "FFPE"]
+                        },
+                        "Estimated Cancer Cell Content (%)":{
+                            "description": "Estimated percentage of cancer cell content",
+                            "type": "integer"
+                        },
+                        "Estimated Ploidy":{
+                            "description": "Estimated ploidy value",
+                            "type": "string"
+                        },
+                        "Callability (%)":{
+                            "description": "Call quality",
+                            "type": "string"
+                        },
+                        "Coverage (mean)":{
+                            "description": "Average coverage",
+                            "type": "string"
+                        }
                     }
-                },
-                "type":{
-                    "description": "Type of specific alteration or biological event (Missense Mutation, Nonsense Mutation, Frame Shift Del, Frame Shift Ins, Splice Site, Splice Region)",
-                    "type": "string",
-                    "enum": ["Missense Mutation", "Nonsense Mutation", "Frame Shift Del", "Frame Shift Ins", "Splice Site", "Splice Region"]
-                },
-                "vaf":{
-                    "description": "Variant allele frequency",
-                    "type": "array",
-                    "items":{
+                }
+            }
+        },
+
+
+        "cnv":{
+            "description": "Findings associated with copy number variants",
+            "type": "object",
+            "propterties":{
+
+                
+            }
+        }
+
+            "results":{
+                "description": "Results from testing; merged",
+                "type": "object",
+                "properties":{
+                    "known_variants":{
+                        "description": "Previously known variants (<em>GENE</em> c.notation (p.notation)",
+                        "type": "string"
+                    },
+                    "raw_coverage":{
+                        "description": "Sequences read coverage",
                         "type": "integer"
-                    }
-                },
-                "depth":{
-                    "description": "Variant read depth",
-                    "type": "array",
-                    "items":{
-                        "type": "string"
-                    }
-                },
-                "LOH":{
-                    "description": "Whether loss of heterozygosity is exhibited",
-                    "type": "array",
-                    "items":{
+                    },
+                    "unique_coverage":{
+                        "description": "Unique read coverage",
+                        "type": "integer"
+                    },
+
+                    "Clinically relevant variants":{
+                        "description": "Number of clinically relevant variants",
+                        "type": "integer"
+                    },
+                    "Total variants":{
+                        "description": "Number of total variants identified",
+                        "type": "integer"
+                    },
+                    "Has expression data":{
+                        "description": "Whether variant is expressed",
                         "type": "boolean"
-                    }
-                },
-                "Chromosome":{
-                    "decription": "Chromosomal position of variant (ie 17p13.1)",
-                    "type": "array",
-                    "items":{
-                        "type": "string"
+                    },
+                    
+
+                    "somatic mutations":{
+                        "description": "Number of somatic mutations identified",
+                        "type": "integer"
+                    },
+                    "coding sequence mutations":{
+                        "description": "Number of mutations in coding sequence",
+                        "type": "integer"
+                    },
+                    "oncogenic mutations":{
+                        "description": "Number of oncogenic mutations identified",
+                        "type": "integer"
+                    },
+                    
+
+                    "Gene":{
+                        "description": "Gene containing identified variant",
+                        "type": "array",
+                        "items":{
+                            "type": "string"
+                        }
+                    },
+                    "protein":{
+                        "description": "Protein alteration",
+                        "type": "array",
+                        "items":{
+                            "type": "string"
+                        }
+                    },
+                    "type":{
+                        "description": "Type of specific alteration or biological event (Missense Mutation, Nonsense Mutation, Frame Shift Del, Frame Shift Ins, Splice Site, Splice Region)",
+                        "type": "string",
+                        "enum": ["Missense Mutation", "Nonsense Mutation", "Frame Shift Del", "Frame Shift Ins", "Splice Site", "Splice Region"]
+                    },
+                    "vaf":{
+                        "description": "Variant allele frequency",
+                        "type": "array",
+                        "items":{
+                            "type": "integer"
+                        }
+                    },
+                    "depth":{
+                        "description": "Variant read depth",
+                        "type": "array",
+                        "items":{
+                            "type": "string"
+                        }
+                    },
+                    "LOH":{
+                        "description": "Whether loss of heterozygosity is exhibited",
+                        "type": "array",
+                        "items":{
+                            "type": "boolean"
+                        }
+                    },
+                    "Chromosome":{
+                        "decription": "Chromosomal position of variant (ie 17p13.1)",
+                        "type": "array",
+                        "items":{
+                            "type": "string"
+                        }
                     }
                 }
             }
