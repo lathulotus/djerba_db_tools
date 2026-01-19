@@ -251,96 +251,67 @@
                                     "type": "integer"
                                 },
                                 "Cancer-specific Percentile":{
-                                    "description": "",
+                                    "description": "Percentile within specific cohort",
                                     "type": "string"
+                                },
+                                "purity":{
+                                    "description": "Fraction of cancer cells in tumour",
+                                    "type": "integer"
                                 }
                             }
-                        }
-                    }
-                }
-            }
-        },
+                        },
 
+                        "genomic_biomarkers":{
+                            "description": "Genomic biomarkers (TMB, MSI, HRD)",
+                            "type": "object",
+                            "properties":{
 
-            "results":{
-                "description": "Results from testing; merged",
-                "type": "object",
-                "properties":{
-                    "known_variants":{
-                        "description": "Previously known variants (<em>GENE</em> c.notation (p.notation)",
-                        "type": "string"
-                    },
-                    "raw_coverage":{
-                        "description": "Sequences read coverage",
-                        "type": "integer"
-                    },
-                    "unique_coverage":{
-                        "description": "Unique read coverage",
-                        "type": "integer"
-                    },
-
-                    "Clinically relevant variants":{
-                        "description": "Number of clinically relevant variants",
-                        "type": "integer"
-                    },
-                    "Total variants":{
-                        "description": "Number of total variants identified",
-                        "type": "integer"
-                    },
-                    "Has expression data":{
-                        "description": "Whether variant is expressed",
-                        "type": "boolean"
-                    },
-                    
-
-                    
-                    
-
-                    "Gene":{
-                        "description": "Gene containing identified variant",
-                        "type": "array",
-                        "items":{
-                            "type": "string"
-                        }
-                    },
-                    "protein":{
-                        "description": "Protein alteration",
-                        "type": "array",
-                        "items":{
-                            "type": "string"
-                        }
-                    },
-                    "type":{
-                        "description": "Type of specific alteration or biological event (Missense Mutation, Nonsense Mutation, Frame Shift Del, Frame Shift Ins, Splice Site, Splice Region)",
-                        "type": "string",
-                        "enum": ["Missense Mutation", "Nonsense Mutation", "Frame Shift Del", "Frame Shift Ins", "Splice Site", "Splice Region"]
-                    },
-                    "vaf":{
-                        "description": "Variant allele frequency",
-                        "type": "array",
-                        "items":{
-                            "type": "integer"
-                        }
-                    },
-                    "depth":{
-                        "description": "Variant read depth",
-                        "type": "array",
-                        "items":{
-                            "type": "string"
-                        }
-                    },
-                    "LOH":{
-                        "description": "Whether loss of heterozygosity is exhibited",
-                        "type": "array",
-                        "items":{
-                            "type": "boolean"
-                        }
-                    },
-                    "Chromosome":{
-                        "decription": "Chromosomal position of variant (ie 17p13.1)",
-                        "type": "array",
-                        "items":{
-                            "type": "string"
+                                "TMB":{
+                                    "description": "Tumour Mutation Burden",
+                                    "type": "object",
+                                    "properties":{
+                                        "Genomic biomarker value":{
+                                            "description": "TMB per megabase",
+                                            "type": "integer"
+                                        },
+                                        "Genomic biomarker alteration":{
+                                            "description": "Biomarker title",
+                                            "type": "string",
+                                            "enum": ["TMB-L", "TMB-H"]
+                                        }
+                                    }
+                                },
+                                "MSI":{
+                                    "description": "Microsatellite Instability",
+                                    "type": "object",
+                                    "properties":{
+                                        "Genomic biomarker value":{
+                                            "description": "MSI per megabase",
+                                            "type": "integer"
+                                        },
+                                        "Genomic biomarker alteration":{
+                                            "description": "Biomarker title",
+                                            "type": "string",
+                                            "enum": ["MSS"]
+                                        }
+                                    }
+                                },
+                                "HRD":{
+                                    "description": "Homologous Recombination Deficiency",
+                                    "type": "object",
+                                    "properties":{
+                                        "Genomic biomarker value":{
+                                            "description": "HRD per megabase",
+                                            "type": "integer"
+                                        },
+                                        "Genomic biomarker alteration":{
+                                            "description": "Biomarker title",
+                                            "type": "string",
+                                            "enum": [""]
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
