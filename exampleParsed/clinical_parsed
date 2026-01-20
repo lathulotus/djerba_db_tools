@@ -1,46 +1,83 @@
 {
   "case_overview":{
-    "assay": "WGTS",
-    "primary_cancer": "Breast cancer",
-    "OncoTree code": "BRCA",
-    "site_of_biopsy": "Soft Tissue"
+    "results":{
+      "assay": "WGTS",
+      "primary_cancer": "Nasopharyngeal cancer",
+      "site_of_biopsy": "Lung, RML",
+      "study": "MOHCCN-OCTANE",
+      "project": "MOHCCN"
+    }
   },
 
   "sample":{
-    "Sample type": "Tissue",
-    "Estimated Cancer Cell Content(%)": 64,
-    "Estimated Ploidy": "1.78",
-    "Callability": "91.9"
+    "results":{
+      "OncoTree code": "NPC",
+      "Sample Type": "Nucleic Acids Extracted from Tissue in a CLIA-certified Laboratory",
+      "Estimated Cancer Cell Content (%)": 65,
+      "Estimated Ploidy": "2.96",
+      "Callability (%)": "66.4",
+      "Coverage (mean)": "82.2"
+    }
   },
 
-  "results":{
-    "genomic_landscape_info":{
-        "Tumour Mutation Burden": 211,
-        "TMB per megabase": "5.66"
-    },
-    "genomic_biomarkers":{
+  "wgts.cnv_purple":{
+    "results":{
+      "percent genome altered": 53,
+      "total variants": 21,
+      "body":{
+        "Gene": ["MTAP", "CDKN2A", "CDKN2B", "CCND1", "FOLH1"],
+        "Alteration": ["Deletion", "Deletion", "Deletion", "Amplification", "Amplification"],
+        "Chromosome": ["9p21.3", "9p21.3", "9p21.3", "11q13.3", "11q13.3"],
+        "OncoKB": ["3A", "4", "N1", "N2", "N2"]
+      }
+    }
+  },
+
+  "wgts.snv_indel":{
+    "results":{
+      "somatic mutations": 205,
+      "coding sequence mutations": 153,
+      "oncogenic mutations": 1,
+      "body":{
+        "Gene": ["TP53"],
+        "protein": ["p.R306*"],
+        "type": ["Nonsense Mutation"],
+        "vaf": [56],
+        "Chromosome": ["17p13.1"],
+        "OncoKB": ["N2"]
+      }
+    }
+  },
+
+  "fusion":{
+    "results":{
+      "Total variants": 5,
+      "Clinically relevant variants": 0,
+      "nccn_relevant_variants": 0
+    }
+  },
+
+  "genomic_landscape":{
+    "results":{
+      "genomic_landscape_info":{
+        "Tumour Mutation Burden": 153,
+        "TMB per megabase": 4.1,
+        "Percent Genome Altered": 53
+      },
+      "genomic_biomarkers":{
         "TMB":{
-            "Genomic biomarker value": 5.66
-        },
-        "HRD":{
-            "Genomic biomarker value": 0.0887
+          "Genomic biomarker values": 2.53,
+          "Genomic biomarker alteration": "TMB-L"
         },
         "MSI":{
-            "Genomic biomarker value": 0.805
+          "Genomic biomarker values": 0.77,
+          "Genomic biomarker alteration": "MSS"
+        },
+        "HRD":{
+          "Genomic biomarker values": 2.53,
+          "Genomic biomarker alteration": "HRD"
         }
-    },
-    "somatic mutations": 309,
-    "coding sequence mutations": 211,
-    "oncogenic mutations": 3,
-    "Gene": ["Pik3CA", "PTPN13", "CDH1"],
-    "protein": ["p.H1047R", "p.? (c.2652G>A)", "p.T342Ifs*15"],
-    "type": ["Missense Mutation", "Splice Region", "Frame Shift Ins"],
-    "vaf": [30, 26, 45],
-    "depth": ["36/119", "32/123", "31/69"],
-    "LOH": [false, false, true],
-    "Chromosome": ["3q26.32", "4q21.3", "16q22.1"],
-    "percent genome altered": 47,
-    "total variants": 20,
-    "clinically relevant variants": 8
+      }
+    }
   }
 }

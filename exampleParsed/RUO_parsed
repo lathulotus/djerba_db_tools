@@ -1,32 +1,84 @@
 {
-  "results":{
-    "assay": "TAR",
-    "primary_cancer": "None",
-    "OncoTree code": "None",
-    "site_of_biopsy": "cfDNA",
-    "study": "CHARM2",
-    "project": "CHARM2PLAS",
+  "case_overview":{
+    "results":{
+      "assay": "WGTS",
+      "primary_cancer": "Lung Adenocarcinoma",
+      "site_of_biopsy": "Lung",
+      "study": "MOHCCN-O",
+      "project": "MOHCCN"
+    }
+  },
 
-    "known_variants": "<em>MSH6<em> c.2057G>A (p.Gly686Asp)",
-    "cancer_content": "<10",
-    "raw_coverage": 31499,
-    "unique_coverage": 4081,
+  "sample":{
+    "results":{
+      "Sample Type": "FFPE",
+      "Estimated Cancer Cell Content (%)": 17,
+      "Estimated Ploidy": "3.35",
+      "Callability (%)": "99.1",
+      "Coverage (mean)": "112.2"
+    }
+  },
 
-    "Clinically relevant variants": 0,
-    "Total variants": 0,
-    "Has expression data": false,
+  "wgts.cnv_purple":{
+    "results":{
+      "percent genome altered": 5,
+      "total variants": 16,
+      "body":{
+        "Gene": ["RICTOR", "ETV1", "JAZF1", "RAC1", "CARD11", "TNFRSF17"],
+        "Alteration": ["Amplification", "Amplification", "Amplification", "Amplification", "Amplification", "Amplification"],
+        "Chromosome": ["5p13.1", "7p21.2", "7p15.2-p.15.1", "7p22.1", "7p22.2", "16p13.13"],
+        "OncoKB": ["N1", "N1", "N2", "N2", "N2", "N2"]
+      }
+    }
+  },
 
-    "somatic mutations": null,
-    "coding sequence mutations": null,
-    "oncogenic mutations": null,
+  "wgts.snv_indel":{
+    "results":{
+      "somatic mutations": 40,
+      "coding sequence mutations": 31,
+      "oncogenic mutations": 1,
+      "body":{
+        "Gene": ["MET"],
+        "protein": ["p.D1010H"],
+        "type": ["Missense Mutation"],
+        "vaf": [28],
+        "Chromosome": ["7q31"],
+        "OncoKB": ["1"]
+      }
+    }
+  },
 
+  "fusion":{
+    "results":{
+      "Total variants": 2,
+      "Clinically relevant variants": 0,
+      "nccn_relevant_variants": 0
+    }
+  },
 
-    "Gene": null,
-    "protein": null,
-    "type": null,
-    "vaf": null,
-    "depth": null,
-    "LOH": null,
-    "Chromosome": null
+  "genomic_landscape":{
+    "results":{
+      "genomic_landscape_info":{
+        "Tumour Mutation Burden": 31,
+        "TMB per megabase": "0.83",
+        "Percent Genome Altered": 5,
+        "Cancer-specific Percentile": "4",
+        "purity": "0.29"
+      },
+      "genomic_biomarkers":{
+        "TMB":{
+          "Genomic biomarker value": 0.83,
+          "Genomic biomarker alteration": "TMB-L"
+        },
+        "MSI":{
+          "Genomic biomarker value": null,
+          "Genomic biomarker alteration": "NA"
+        },
+        "TMB":{
+          "Genomic biomarker value": null,
+          "Genomic biomarker alteration": "NA"
+        }
+      }
+    }
   }
 }

@@ -23,3 +23,4 @@ Type of sample
 | `"Fresh"` |Fresh|
 | `"FF"`    |Fresh Frozen|
 | `"FFPE"`  |Formalin-Fixed Paraffin-Embedded|
+|`"Nucleic Acids Extracted from Tissue in a CLIA-certified Laboratory"`|Nucleic Acid Extraction|

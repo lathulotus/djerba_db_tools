@@ -56,10 +56,6 @@
                     "type": "object",
                     "properties":{
 
-                        "OncoTree code":{
-                            "description": "OncoTree-standardized code for cancer identification",
-                            "type": "string"
-                        },
                         "Sample Type":{
                             "description": "Type of sample",
                             "type": "string",
@@ -87,7 +83,7 @@
         },
 
 
-        "cnv":{
+        "wgts.cnv_purple":{
             "description": "Findings associated with copy number variants",
             "type": "object",
             "propterties":{
