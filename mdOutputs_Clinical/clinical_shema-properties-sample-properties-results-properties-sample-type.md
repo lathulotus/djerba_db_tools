@@ -20,7 +20,7 @@ Type of sample
 
 | Value     | Explanation |
 | :-------- | :---------- |
-| `"Fresh"` |Fresh|
-| `"FF"`    |Fresh Frozen|
-| `"FFPE"`  |Formalin-Fixed Paraffin-Embedded|
+| `"Fresh frozen"` |Fresh Frozen (FF)|
+| `"FFPE"`    |Formalin-Fixed Paraffin-Embedded|
+| `"Blood"`  |Fresh, whole blood|
 |`"Nucleic Acids Extracted from Tissue in a CLIA-certified Laboratory"`|Nucleic Acid Extraction|
