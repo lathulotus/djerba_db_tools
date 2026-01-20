@@ -11,7 +11,6 @@
 
   "sample":{
     "results":{
-      "OncoTree code": "LUAD",
       "Sample Type": "FFPE",
       "Estimated Cancer Cell Content (%)": 17,
       "Estimated Ploidy": "3.35",
