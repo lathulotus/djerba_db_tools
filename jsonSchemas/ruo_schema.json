@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "RUO.schema.json",
-    "$comment": "Latest report from 24/12/2025",
+    "$comment": "Latest report from 13/01/2026",
     "title": "RUO - Report Structure Schema",
     "description": "Schema documentation of RUO report structures",
     "type": "object",
@@ -56,11 +56,6 @@
                     "type": "object",
                     "properties":{
 
-                        "Sample Type":{
-                            "description": "Type of sample",
-                            "type": "string",
-                            "enum": ["Fresh frozen", "FFPE", "Blood", "Nucleic Acids Extracted from Tissue in a CLIA-certified Laboratory"]
-                        },
                         "Estimated Cancer Cell Content (%)":{
                             "description": "Estimated percentage of cancer cell content",
                             "type": "integer"
@@ -86,7 +81,7 @@
         "wgts.cnv_purple":{
             "description": "Findings associated with copy number variants",
             "type": "object",
-            "propterties":{
+            "properties":{
                 
                 "results":{
                     "description": "Results pertaining to CNV data",
@@ -135,7 +130,7 @@
         "wgts.snv_indel":{
             "description": "Findings associated with short nucleotide variants and indels",
             "type": "object",
-            "propterties":{
+            "properties":{
                 
                 "results":{
                     "description": "Results pertaining to SNV/indel data",
@@ -196,7 +191,7 @@
         "fusion":{
             "description": "Findings associated with gene fusions",
             "type": "object",
-            "propterties":{
+            "properties":{
                 
                 "results":{
                     "description": "Results pertaining to fusion data",
@@ -224,7 +219,7 @@
         "genomic_landscape":{
             "description": "Genomic Landscape and Biomarkers (TMB, MSI)",
             "type": "object",
-            "propterties":{
+            "properties":{
                 
                 "results":{
                     "description": "Results pertaining to landscape and biomarkers",

@@ -18,30 +18,11 @@ Results covering sample details
 
 | Property                                                             | Type      | Required | Nullable       | Defined by                                                                                                                                                                                                                           |
 | :------------------------------------------------------------------- | :-------- | :------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [OncoTree code](#oncotree-code)                                      | `string`  | Optional | cannot be null | [RUO - Report Structure Schema](ruo_schema-properties-samples-properties-results-properties-oncotree-code.md "RUO.schema.json#/properties/samples/properties/results/properties/OncoTree code")                                      |
 | [Sample Type](#sample-type)                                          | `string`  | Optional | cannot be null | [RUO - Report Structure Schema](ruo_schema-properties-samples-properties-results-properties-sample-type.md "RUO.schema.json#/properties/samples/properties/results/properties/Sample Type")                                          |
 | [Estimated Cancer Cell Content (%)](#estimated-cancer-cell-content-) | `integer` | Optional | cannot be null | [RUO - Report Structure Schema](ruo_schema-properties-samples-properties-results-properties-estimated-cancer-cell-content-.md "RUO.schema.json#/properties/samples/properties/results/properties/Estimated Cancer Cell Content (%)") |
 | [Estimated Ploidy](#estimated-ploidy)                                | `string`  | Optional | cannot be null | [RUO - Report Structure Schema](ruo_schema-properties-samples-properties-results-properties-estimated-ploidy.md "RUO.schema.json#/properties/samples/properties/results/properties/Estimated Ploidy")                                |
 | [Callability (%)](#callability-)                                     | `string`  | Optional | cannot be null | [RUO - Report Structure Schema](ruo_schema-properties-samples-properties-results-properties-callability-.md "RUO.schema.json#/properties/samples/properties/results/properties/Callability (%)")                                     |
 | [Coverage (mean)](#coverage-mean)                                    | `string`  | Optional | cannot be null | [RUO - Report Structure Schema](ruo_schema-properties-samples-properties-results-properties-coverage-mean.md "RUO.schema.json#/properties/samples/properties/results/properties/Coverage (mean)")                                    |
-
-## OncoTree code
-
-OncoTree-standardized code for cancer identification
-
-`OncoTree code`
-
-* is optional
-
-* Type: `string`
-
-* cannot be null
-
-* defined in: [RUO - Report Structure Schema](ruo_schema-properties-samples-properties-results-properties-oncotree-code.md "RUO.schema.json#/properties/samples/properties/results/properties/OncoTree code")
-
-### OncoTree code Type
-
-`string`
 
 ## Sample Type
 
