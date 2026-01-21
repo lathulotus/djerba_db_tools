@@ -1,4 +1,4 @@
-# Untitled string in Clinical - Report Structure Schema Schema
+# Clinical Report Structure: Case Overview - Assay
 
 ```txt
 Clinical.schema.json#/properties/case_overview/properties/results/properties/assay

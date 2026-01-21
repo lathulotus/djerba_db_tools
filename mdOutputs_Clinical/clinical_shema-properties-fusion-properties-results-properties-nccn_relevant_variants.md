@@ -1,4 +1,4 @@
-# Untitled integer in Clinical - Report Structure Schema Schema
+# Clinical Report Structure: Fusion - NCCN Relevant Variants
 
 ```txt
 Clinical.schema.json#/properties/fusion/propterties/results/properties/nccn_relevant_variants

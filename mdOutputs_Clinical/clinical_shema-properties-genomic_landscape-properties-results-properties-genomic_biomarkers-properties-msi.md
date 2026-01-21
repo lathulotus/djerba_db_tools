@@ -1,4 +1,4 @@
-# Untitled object in Clinical - Report Structure Schema Schema
+# Clinical Report Structure: Genomic Landscape - MSI
 
 ```txt
 Clinical.schema.json#/properties/genomic_landscape/propterties/results/properties/genomic_biomarkers/properties/MSI

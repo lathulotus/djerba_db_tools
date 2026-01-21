@@ -1,4 +1,4 @@
-# Untitled string in Clinical - Report Structure Schema Schema
+# Clinical Report Structure: Genomic Landscape - Biomarker Alteration (HRD)
 
 ```txt
 Clinical.schema.json#/properties/genomic_landscape/propterties/results/properties/genomic_biomarkers/properties/HRD/properties/Genomic biomarker alteration

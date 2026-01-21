@@ -1,4 +1,4 @@
-# Untitled string in Clinical - Report Structure Schema Schema
+# Clinical Report Structure: Case Overview - Last Updated
 
 ```txt
 Clinical.schema.json#/properties/case_overview/properties/results/properties/last_updated

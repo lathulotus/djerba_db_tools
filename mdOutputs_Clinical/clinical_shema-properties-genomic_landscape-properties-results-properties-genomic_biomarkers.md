@@ -1,4 +1,4 @@
-# Untitled object in Clinical - Report Structure Schema Schema
+# Clinical Report Structure: Genomic Landscape - Genomic Biomarkers
 
 ```txt
 Clinical.schema.json#/properties/genomic_landscape/propterties/results/properties/genomic_biomarkers

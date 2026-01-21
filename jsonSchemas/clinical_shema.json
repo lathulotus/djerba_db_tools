@@ -315,7 +315,7 @@
                                         "Genomic biomarker alteration":{
                                             "description": "Biomarker title",
                                             "type": "string",
-                                            "enum": ["HRD Proficient"]
+                                            "enum": ["HRD Proficient", "HRD Deficient"]
                                         }
                                     }
                                 }

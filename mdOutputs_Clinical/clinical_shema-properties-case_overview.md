@@ -1,4 +1,4 @@
-# Untitled object in Clinical - Report Structure Schema Schema
+# Clinical Report Structure: Case Overview
 
 ```txt
 Clinical.schema.json#/properties/case_overview

@@ -1,4 +1,4 @@
-# Untitled object in Clinical - Report Structure Schema Schema
+# Clinical Report Structure: Fusion
 
 ```txt
 Clinical.schema.json#/properties/fusion

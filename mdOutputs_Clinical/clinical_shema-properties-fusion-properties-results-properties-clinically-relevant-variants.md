@@ -1,4 +1,4 @@
-# Untitled integer in Clinical - Report Structure Schema Schema
+# Clinical Report Structure: Fusion - Clinically Relevant Variants
 
 ```txt
 Clinical.schema.json#/properties/fusion/propterties/results/properties/Clinically relevant variants
