@@ -34,6 +34,14 @@
                         "study":{
                             "description": "Research study name",
                             "type": "string"
+                        },
+                        "requisition_approval":{
+                            "definition": "Date of requisition approval",
+                            "type": "string"
+                        },
+                        "last_updated":{
+                            "definition": "Date of report",
+                            "type": "string"
                         }
                     }
                 }
@@ -85,7 +93,7 @@
         "wgts.cnv_purple":{
             "description": "Findings associated with copy number variants",
             "type": "object",
-            "propterties":{
+            "properties":{
                 
                 "results":{
                     "description": "Results pertaining to CNV data",
@@ -134,7 +142,7 @@
         "wgts.snv_indel":{
             "description": "Findings associated with short nucleotide variants and indels",
             "type": "object",
-            "propterties":{
+            "properties":{
                 
                 "results":{
                     "description": "Results pertaining to SNV/indel data",
@@ -209,7 +217,7 @@
         "fusion":{
             "description": "Findings associated with gene fusions",
             "type": "object",
-            "propterties":{
+            "properties":{
                 
                 "results":{
                     "description": "Results pertaining to fusion data",
@@ -237,7 +245,7 @@
         "genomic_landscape":{
             "description": "Genomic Landscape and Biomarkers (TMB, MSI)",
             "type": "object",
-            "propterties":{
+            "properties":{
                 
                 "results":{
                     "description": "Results pertaining to landscape and biomarkers",

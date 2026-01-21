@@ -8,7 +8,7 @@
 
 ### Objects
 
-* [Untitled object in RUO - Report Structure Schema](./ruo_schema-properties-case_overview.md "Case details: cancer type, site of biopsy, assay") – `RUO.schema.json#/properties/case_overview`
+* [Untitled object in RUO - Report Structure Schema](./ruo_schema-properties-case_overview.md "Case details: cancer type, assay") – `RUO.schema.json#/properties/case_overview`
 
 * [Untitled object in RUO - Report Structure Schema](./ruo_schema-properties-case_overview-properties-results.md "Results covering case overview") – `RUO.schema.json#/properties/case_overview/properties/results`
 

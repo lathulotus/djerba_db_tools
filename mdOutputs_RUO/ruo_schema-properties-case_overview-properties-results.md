@@ -19,9 +19,8 @@ Results covering case overview
 | Property                            | Type     | Required | Nullable       | Defined by                                                                                                                                                                                                    |
 | :---------------------------------- | :------- | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | [assay](#assay)                     | `string` | Optional | cannot be null | [RUO - Report Structure Schema](ruo_schema-properties-case_overview-properties-results-properties-assay.md "RUO.schema.json#/properties/case_overview/properties/results/properties/assay")                   |
-| [primary\_cancer](#primary_cancer)  | `string` | Optional | cannot be null | [RUO - Report Structure Schema](ruo_schema-properties-case_overview-properties-results-properties-primary_cancer.md "RUO.schema.json#/properties/case_overview/properties/results/properties/primary_cancer") |
-| [site\_of\_biopsy](#site_of_biopsy) | `string` | Optional | cannot be null | [RUO - Report Structure Schema](ruo_schema-properties-case_overview-properties-results-properties-site_of_biopsy.md "RUO.schema.json#/properties/case_overview/properties/results/properties/site_of_biopsy") |
 | [study](#study)                     | `string` | Optional | cannot be null | [RUO - Report Structure Schema](ruo_schema-properties-case_overview-properties-results-properties-study.md "RUO.schema.json#/properties/case_overview/properties/results/properties/study")                   |
+| [report_id](#report_id)                 | `string` | Optional | cannot be null | [RUO - Report Structure Schema](ruo_schema-properties-case_overview-properties-results-properties-report_id.md "RUO.schema.json#/properties/case_overview/properties/results/properties/report_id")               |
 | [project](#project)                 | `string` | Optional | cannot be null | [RUO - Report Structure Schema](ruo_schema-properties-case_overview-properties-results-properties-project.md "RUO.schema.json#/properties/case_overview/properties/results/properties/project")               |
 
 ## assay
@@ -56,212 +55,6 @@ Type of assay used for sequencing (WGTS, WGS, TAR)
 | `"sWGS"` |Shallow whole genome sequencing|
 | `"TAR"`  |Targeted sequencing|
 
-## primary\_cancer
-
-Cancer type.
-
-`primary_cancer`
-
-* is optional
-
-* Type: `string`
-
-* cannot be null
-
-* defined in: [RUO - Report Structure Schema](ruo_schema-properties-case_overview-properties-results-properties-primary_cancer.md "RUO.schema.json#/properties/case_overview/properties/results/properties/primary_cancer")
-
-### primary\_cancer Type
-
-`string`
-
-### primary\_cancer Constraints
-
-**enum**: the value of this property must be equal to one of the following values:
-
-| Value                         | Explanation |
-| :---------------------------- | :---------- |
-| `"Pancreatic adenocarcinoma"` |             |
-| `"Hepatobiliary Tumour"`      |             |
-| `"Multiple Myeloma"`          |             |
-| `"Breast Cancer"`             |             |
-| `"Invasive breast carcinoma"` |             |
-
-## site\_of\_biopsy
-
-Biopsy type/location (cfDNA)
-
-`site_of_biopsy`
-
-* is optional
-
-* Type: `string`
-
-* cannot be null
-
-* defined in: [RUO - Report Structure Schema](ruo_schema-properties-case_overview-properties-results-properties-site_of_biopsy.md "RUO.schema.json#/properties/case_overview/properties/results/properties/site_of_biopsy")
-
-### site\_of\_biopsy Type
-
-`string`
-
-## site\_of\_biopsy Constraints
-
-**enum**: the value of this property must be equal to one of the following values:
-
-| Value                     | Explanation |
-| :------------------------- | :---------- |
-| `"Adipose"`                |             |
-| `"Adnexa"`                 |             |
-| `"Adrenal Gland"`          |             |
-| `"Anus"`                   |             |
-| `"Anorectal"`              |             |
-| `"Appendix"`               |             |
-| `"Ascites Fluid"`          |             |
-| `"Astrocytoma"`            |             |
-| `"Ampulla of Vater"`       |             |
-| `"Axillary"`               |             |
-| `"Back"`                   |             |
-| `"Bile Duct"`              |             |
-| `"Biliary"`                |             |
-| `"Bladder"`                |             |
-| `"Bone Marrow"`            |             |
-| `"Brain"`                  |             |
-| `"Bone"`                   |             |
-| `"Breast"`                 |             |
-| `"Buccal Cells"`           |             |
-| `"Bowel"`                  |             |
-| `"Carotid Artery"`         |             |
-| `"Cord Blood"`             |             |
-| `"Cecum"`                  |             |
-| `"Cervix"`                 |             |
-| `"cfDNA"`                  |             |
-| `"Chest Wall"`             |             |
-| `"Conjunctiva"`            |             |
-| `"Cheek"`                  |             |
-| `"Central Nervous System"`|             |
-| `"Colon"`                  |             |
-| `"Colorectal"`             |             |
-| `"Cul-de-sac"`             |             |
-| `"Circulating Tumour Cells"`|           |
-| `"Diaphragm"`              |             |
-| `"Duodenum"`               |             |
-| `"Ear"`                    |             |
-| `"Endometrial"`            |             |
-| `"Epidural mass"`          |             |
-| `"Esophagus"`              |             |
-| `"Eye"`                    |             |
-| `"Fallopian Tube"`         |             |
-| `"Fibroid"`                |             |
-| `"Fimbriae"`               |             |
-| `"Fundus"`                 |             |
-| `"Foreskin"`               |             |
-| `"Foot"`                   |             |
-| `"Gastric Margin"`         |             |
-| `"Gallbladder"`            |             |
-| `"Gastroesophageal Junction"`|          |
-| `"Gastrointestinal stromal"`|           |
-| `"Gastrojejunal"`          |             |
-| `"Glomus"`                 |             |
-| `"Gingiva"`                |             |
-| `"Groin"`                  |             |
-| `"Genital Tract"`          |             |
-| `"Hypopharynx"`            |             |
-| `"Heart"`                  |             |
-| `"ileocecum"`              |             |
-| `"Ileum"`                  |             |
-| `"Iliac Crest"`            |             |
-| `"Kidney"`                 |             |
-| `"Lacrimal Sac"`           |             |
-| `"Limb"`                   |             |
-| `"Leukocyte"`              |             |
-| `"Leg"`                    |             |
-| `"Large Intestine"`        |             |
-| `"Lymph Node"`             |             |
-| `"Lymphoblast"`            |             |
-| `"Lip"`                    |             |
-| `"Placenta"`               |             |
-| `"Lung"`                   |             |
-| `"Liver"`                  |             |
-| `"Larynx"`                 |             |
-| `"Lymphocyte"`             |             |
-| `"Mediastinum"`            |             |
-| `"Mesenchyme"`             |             |
-| `"Mandible"`               |             |
-| `"Mouth"`                  |             |
-| `"Mesentary"`              |             |
-| `"Muscle"`                 |             |
-| `"Maxilla"`                |             |
-| `"Neck"`                   |             |
-| `"Unknown"`                |             |
-| `"Nose"`                   |             |
-| `"Nasopharynx"`            |             |
-| `"Oral Cavity"`            |             |
-| `"Omentum"`                |             |
-| `"Orbit"`                  |             |
-| `"Ovary"`                  |             |
-| `"Pancreas"`               |             |
-| `"Peripheral Blood"`       |             |
-| `"Pancreatobiliary"`       |             |
-| `"Parathyroid"`            |             |
-| `"Pelvic"`                 |             |
-| `"Parotid gland"`          |             |
-| `"Paratracheal"`           |             |
-| `"Penis"`                  |             |
-| `"Plasma"`                 |             |
-| `"Perihepatic"`            |             |
-| `"Peritoneum"`             |             |
-| `"Peripheral Nerve"`      |             |
-| `"Peri-aorta"`             |             |
-| `"Prostate"`               |             |
-| `"Platelet"`               |             |
-| `"Palate"`                 |             |
-| `"Pleura"`                 |             |
-| `"Portocaval Space"`       |             |
-| `"Pharynx"`                |             |
-| `"periampullary"`          |             |
-| `"Right Adnexa"`           |             |
-| `"Rectosigmoid"`           |             |
-| `"Rectum"`                 |             |
-| `"Rib"`                    |             |
-| `"Retroperitoneum"`        |             |
-| `"Saliva"`                 |             |
-| `"Small Bowel"`            |             |
-| `"Scalp"`                  |             |
-| `"Sigmoid Mass"`           |             |
-| `"Serum"`                  |             |
-| `"Salivary Gland"`         |             |
-| `"Small Intestine"`        |             |
-| `"Skin"`                   |             |
-| `"Skull"`                  |             |
-| `"Skeletal Muscle"`        |             |
-| `"Spine"`                  |             |
-| `"Soft Tissue"`            |             |
-| `"Spleen"`                 |             |
-| `"Serosa"`                 |             |
-| `"Sinus"`                  |             |
-| `"Stomach"`                |             |
-| `"Sternum"`                |             |
-| `"Subcutaneous Tissue"`    |             |
-| `"Testes"`                 |             |
-| `"Thymic Gland"`           |             |
-| `"Thymus"`                 |             |
-| `"Tonsil"`                 |             |
-| `"Throat"`                 |             |
-| `"Trachea"`                |             |
-| `"Tongue"`                 |             |
-| `"Thorax"`                 |             |
-| `"Thyroid"`                |             |
-| `"Urachus"`                |             |
-| `"Ureter"`                 |             |
-| `"Umbilical Cord"`         |             |
-| `"Urine Pellet"`           |             |
-| `"Urethra"`                |             |
-| `"Urine Supernatant"`      |             |
-| `"Uterus"`                 |             |
-| `"Urine"`                  |             |
-| `"Vagina"`                 |             |
-| `"Vulva"`                  |             |
-
 ## study
 
 Research study name
@@ -280,11 +73,11 @@ Research study name
 
 `string`
 
-## project
+## report_id
 
-Specific project name
+Report identifier; can be used for single report fetching
 
-`project`
+`report_id`
 
 * is optional
 
@@ -292,8 +85,26 @@ Specific project name
 
 * cannot be null
 
-* defined in: [RUO - Report Structure Schema](ruo_schema-properties-case_overview-properties-results-properties-project.md "RUO.schema.json#/properties/case_overview/properties/results/properties/project")
+* defined in: [RUO - Report Structure Schema](ruo_schema-properties-case_overview-properties-results-properties-report_id.md "RUO.schema.json#/properties/case_overview/properties/results/properties/report_id")
 
-### project Type
+### last_updated Type
+
+`string`
+
+## last_updated
+
+Date of report
+
+`last_updated`
+
+* is optional
+
+* Type: `string`
+
+* cannot be null
+
+* defined in: [RUO - Report Structure Schema](ruo_schema-properties-case_overview-properties-results-properties-last_updated.md "RUO.schema.json#/properties/case_overview/properties/results/properties/last_updated")
+
+### last_updated Type
 
 `string`

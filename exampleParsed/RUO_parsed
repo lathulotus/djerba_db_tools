@@ -1,11 +1,11 @@
 {
   "case_overview":{
     "results":{
-      "assay": "WGTS",
-      "primary_cancer": "Lung Adenocarcinoma",
-      "site_of_biopsy": "Lung",
-      "study": "MOHCCN-O",
-      "project": "MOHCCN"
+      "assay": "WGS",
+      "study": "READILY",
+      "requisition_approval": "2026-01-01",
+      "last_updated": "2026-01-21",
+      "report_id": "READILY_0000"
     }
   },
 
@@ -60,22 +60,21 @@
       "genomic_landscape_info":{
         "Tumour Mutation Burden": 31,
         "TMB per megabase": "0.83",
-        "Percent Genome Altered": 5,
         "Cancer-specific Percentile": "4",
         "purity": "0.29"
       },
       "genomic_biomarkers":{
         "TMB":{
-          "Genomic biomarker value": 0.83,
+          "Genomic biomarker value": 1.83,
           "Genomic biomarker alteration": "TMB-L"
         },
         "MSI":{
-          "Genomic biomarker value": null,
-          "Genomic biomarker alteration": "NA"
+          "Genomic biomarker value": 0.01,
+          "Genomic biomarker alteration": "MSS"
         },
         "HRD":{
-          "Genomic biomarker value": null,
-          "Genomic biomarker alteration": "NA"
+          "Genomic biomarker value": 0.01,
+          "Genomic biomarker alteration": "HR Proficient"
         }
       }
     }

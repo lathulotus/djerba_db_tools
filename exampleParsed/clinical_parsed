@@ -5,7 +5,9 @@
       "primary_cancer": "Nasopharyngeal cancer",
       "site_of_biopsy": "Lung, RML",
       "study": "MOHCCN-OCTANE",
-      "project": "MOHCCN"
+      "project": "MOHCCN",
+      "requisition_approval": "2026-01-01",
+      "last_updated": "2026-01-21"
     }
   },
 
