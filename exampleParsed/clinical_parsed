@@ -45,6 +45,7 @@
         "protein": ["p.R306*"],
         "type": ["Nonsense Mutation"],
         "vaf": [56],
+        "depth": "33/56",
         "Chromosome": ["17p13.1"],
         "OncoKB": ["N2"]
       }
