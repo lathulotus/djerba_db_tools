@@ -134,7 +134,15 @@ Supported query types when searching through clinical reports stored by Djerba o
 ## 4. Combined Metadata Filters
 - Report type: type of report
    - Input: ```clinical```, ```research```, ```supplementary```, ```failed```
-    - Processing: ```attributes```
+    - Searching for clinical reports:
+    ```
+    {
+    "selector": {
+        "_id": { "$gt": null },
+        "attributes": "clinical"
+        }
+    }
+    ```
 - Requisition Approval: date of approval for testing
     - Input: input date or sort feature
     - Processing: ```case_overview``` -> ```requisition_approval```
