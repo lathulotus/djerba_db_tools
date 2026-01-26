@@ -1,9 +1,9 @@
 # README
 
 ## Top-level Schemas
-* [Clinical - Report Structure Schema](https://github.com/lathulotus/CGIWeek1_2/blob/main/jsonSchemas/clinical_schema.json) – `clinical.schema.json`
-* [RUO - Report Structure Schema](https://github.com/lathulotus/CGIWeek1_2/blob/main/jsonSchemas/ruo_schema.json) – `ruo.schema.json`
-* [Testing - Report Structure Schema](https://github.com/lathulotus/CGIWeek1_2/blob/main/jsonSchemas/testing_schema.json) – `testing.schema.json`
+* [Clinical - Report Structure Schema](https://github.com/lathulotus/CGIWeek1_2/blob/main/schema_clinical.json) – `clinical.schema.json`
+* [RUO - Report Structure Schema](https://github.com/lathulotus/CGIWeek1_2/blob/main/schema_ruo.json) – `ruo.schema.json`
+* [Testing - Report Structure Schema](https://github.com/lathulotus/CGIWeek1_2/blob/main/schema_testing.json) – `testing.schema.json`
 
 ## Top-level Fields
 * Case Overview: assay, primary cancer, site of biopsy, study
