@@ -36,9 +36,9 @@ Supported query types when searching through clinical reports stored by Djerba o
 - OncoTree Code: OncoTree-standardized cancer identifier
     - Input: e.g., NPC
     - Processing: ```sample``` -> ```results``` -> ```OncoTree Code```
-- Sample type: type of sample
-    - Input: e.g., Nucleic acids extracted from tissue in a CLIA-certified laboratory
-    - Processing: ```sample``` -> ```results``` -> ```Sample Type```
+- ~~Sample type: type of sample~~
+    - ~~Input: e.g., Nucleic acids extracted from tissue in a CLIA-certified laboratory~~
+    - ~~Processing: ```sample``` -> ```results``` -> ```Sample Type```~~
 - Estimated Cancer Cell Content: estimated percentage of cancer cell content in sample, purity
     - Input: e.g., 65
     - Processing: ```sample``` -> ```results``` -> ```Estimated Cancer Cell Content (%)```
