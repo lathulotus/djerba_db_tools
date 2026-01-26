@@ -1,0 +1,155 @@
+# Ticket: 1679 (https://jira.oicr.on.ca/browse/GCGI-1679)
+# Archive different versions of reports on same requisition
+    # 1. Identify report type under attributes
+    # 2. Add attribute to naming convention
+    # Ex: reportID-v1_research_report.json
+
+
+
+
+
+"""Interface with a CouchDB instance for JSON report documents"""
+
+
+import re
+import configparser
+import json
+import logging
+import os
+import requests
+import string
+import time
+import djerba.core.constants as cc
+import djerba.util.constants as constants
+import djerba.util.ini_fields as ini
+from configparser import ConfigParser
+from posixpath import join as posixjoin
+from djerba.util.environment import directory_finder, DjerbaEnvDirError
+from djerba.util.logger import logger
+from djerba.util.validator import path_validator
+
+class database(logger):
+    """Class to communicate with CouchDB via the API, eg. using HTTP GET/POST statements"""
+
+    def __init__(self, log_level=logging.WARNING, log_path=None):
+        self.log_level = log_level
+        self.log_path = log_path
+        self.logger = self.get_logger(log_level, __name__, log_path)
+        self.logger.debug("Initializing Djerba database object")
+
+    def create_document(self, report_id, data):
+        couch_info = {
+            '_id': report_id,
+            'last_updated': time.strftime("%d/%m/%Y_%H:%M:%SZ", time.gmtime())
+        }
+        doc = {**couch_info, **data}
+        return doc
+    
+    def get_upload_params(self):
+        config_path = os.environ.get(cc.ARCHIVE_CONFIG_VAR)
+        path_validator(self.log_level, self.log_path).validate_input_file(config_path)
+        config = ConfigParser()
+        config.read(config_path)
+        keys = [cc.USERNAME, cc.PASSWORD, cc.ADDRESS, cc.PORT, cc.DATABASE_NAME]
+        args = {key : config[cc.ARCHIVE_HEADER][key] for key in keys}
+        template_str = "http://${username}:${password}@${address}:${port}/${database_name}"
+        url = string.Template(template_str).substitute(args)
+        return args[cc.DATABASE_NAME], url
+
+    def get_revision_and_url(self, report_id, url):
+        url_with_id = posixjoin(url, report_id)
+        result = requests.head(url_with_id)
+        status = result.status_code
+        if status == 200:
+            rev = result.headers.get("ETag")
+            msg = "HTTP HEAD request OK for {0}; ".format(report_id)+\
+                "got ETag for _rev: {0}".format(rev)
+            self.logger.debug(msg)
+        else:
+            rev = None
+            msg = "HTTP HEAD request failed for {0}: status {1}".format(report_id, status)
+            self.logger.warning(msg)
+        return rev, url_with_id
+
+    def upload_data(self, report_data):
+        """
+        Upload the report data structure to couchdb
+        Full upload URL is intentionally not logged, as it contains the DB username/password
+        """
+
+        original_report_id = report_data[cc.CORE][cc.REPORT_ID]
+
+        try:
+            attributes = (
+                report_data
+                .get("plugins", {})
+                .get("supplement.body", {})
+                .get("attributes", [])
+            )
+            analysis_type = "_".join(attributes) if attributes else None
+
+            if analysis_type:
+                # Match everything before v<number>
+                match = re.match(r"^(.*?)([vV]\d+)$", original_report_id)
+
+                if match:
+                    base_id, version = match.groups()
+                    report_id = f"{base_id}-{version}-{analysis_type}"
+                else:
+                    # Fallback if no version pattern is found
+                    report_id = f"{original_report_id}-{analysis_type}"
+            else:
+                report_id = original_report_id
+
+        except (KeyError, AttributeError, TypeError):
+            report_id = original_report_id
+
+        db, url = self.get_upload_params()
+        headers = {'Content-Type': 'application/json'}
+        attempts = 0
+        http_post = True
+        uploaded = False
+        max_attempts = 5
+        attempt = 0
+        while uploaded == False and attempt < max_attempts:
+            attempt +=1
+            self.logger.debug("Uploading attempt {0} of {1}".format(attempt, max_attempts))
+            if http_post == True:
+                # create document
+                self.logger.debug('Attempting POST for {0}'.format(report_id))
+                upload_doc = self.create_document(report_id, report_data)
+                result = requests.post(url=url, headers=headers, json=upload_doc)
+            else:
+                # update document
+                rev, url_with_id = self.get_revision_and_url(report_id, url)
+                if rev == None:
+                    self.logger.debug('Unable to get document revision ID; will retry')
+                    time.sleep(2)
+                    continue
+                else:
+                    # create document with updated timestamp
+                    upload_doc = self.create_document(report_id, report_data)
+                    headers['If-Match'] = rev
+                    self.logger.debug('Attempting PUT for {0}'.format(report_id))
+                    result = requests.put(url=url_with_id, headers=headers, json=upload_doc)
+            status = result.status_code
+            self.logger.debug("HTTP result: {0}, {1}".format(status, result.reason))
+            if status == 201:
+                uploaded = True
+            elif status == 409:
+                http_post = False
+                self.logger.info('Document already exists, will retry with HTTP put request')
+            else:
+                self.logger.warning('Unexpected HTTP status <%s>, will retry', status)
+            time.sleep(2)
+        if uploaded == True:
+            self.logger.info('Upload of "%s" to database "%s" successful.', report_id, db)
+        else:
+            self.logger.warning('Upload of "%s" to database "%s" FAILED', report_id, db)
+        return uploaded, report_id
+
+    def upload_file(self, json_path):
+        """Read JSON from given path and upload to couchdb"""
+        with open(json_path) as report:
+            report_data = json.load(report)
+        return self.upload_data(report_data)
