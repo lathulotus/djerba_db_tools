@@ -68,7 +68,7 @@ class database(logger):
             msg = "HTTP HEAD request failed for {0}: status {1}".format(report_id, status)
             self.logger.warning(msg)
         return rev, url_with_id
-
+    
     def upload_data(self, report_data):
         """
         Upload the report data structure to couchdb
@@ -118,7 +118,7 @@ class database(logger):
         else:
             self.logger.warning('Upload of "%s" to database "%s" FAILED', report_id, db)
         return uploaded, report_id
-
+    
     def upload_file(self, json_path):
         """Read JSON from given path and upload to couchdb"""
         with open(json_path) as report:
