@@ -108,8 +108,23 @@ class database(logger):
             if status == 201:
                 uploaded = True
             elif status == 409:
-                http_post = False
-                self.logger.info('Document already exists, will retry with HTTP put request')
+                #http_post = False
+                #self.logger.info('Document already exists, will retry with HTTP put request')
+                report_type = report_data['plugins']['attributes'][0]
+
+                if report_type == 'clinical':
+                    report_id = f"{report_id}_clinical.report.json"
+                elif report_type == 'research':
+                    report_id = f"{report_id}_research.report.json"
+                elif report_type == 'supplementary':
+                    report_id = f"{report_id}_supplementary.report.json"
+                elif report_type == 'failed':
+                    report_id = f"{report_id}_failed.report.json"
+                else:
+                    self.logger.warning('Unexpected report type, no archive ID was generated')
+                
+                self.logger.info('Document already exists, will retry HTTP post with archive ID: ', report_id)
+                http_post = True
             else:
                 self.logger.warning('Unexpected HTTP status <%s>, will retry', status)
             time.sleep(2)
