@@ -7,9 +7,11 @@
 
 
 
+
 """Interface with a CouchDB instance for JSON report documents"""
 
 
+import re
 import configparser
 import json
 import logging
@@ -68,13 +70,40 @@ class database(logger):
             msg = "HTTP HEAD request failed for {0}: status {1}".format(report_id, status)
             self.logger.warning(msg)
         return rev, url_with_id
-    
+
     def upload_data(self, report_data):
         """
         Upload the report data structure to couchdb
         Full upload URL is intentionally not logged, as it contains the DB username/password
         """
-        report_id = report_data[cc.CORE][cc.REPORT_ID]
+
+        original_report_id = report_data[cc.CORE][cc.REPORT_ID]
+
+        try:
+            attributes = (
+                report_data
+                .get("plugins", {})
+                .get("supplement.body", {})
+                .get("attributes", [])
+            )
+            analysis_type = "_".join(attributes) if attributes else None
+
+            if analysis_type:
+                # Match everything before v<number>
+                match = re.match(r"^(.*?)([vV]\d+)$", original_report_id)
+
+                if match:
+                    base_id, version = match.groups()
+                    report_id = f"{base_id}-{version}-{analysis_type}"
+                else:
+                    # Fallback if no version pattern is found
+                    report_id = f"{original_report_id}-{analysis_type}"
+            else:
+                report_id = original_report_id
+
+        except (KeyError, AttributeError, TypeError):
+            report_id = original_report_id
+
         db, url = self.get_upload_params()
         headers = {'Content-Type': 'application/json'}
         attempts = 0
@@ -108,23 +137,8 @@ class database(logger):
             if status == 201:
                 uploaded = True
             elif status == 409:
-                #http_post = False
-                #self.logger.info('Document already exists, will retry with HTTP put request')
-                report_type = report_data['plugins']['attributes'][0]
-
-                if report_type == 'clinical':
-                    report_id = f"{report_id}_clinical.report.json"
-                elif report_type == 'research':
-                    report_id = f"{report_id}_research.report.json"
-                elif report_type == 'supplementary':
-                    report_id = f"{report_id}_supplementary.report.json"
-                elif report_type == 'failed':
-                    report_id = f"{report_id}_failed.report.json"
-                else:
-                    self.logger.warning('Unexpected report type, no archive ID was generated')
-                
-                self.logger.info('Document already exists, will retry HTTP post with archive ID: ', report_id)
-                http_post = True
+                http_post = False
+                self.logger.info('Document already exists, will retry with HTTP put request')
             else:
                 self.logger.warning('Unexpected HTTP status <%s>, will retry', status)
             time.sleep(2)
@@ -133,7 +147,7 @@ class database(logger):
         else:
             self.logger.warning('Upload of "%s" to database "%s" FAILED', report_id, db)
         return uploaded, report_id
-    
+
     def upload_file(self, json_path):
         """Read JSON from given path and upload to couchdb"""
         with open(json_path) as report:
