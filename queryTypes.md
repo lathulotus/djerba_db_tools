@@ -24,6 +24,7 @@ Supported query types when searching through clinical reports stored by Djerba o
     - Processing: ```case_overview``` -> ```results``` -> ```assay```
 - Primary Cancer: type of cancer
     - Input: e.g., Nasopharyngeal cancer
+    - Combine with OncoTree code ??
     - Processing: ```case_overview``` -> ```results``` -> ```primary_cancer```
 - Site of biopsy: biopsy type or location
     - Input: e.g., Lung
@@ -35,6 +36,7 @@ Supported query types when searching through clinical reports stored by Djerba o
 ### 3b. Sample Information
 - OncoTree Code: OncoTree-standardized cancer identifier
     - Input: e.g., NPC
+    - Combine with primary_cancer ??
     - Processing: ```sample``` -> ```results``` -> ```OncoTree Code```
 - ~~Sample type: type of sample~~
     - ~~Input: e.g., Nucleic acids extracted from tissue in a CLIA-certified laboratory~~
@@ -143,9 +145,9 @@ Supported query types when searching through clinical reports stored by Djerba o
         }
     }
     ```
-- Requisition Approval: date of approval for testing
-    - Input: input date or sort feature
-    - Processing: ```case_overview``` -> ```requisition_approval```
+- ~~Requisition Approval: date of approval for testing~~
+    - ~~Input: input date or sort feature~~
+    - ~~Processing: ```case_overview``` -> ```requisition_approval```~~
 - Last Updated: date of report's last update
     - Input: input date or sort feature
     - Processing: ```case_overview``` -> ```last_updated```
