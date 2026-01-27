@@ -1,7 +1,7 @@
 # README
 
 ## Top-level Schemas
-* [Clinical Report Structure Schema](1_djerbaSchemas\schema_clinical.json) | [Biological Variables](1_djerbaSchemas\simpleSchemas\bioSchema_clinical.json)
+* [Clinical Report Structure Schema](1_djerbaSchemas/schema_clinical.json) | [Biological Variables](1_djerbaSchemas/simpleSchemas/bioSchema_clinical.json)
 * [RUO Report Structure Schema](https://github.com/lathulotus/CGIWeek1_2/blob/main/schema_research.json) – `research.schema.json`
 * [Testing Report Structure Schema](https://github.com/lathulotus/CGIWeek1_2/blob/main/simpleSchema_testing.json) – `testing.schema.json`
 
