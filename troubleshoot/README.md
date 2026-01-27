@@ -12,7 +12,7 @@ CouchDB only stores the most updated versions of reports due to Djerba overwriti
 
 
 ## Amended Reports
-> [Repository](https://github.com/lathulotus/cgi_djerba/tree/main/troubleshoot/database_HTMLtoJSON) | [Ticket]()
+> [Repository](https://github.com/lathulotus/cgi_djerba/tree/main/troubleshoot/database_amendedReports) | [Ticket]()
 
 CouchDB only stores JSON files. Amended reports are manually edited using an ```html_to_pdf.py``` script, thereby not producing nor editing and JSON files. As such, amended reports do not get archived on CouchDB. Modifying the JSON file rather than the HTML could allow for archiving of JSONs.
 
