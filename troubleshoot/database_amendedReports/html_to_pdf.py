@@ -9,7 +9,7 @@ import pdfkit
 import sys
 from time import strftime
 
-if len(sys.argv)==2: #two arguments ('html_to_pdf.py', 'reportID')
+if len(sys.argv)==2: #two arguments ('html_to_pdf.py', 'reportID.html')
     report_id = sys.argv[1] #second item is report id
     version = '1' #assign version 1
 elif len(sys.argv)==3: #three arguments ('html_to_pdf.py', 'reportID', 2)

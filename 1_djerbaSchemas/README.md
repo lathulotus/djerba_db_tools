@@ -1,9 +1,9 @@
 # README
 
 ## Top-level Schemas
-* [Clinical Report Structure Schema](schema_clinical.json) | [Biological Variables](simpleSchemas/bioSchema_clinical.json)
-* [RUO Report Structure Schema](https://github.com/lathulotus/CGIWeek1_2/blob/main/schema_research.json) – `research.schema.json`
-* [Testing Report Structure Schema](https://github.com/lathulotus/CGIWeek1_2/blob/main/simpleSchema_testing.json) – `testing.schema.json`
+* [Clinical Report Structure Schema](schema_clinical.json) | [Clinical Schema - Biological Variables](simpleSchemas/bioSchema_clinical.json)
+* [Research Report Structure Schema](schema_research.json) | [Research Schema - Biological Variables](simpleSchemas/bioSchema_research.json)
+* [Testing Report Structure Schema](simpleSchemas/bioSchema_testing.json)
 
 ## Top-level Fields
 * Case Overview: assay, primary cancer, site of biopsy, study
