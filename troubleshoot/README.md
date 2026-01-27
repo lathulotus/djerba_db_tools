@@ -21,7 +21,7 @@ CouchDB only stores JSON files. Amended reports are manually edited using an ```
 2. Use this as a basis to write instructions on hot to modify JSON instead of HTML
 3. Allowing team to run ```djerba.py update``` to upload to CouchDB and generate PDF
 
-**ALTERNATIVW**: Archive HTML files rather than JSON
+**ALTERNATIVE**: Archive HTML files rather than JSON
 1. Modify existing python script (```html_to_pdf.py```) to upload HTML
 
 
