@@ -1,14 +1,12 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id":"Clinical.schema.json",
-    "$comment": "Latest report from 05/01/2026",
-    "title": "Clinical - Report Structure Schema",
-    "description": "Schema documentation of clinical report structures",
+    "$id": "https://github.com/lathulotus/cgi_djerba/blob/main/1_djerbaSchemas/simpleSchemas/simpleSchema_research.json",
+    "title": "Research - Report Structure Schema",
+    "description": "Schema documentation of RUO report structures, highlighting key variables. Latest sample report from 13/01/2026.",
     "type": "object",
 
     "properties":{
         "case_overview":{
-            "description": "Case details: cancer type, site of biopsy, assay.",
+            "description": "Case details: cancer type, study name.",
             "type": "object",
             "properties":{
                 
@@ -22,26 +20,20 @@
                             "type": "string",
                             "enum": ["WGTS", "WGS", "WES", "WTS", "pWGS", "sWGS", "TAR"]
                         },
-                        "primary_cancer": {
-                            "description": "Cancer type.",
-                            "type": "string",
-                            "enum": ["Pancreatic adenocarcinoma", "Hepatobiliary Tumour", "Multiple Myeloma", "Breast Cancer", "Invasive breast carcinoma"]
-                        },
-                        "site_of_biopsy":{
-                            "description": "Biopsy type/location",
-                            "type": "string",
-                            "enum": ["Adipose", "Adnexa", "Adrenal Gland", "Anus", "Anorectal", "Appendix", "Ascites Fluid", "Astrocytoma", "Ampulla of Vater", "Axillary", "Back", "Bile Duct", "Biliary", "Bladder", "Bone Marrow", "Brain", "Bone", "Breast", "Buccal Cells", "Bowel", "Carotid Artery", "Cord Blood", "Cecum", "Cervix", "cfDNA", "Chest Wall", "Conjunctiva", "Cheek", "Central Nervous System", "Colon", "Colorectal", "Cul-de-sac", "Circulating Tumour Cells", "Diaphragm", "Duodenum", "Ear", "Endometrial", "Epidural mass", "Esophagus", "Eye", "Fallopian Tube", "Fibroid", "Fimbriae", "Fundus", "Foreskin", "Foot", "Gastric Margin", "Gallbladder", "Gastroesophageal Junction", "Gastrointestinal stromal", "Gastrojejunal", "Glomus", "Gingiva", "Groin", "Genital Tract", "Hypopharynx", "Heart", "ileocecum", "Ileum", "Iliac Crest", "Kidney", "Lacrimal Sac", "Limb", "Leukocyte", "Leg", "Large Intestine", "Lymph Node", "Lymphoblast", "Lip", "Placenta", "Lung", "Liver", "Larynx", "Lymphocyte", "Mediastinum", "Mesenchyme", "Mandible", "Mouth", "Mesentary", "Muscle", "Maxilla", "Neck", "Unknown", "Nose", "Nasopharynx", "Oral Cavity", "Omentum", "Orbit", "Ovary", "Pancreas", "Peripheral Blood", "Pancreatobiliary", "Parathyroid", "Pelvic", "Parotid gland", "Paratracheal", "Penis", "Plasma", "Perihepatic", "Peritoneum", "Peripheral Nerve", "Peri-aorta", "Prostate", "Platelet", "Palate", "Pleura", "Portocaval Space", "Pharynx", "periampullary", "Right Adnexa", "Rectosigmoid", "Rectum", "Rib", "Retroperitoneum", "Saliva", "Small Bowel", "Scalp", "Sigmoid Mass", "Serum", "Salivary Gland", "Small Intestine", "Skin", "Skull", "Skeletal Muscle", "Spine", "Soft Tissue", "Spleen", "Serosa", "Sinus", "Stomach", "Sternum", "Subcutaneous Tissue", "Testes", "Thymic Gland", "Thymus", "Tonsil", "Throat", "Trachea", "Tongue", "Thorax", "Thyroid", "Urachus", "Ureter", "Umbilical Cord", "Urine Pellet", "Urethra", "Urine Supernatant", "Uterus", "Urine", "Vagina", "Vulva"]
-                        },
-                            "study":{
+                        "study":{
                             "description": "Research study name",
                             "type": "string"
                         },
-                        "requisition_approval":{
-                            "definition": "Date of requisition approval",
+                        "requisition_approved":{
+                            "description": "Date of requisition approval",
                             "type": "string"
                         },
                         "last_updated":{
-                            "definition": "Date of report",
+                            "description": "Date of report",
+                            "type": "string"
+                        },
+                        "report_id":{
+                            "description": "Report identifier; can be used for single report fetching",
                             "type": "string"
                         }
                     }
@@ -60,15 +52,6 @@
                     "type": "object",
                     "properties":{
 
-                        "OncoTree code":{
-                            "description": "OncoTree-standardized code for cancer identification",
-                            "type": "string"
-                        },
-                        "Sample Type":{
-                            "description": "Type of sample",
-                            "type": "string",
-                            "enum": ["Fresh frozen", "FFPE", "Blood", "Nucleic Acids Extracted from Tissue in a CLIA-certified Laboratory"]
-                        },
                         "Estimated Cancer Cell Content (%)":{
                             "description": "Estimated percentage of cancer cell content",
                             "type": "integer"
@@ -106,7 +89,7 @@
                             "type": "integer"
                         },
                         "total variants":{
-                            "description": "Number of total variants",
+                            "description": "Number of total copy number variants",
                             "type": "integer"
                         },
 
@@ -184,22 +167,8 @@
                                     "description": "Variant allele frequency (percentage)",
                                     "type": "integer"
                                 },
-                                "depth":{
-                                    "description": "Variant read depth",
-                                    "type": "array",
-                                    "items":{
-                                        "type": "string"
-                                    }
-                                },
-                                "LOH":{
-                                    "description": "Whether loss of heterozygosity is exhibited",
-                                    "type": "array",
-                                    "items":{
-                                        "type": "boolean"
-                                    }
-                                },
                                 "Chromosome":{
-                                    "description": "Position of SNV/indel",
+                                    "description": "Position of SNV/indel (chromosome and cytoband)",
                                     "type": "string"
                                 },
                                 "OncoKB":{
@@ -244,7 +213,7 @@
 
 
         "genomic_landscape":{
-            "description": "Genomic Landscape and Biomarkers (TMB, MSI)",
+            "description": "Genomic Landscape and Biomarkers (TMB, MSI, HRD)",
             "type": "object",
             "properties":{
                 
@@ -259,11 +228,19 @@
                             "properties":{
                                 
                                 "Tumour Mutation Burden":{
-                                    "description": "Total TMB value",
+                                    "description": "TMB value; total number of coding mutations",
                                     "type": "integer"
                                 },
                                 "TMB per megabase":{
-                                    "description": "TMB per megabase",
+                                    "description": "TMB; coding mutations per megabase",
+                                    "type": "integer"
+                                },
+                                "Cancer-specific Percentile":{
+                                    "description": "Percentile within specific cohort",
+                                    "type": "string"
+                                },
+                                "purity":{
+                                    "description": "Fraction of cancer cells in tumour",
                                     "type": "integer"
                                 }
                             }
@@ -315,7 +292,7 @@
                                         "Genomic biomarker alteration":{
                                             "description": "Biomarker title",
                                             "type": "string",
-                                            "enum": ["HRD Proficient", "HRD Deficient"]
+                                            "enum": ["HRD Proficient"]
                                         }
                                     }
                                 }

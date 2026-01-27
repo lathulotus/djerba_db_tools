@@ -1,9 +1,7 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "Week1Testing.schema.json",
-    "$comment": "Latest report from DATE",
+    "$id": "https://github.com/lathulotus/cgi_djerba/blob/main/1_djerbaSchemas/simpleSchemas/simpleSchema_testing.json",
     "title": "Testing Report Structure Schema",
-    "description": "Schema documentation of testing report structures",
+    "description": "Schema documentation of testing report structures, highlighting key variables. Latest sample report from DATE",
     "type": "object",
 
     "properties":{
