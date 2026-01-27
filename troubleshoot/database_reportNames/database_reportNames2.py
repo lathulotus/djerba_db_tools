@@ -5,9 +5,6 @@
     # Ex: reportID-v1_research_report.json
 
 
-
-
-
 """Interface with a CouchDB instance for JSON report documents"""
 
 
