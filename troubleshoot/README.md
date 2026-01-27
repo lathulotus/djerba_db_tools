@@ -8,6 +8,8 @@ CouchDB only stores the most updated versions of reports due to Djerba overwriti
 **TASK**: Archiving different versions of reports on the same requisition by:
 1. Identifying report types under attributes
 2. Using regular expressions to match report IDs (any version)
-3. Concatenating report type to the report ID
-- Ex: reportID-v1_research_report.json
+3. Concatenating report type to the report ID (ex: reportID-v1_research_report.json)
+
+
+## Appended Reports
 
