@@ -1,7 +1,7 @@
 # README
 
 ## Top-level Schemas
-* [Master Report Structure Schema](schema_master.json)
+* [Query Report Structure Schema](schema_master.json)
 * [Clinical Report Structure Schema (Biological Variables)](bioSchemas/schema_clinical.json)
 * [Research Report Structure Schema (Biological Variables)](bioSchemas/schema_research.json)
 * [Testing Report Structure Schema (Biological Variables)](bioSchemas/schema_testing.json)

@@ -1,0 +1,116 @@
+{
+    "$id": "https://github.com/lathulotus/cgi_djerba/blob/main/1_djerbaSchemas/schema_master.json",
+    "type": "object",
+    "properties":{
+
+        "core":{
+            "author": "string",
+            "document_config": "string",
+            "report_id": "string",
+            "core_version": "string",
+            "extract_time": "string"
+        },
+
+        "plugins":{
+            "report_title":{
+                "plugin_name": "string",
+                "version": "string",
+                "priorities": {
+                    "configure": "integer",
+                    "extract": "integer",
+                    "render": "integer"
+                },
+                "attributes": "array",
+                "merge_inputs": "object",
+                "results":{
+                    "header_type": "string"
+                }
+            },
+
+            "patient_info":{
+                "plugin_name": "string",
+                "version": "string",
+                "priorities": {
+                    "configure": "integer",
+                    "extract": "integer",
+                    "render": "integer"
+                },
+                "attributes": "array",
+                "merge_inputs": "object",
+                "results":{
+                    "patient_name": "string",
+                    "patient_dob": "string",
+                    "patient_genetic_sex": "string",
+                    "requisitioner_email": "string",
+                    "physician_licence_number": "string",
+                    "physician_name": "string",
+                    "physician_phone_number": "string",
+                    "hospital_name_and_address": "string"
+                }
+            },
+
+            "case_overview":{
+                "plugin_name": "string",
+                "version": "string",
+                "priorities": {
+                    "configure": "integer",
+                    "extract": "integer",
+                    "render": "integer"
+                },
+                "attributes": "array",
+                "merge_inputs": "object",
+                "results":{
+                    "assay": "string",
+                    "assay_description": "string",
+                    "primary_cancer": "string",
+                    "site_of_biopsy": "string",
+                    "donor": "string",
+                    "study": "string",
+                    "patient_study_id": "string",
+                    "tumour_id": "string",
+                    "normal_id": "string",
+                    "report_id": "string",
+                    "requisition_approved": "string"
+                }
+            },
+
+            "summary":{
+                "plugin_name": "string",
+                "version": "string",
+                "priorities": {
+                    "configure": "integer",
+                    "extract": "integer",
+                    "render": "integer"
+                },
+                "attributes": "array",
+                "merge_inputs": "object",
+                "results":{
+                    "summary_text": "string",
+                    "failed": "boolean"
+                }
+            },
+
+            "sample":{
+                "plugin_name": "string",
+                "version": "string",
+                "priorities": {
+                    "configure": "integer",
+                    "extract": "integer",
+                    "render": "integer"
+                },
+                "attributes": "array",
+                "merge_inputs": "object",
+                "results":{
+                    "OncoTree code": "string",
+                    "Sample Type": "string",
+                    "Estimated Cancer Cell Content (%)": "integer",
+                    "Estimated Ploidy": "string",
+                    "Callability (%)": "string",
+                    "Coverage (mean)": "string"
+                }
+            },
+
+            "wgts.cnv_purple"
+        }
+    }
+}
