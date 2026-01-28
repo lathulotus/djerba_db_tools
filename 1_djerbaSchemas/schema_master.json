@@ -1,7 +1,7 @@
 {
     "$id":"https://github.com/lathulotus/cgi_djerba/blob/main/1_djerbaSchemas/schema_clinical.json",
-    "title": "Clinical Report Structure Schema",
-    "description": "Thorough schema documentation of clinical report structures.",
+    "title": "Master Report Structure Schema",
+    "description": "Thorough schema documentation of report structures, primarily designed using clinical reports",
     "required": ["core", "plugins", "mergers", "config", "html_cache"],
 
     "type": "object",
