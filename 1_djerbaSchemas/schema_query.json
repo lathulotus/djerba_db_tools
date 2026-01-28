@@ -17,12 +17,66 @@
         "type": "object",
         "properties": {
 
+            "case_overview": {
+                "type": "object",
+                "properties": {
+                    "plugin_name": {"type": "string"},
+                    "version": {"type": "string"},
+                    "priorities": {
+                        "type": "object",
+                        "properties": {
+                            "configure": {"type": "integer"},
+                            "extract": {"type": "integer"},
+                            "render": {"type": "integer"}
+                        }
+                    },
+                    "attributes": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": ["clinical", "supplementary", "failed", "research"]
+                        }
+                    },
+                    "merge_inputs": {"type": "object"},
+                    "results": {"type": "object"},
+                    "url": {"type": "string"}
+                },
+                "required": ["plugin_name", "version", "priorities", "attributes", "merge_inputs", "results"]
+            },
+
+            "sample":{
+                "type": "object",
+                "properties": {
+                    "plugin_name": {"type": "string"},
+                    "version": {"type": "string"},
+                    "priorities": {
+                        "type": "object",
+                        "properties": {
+                            "configure": {"type": "integer"},
+                            "extract": {"type": "integer"},
+                            "render": {"type": "integer"}
+                        }
+                    },
+                    "attributes": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": ["clinical", "supplementary", "failed", "research"]
+                        }
+                    },
+                    "merge_inputs": {"type": "object"},
+                    "results": {"type": "object"},
+                    "url": {"type": "string"}
+                },
+                "required": ["plugin_name", "version", "priorities", "attributes", "merge_inputs", "results"]
+            },
+
             "genomic_landscape": {
                 "type": "object",
                 "properties": {
                     "plugin_name": {"type": "string"},
-                     "version": {"type": "string"},
-                     "priorities": {
+                    "version": {"type": "string"},
+                    "priorities": {
                         "type": "object",
                         "properties": {
                             "configure": {"type": "integer"},
