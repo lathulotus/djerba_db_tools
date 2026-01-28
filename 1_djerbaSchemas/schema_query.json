@@ -1,116 +1,147 @@
 {
     "$id": "https://github.com/lathulotus/cgi_djerba/blob/main/1_djerbaSchemas/schema_master.json",
     "type": "object",
-    "properties":{
+    "properties": {
+        "core": {
+            "type": "object",
+            "properties": {
+            "author": {"type": "string"},
+            "document_config": {"type": "string"},
+            "report_id": {"type": "string"},
+            "core_version": {"type": "string"},
+            "extract_time": {"type": "string"}
+      }
+    },
 
-        "core":{
-            "author": "string",
-            "document_config": "string",
-            "report_id": "string",
-            "core_version": "string",
-            "extract_time": "string"
+    "plugins": {
+        "type": "object",
+        "properties": {
+
+            "genomic_landscape": {
+                "type": "object",
+                "properties": {
+                    "plugin_name": {"type": "string"},
+                     "version": {"type": "string"},
+                     "priorities": {
+                        "type": "object",
+                        "properties": {
+                            "configure": {"type": "integer"},
+                            "extract": {"type": "integer"},
+                            "render": {"type": "integer"}
+                        }
+                    },
+                    "attributes": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": ["clinical", "supplementary", "failed", "research"]
+                        }
+                    },
+                    "merge_inputs": {"type": "object"},
+                    "results": {"type": "object"},
+                    "url": {"type": "string"}
+                },
+                "required": ["plugin_name", "version", "priorities", "attributes", "merge_inputs", "results"]
+            },
+            
+            "fusion":{
+                "type": "object",
+                "properties": {
+                    "plugin_name": {"type": "string"},
+                    "version": {"type": "string"},
+                    "priorities": {
+                        "type": "object",
+                        "properties": {
+                            "configure": {"type": "integer"},
+                            "extract": {"type": "integer"},
+                            "render": {"type": "integer"}
+                        }
+                    },
+                    "attributes": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": ["clinical", "supplementary", "failed", "research"]
+                        }
+                    },
+                    "merge_inputs": {"type": "object"},
+                    "results": {"type": "object"},
+                    "url": {"type": "string"}
+                },
+                "required": ["plugin_name", "version", "priorities", "attributes", "merge_inputs", "results"]
+            }
         },
 
-        "plugins":{
-            "report_title":{
-                "plugin_name": "string",
-                "version": "string",
-                "priorities": {
-                    "configure": "integer",
-                    "extract": "integer",
-                    "render": "integer"
+        "patternProperties": {
+            "^[A-Za-z_.-]+$": {
+                "type": "object",
+                "properties": {
+                    "plugin_name": {"type": "string"},
+                    "priorities": {
+                        "type": "object",
+                        "properties": {
+                            "configure": {"type": "integer"},
+                            "extract": {"type": "integer"},
+                            "render": {"type": "integer"}
+                        }
+                    },
+                    "attributes": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": ["clinical", "supplementary", "failed", "research"]
+                        }
+                    },
+                    "merge_inputs": {"type": "object"},
+                    "results": {"type": "object"},
+                    "url": {"type": "string"},
+                    "version": {"type": "string"}
                 },
-                "attributes": "array",
-                "merge_inputs": "object",
-                "results":{
-                    "header_type": "string"
+                "required": ["plugin_name", "priorities", "attributes", "merge_inputs", "results", "version"]
+            }
+        },
+        "required": ["genomic_landscape", "fusion"]
+    },
+
+    "supplement.body": {
+        "type": "object",
+        "properties": {
+            "plugin_name": {"type": "string"},
+            "priorities": {
+                "type": "object",
+                "properties": {
+                    "configure": {"type": "integer"},
+                    "extract": {"type": "integer"},
+                    "render": {"type": "integer"}
                 }
             },
-
-            "patient_info":{
-                "plugin_name": "string",
-                "version": "string",
-                "priorities": {
-                    "configure": "integer",
-                    "extract": "integer",
-                    "render": "integer"
-                },
-                "attributes": "array",
-                "merge_inputs": "object",
-                "results":{
-                    "patient_name": "string",
-                    "patient_dob": "string",
-                    "patient_genetic_sex": "string",
-                    "requisitioner_email": "string",
-                    "physician_licence_number": "string",
-                    "physician_name": "string",
-                    "physician_phone_number": "string",
-                    "hospital_name_and_address": "string"
+            "attributes": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "enum": ["clinical", "supplementary", "failed", "research"]
                 }
             },
-
-            "case_overview":{
-                "plugin_name": "string",
-                "version": "string",
-                "priorities": {
-                    "configure": "integer",
-                    "extract": "integer",
-                    "render": "integer"
-                },
-                "attributes": "array",
-                "merge_inputs": "object",
-                "results":{
-                    "assay": "string",
-                    "assay_description": "string",
-                    "primary_cancer": "string",
-                    "site_of_biopsy": "string",
-                    "donor": "string",
-                    "study": "string",
-                    "patient_study_id": "string",
-                    "tumour_id": "string",
-                    "normal_id": "string",
-                    "report_id": "string",
-                    "requisition_approved": "string"
+            "merge_inputs": {"type": "object"},
+            "results": {
+                "type": "object",
+                "properties": {
+                    "assay": {"type": "string"},
+                    "components": {"type": "object"},
+                    "failed": {"type": "boolean"},
+                    "author": {"type": "string"},
+                    "extract_date": {"type": "string"},
+                    "include_signoffs": {"type": "boolean"},
+                    "template_dir": {"type": "string"},
+                    "report_signoff_date": {"type": "string"},
+                    "clinical_geneticist_name": {"type": "string"},
+                    "clinical_geneticist_licence": {"type": "string"}
                 }
             },
-
-            "summary":{
-                "plugin_name": "string",
-                "version": "string",
-                "priorities": {
-                    "configure": "integer",
-                    "extract": "integer",
-                    "render": "integer"
-                },
-                "attributes": "array",
-                "merge_inputs": "object",
-                "results":{
-                    "summary_text": "string",
-                    "failed": "boolean"
-                }
-            },
-
-            "sample":{
-                "plugin_name": "string",
-                "version": "string",
-                "priorities": {
-                    "configure": "integer",
-                    "extract": "integer",
-                    "render": "integer"
-                },
-                "attributes": "array",
-                "merge_inputs": "object",
-                "results":{
-                    "OncoTree code": "string",
-                    "Sample Type": "string",
-                    "Estimated Cancer Cell Content (%)": "integer",
-                    "Estimated Ploidy": "string",
-                    "Callability (%)": "string",
-                    "Coverage (mean)": "string"
-                }
-            },
-
-            "wgts.cnv_purple"
-        }
+            "url": {"type": "string"},
+            "version": {"type": "string"}
+        },
+        "required": ["plugin_name", "priorities", "attributes", "merge_inputs", "results", "version"]
     }
+  }
 }
