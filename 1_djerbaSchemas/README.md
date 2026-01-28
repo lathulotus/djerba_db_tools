@@ -1,9 +1,10 @@
 # README
 
 ## Top-level Schemas
-* [Clinical Report Structure Schema](schema_clinical.json) | [Clinical Schema - Biological Variables](simpleSchemas/bioSchema_clinical.json)
-* [Research Report Structure Schema](schema_research.json) | [Research Schema - Biological Variables](simpleSchemas/bioSchema_research.json)
-* [Testing Report Structure Schema](simpleSchemas/bioSchema_testing.json)
+* [Master Report Structure Schema](schema_master.json)
+* [Clinical Report Structure Schema (Biological Variables)](bioSchemas/schema_clinical.json)
+* [Research Report Structure Schema (Biological Variables)](bioSchemas/schema_research.json)
+* [Testing Report Structure Schema (Biological Variables)](bioSchemas/schema_testing.json)
 
 ## Top-level Fields
 * Case Overview: assay, primary cancer, site of biopsy, study
