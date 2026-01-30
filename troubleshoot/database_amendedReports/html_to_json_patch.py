@@ -73,12 +73,9 @@ def parse_html_version(html_path: Path) -> int:
         raise ValueError(f"Cannot detect version in HTML file.")
     return int(version_match.group(1))
 
-def name_amended_json(original_json: Path, version: int) -> Path:
-    """Write file name for amended JSON based on amended HTML version"""
-    base = re.sub(r"v\d+", "", original_json.stem, flags=re.IGNORECASE)     # remove existing v#
-    base = re.sub(r"(_report)?$", "", base, flags=re.IGNORECASE)            # remove _report
-    new_name = f"{base}-v{version}_report.json"
-    return original_json.with_name(new_name)
+def name_amended_json(amended_html: Path) -> Path:
+    """Write file name for amended JSON based directly on amended HTML name"""
+    return amended_html.with_suffix(".json")
 
 # Load amended HTML file
 def load_html(path: Path) -> BeautifulSoup:
@@ -102,31 +99,56 @@ def clean_revisions(node) -> str:
     return node.get_text(" ", strip=True)
 
 # Revise JSON
+def update_existing_key(obj, target_key, new_value):
+    """Recursively update existing keys in nested dicts/lists"""
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            if k == target_key:
+                obj[k] = new_value
+            else:
+                update_existing_key(v, target_key, new_value)
+    elif isinstance(obj, list):
+        for item in obj:
+            update_existing_key(item, target_key, new_value)
+
+
 def apply_revisions(json_data: dict, soup: BeautifulSoup):
     """Patch HTML revisions to JSON fields"""
-    for node in find_revisions(soup):                               # fixed function name
+    for node in find_revisions(soup):
         value_td = node if node.name == "td" else node.find_parent("td")
         if not value_td:
-            continue                                        # skip if no <td> found
-        label_td = value_td.find_previous_sibling("td")     # fixed to singular
+            continue
+        label_td = value_td.find_previous_sibling("td")
         if not label_td:
             continue
+
         key = label_td.get_text(strip=True).rstrip(":").lower().replace(" ","_")
-        value = clean_revisions(value_td)                  # fixed function name
-        json_data.setdefault("plugins", {}).setdefault("sample", {}).setdefault("results", {})[key] = value
+
+        # handle known field name exception
+        if key == "blood_sample_id":
+            key = "normal_id"
+
+        value = clean_revisions(value_td)
+
+        # update existing fields instead of appending new ones
+        update_existing_key(json_data, key, value)
 
 def main():
     amended_html = find_amended_html(BASE_DIR)                  # find latest HTML
     original_json = find_original_json(amended_html, BASE_DIR)  # find original JSON
-    html_version = parse_html_version(amended_html)             # extract version number from amended HTML
-    with open(original_json, "r", encoding="utf-8") as file:    # fixed encoding typo
+
+    with open(original_json, "r", encoding="utf-8") as file:
         json_data = json.load(file)                             # load JSON into dictionary
+
     soup = load_html(amended_html)                              # load amended HTML
     apply_revisions(json_data, soup)                            # apply HTML revisions to JSON
-    output_json = name_amended_json(original_json, html_version)   # fixed function name
-    with open(output_json, "w", encoding="utf-8") as file:      # fixed encoding typo
+
+    output_json = name_amended_json(amended_html)               # assign JSON based on HTML name
+
+    with open(output_json, "w", encoding="utf-8") as file:
         json.dump(json_data, file, indent=2)
-    print(f"Amended JSON written to {output_json.name}")        # fixed typo in variable
+
+    print(f"Amended JSON written to {output_json.name}")
 
 if __name__ == "__main__":
     main()
