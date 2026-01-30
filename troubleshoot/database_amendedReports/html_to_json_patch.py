@@ -1,18 +1,7 @@
-# Strategy:
-# Search for revision table at top of HTML report:
-'''<strong style="color:red;">R1</strong>'''
-# Search for superscripts where changes occur within HTML report:
-'''<sup><strong style="color:red;">R1</strong></sup>'''
-# Regex to obtain R with any number (account for more than 1 revision ie MOHCCNO-1480)
-# Append change to original JSON
-#---------------------------------------------------
-
-
-"""Reads amended HTML and appends changes to original JSON (v1) to be saved as an amended JSON (v2)"""
-# Usage:
-# Run this in the directory where the original JSON and amended HTML are located
+"""Reads amended HTML and appends changes to existing JSON to create an amended JSON"""
+# Usage: Run this in the directory containing the original JSON and amended HTML
 # $ module load djerba
-# $python3 path/to/html_to_json.py
+# $ python html_to_json_patch.py
 
 import os
 import sys
@@ -110,7 +99,6 @@ def update_existing_key(obj, target_key, new_value):
     elif isinstance(obj, list):
         for item in obj:
             update_existing_key(item, target_key, new_value)
-
 
 def apply_revisions(json_data: dict, soup: BeautifulSoup):
     """Patch HTML revisions to JSON fields"""
