@@ -1,9 +1,10 @@
 # Strategy:
-# Search for superscripts where changes occur within HTML report:
-'''<sup><strong style="color:red;">R1</strong></sup>'''
 # Search for revision table at top of HTML report:
 '''<strong style="color:red;">R1</strong>'''
+# Search for superscripts where changes occur within HTML report:
+'''<sup><strong style="color:red;">R1</strong></sup>'''
 # Regex to obtain R with any number (account for more than 1 revision ie MOHCCNO-1480)
+# Append change to original JSON
 #---------------------------------------------------
 
 
@@ -17,144 +18,115 @@ import os
 import sys
 import re
 import json
-from string import Template
-from markdown import markdown
-from djerba.util.oncokb.tools import levels as oncokb_levels
+from pathlib import Path
 from bs4 import BeautifulSoup
 
-# Defining version (>=2)
-if len(sys.argv) == 3:      # html_to_json_patch.py, originalReport-v1.json, amendedReport-v2.html
-    report_id = sys.argv[2] # third item is report ID -> SAVE HTML VER OR TITLE AS THE REPORT ID? THIS WOULD CHANGE IT TO THE UPDATED VERSION
-    if "v1" in report_id:
-        version = "2"       # defaults to 2 | REGULAR EXPRESSIONS TO EXTRACT THE NUMBER AND ADD 1 TO IT
-elif len(sys.argv) == 3:    # html_to_json_patch.py, originalReport-v1.json, amendedReport-v2.html, 2
-    report_id = sys.argv[2]
-    version = sys.argv[3]   #fourth item is version
-else:
-    print("Usage: html_to_json_patch.py REPORT_ID [VERSION: optional, defaults to 2]", file=sys.stderr)
-    sys.exit(1)             # error: too many/little files
+# Find files based on regex
+BASE_DIR = Path(__file__).resolve().parent
+VERSION_REGEX = re.compile(r"v(\d+)", re.IGNORECASE)    # finds v1, v2, v3, etc in file name
+REV_INDICATOR = re.compile(r"color\s*:\s*red")          # finds R1, R2, R3, etc in HTML file
 
-report_name = report_id+'-v'+version
+def find_amended_html(base_dir: Path) -> Path:
+    """Find the amended HTML file with latest version in name"""
+    html_files = list(base_dir.glob("*.html"))          # find all HTML files
+    if not html_files:
+        raise FileNotFoundError("Found no HTML files in directory.")
+    
+    latest_file = None
+    latest_version = -1
 
-
-
-# Asigning report paths/names by attributes
-# NOTE: this should be done at the end -> fallback to id failed clinical reports
-# NOTE: read this from the HTML: "(RUO)" in report suggests failed clinical
-original_report_id = report_data[cc.CORE][cc.REPORT_ID]
-try:
-    attributes = (
-        report_data
-        .get("plugins", {})
-        .get("supplement.body", {})
-        .get("attributes", [])
-    )
-    analysis_type = "_".join(attributes) if attributes else None
-
-    if analysis_type:
-        # Match everything before v<number>
-        match = re.match(r"^(.*?)([vV]\d+)$", original_report_id)
-
+    for file in html_files:
+        match = VERSION_REGEX.search(file.name)
         if match:
-            base_id, version = match.groups()
-            report_id = f"{base_id}-{version}-{analysis_type}"
-        else:
-            # Fallback if no version pattern is found
-            report_id = f"{original_report_id}-{analysis_type}"
-    else:
-        report_id = original_report_id
+            version = int(match.group(1))       # converts version to integer
+            if version > latest_version:        # return latest version
+                latest_version = version
+                latest_file = file
+    
+    if not latest_file:                         # different naming convention
+        raise ValueError("No HTML files contain version in their name (v1, v2, etc).")
+    return latest_file                          # latest amended HTML
 
-html_path = report_name+'_report.clinical.html'     # automatically assigns all report names as clinical ??
-if not os.path.exists(html_path):
-    print('Expected input does not exist: '+'html_path')
-    sys.exit(1)
-#pdfkit.from_url(html_path, report_name+'_report.clinical.pdf', options=options)
+def find_original_json(latest_html: Path, base_dir: Path) -> Path:
+    """Find the original JSON to patch"""
+    base_match = re.split(r"-v|_report", latest_html.stem, maxsplit=1)[0]       # matches report ID
 
-def _debug(debug, message, prefix=''):
-    """Print the given message if debugging is true."""
-    if debug:
-        print('{}{}'.format(prefix, message))
-        # add a newline after every message
-        print('')
+    candidate_json = [f for f in base_dir.glob("*.json") if f.stem.startswith(base_match)]
+    if not candidate_json:
+        raise FileNotFoundError(f"Found no JSON files matching base '{base_match}'")
 
+    lowest_version = float("inf")
+    original_json = None
+    for file in candidate_json:
+        match = VERSION_REGEX.search(file.name)            # search for version in JSON name
+        version = int(match.group(1)) if match else 0
+        if version < lowest_version:                    # original json is being amended
+            lowest_version = version
+            original_json = file
+    return original_json
 
-def _record_element_value(element, json_output):
-    """Record the html element's value in the json_output."""
-    element = element.strip()
-    if element != '\n' and element != '':
-        if json_output.get('_value'):
-            json_output['_values'] = [json_output['_value']]
-            json_output['_values'].append(element)
-            del json_output['_value']
-        elif json_output.get('_values'):
-            json_output['_values'].append(element)
-        else:
-            json_output['_value'] = element
+# Parse version from HTML name
+def parse_html_version(html_path: Path) -> int:
+    """Extract version number from HTML file using regex"""
+    version_match = VERSION_REGEX.search(html_path.name)
+    if not version_match:
+        raise ValueError(f"Cannot detect version in HTML file.")
+    return int(version_match.group(1))
 
+def name_amended_json(original_json: Path, version: int) -> Path:
+    """Write file name for amended JSON based on amended HTML version"""
+    base = re.sub(r"v\d+", "", original_json.stem, flags=re.IGNORECASE)     # remove existing v#
+    base = re.sub(r"(_report)?$", "", base, flags=re.IGNORECASE)            # remove _report
+    new_name = f"{base}-v{version}_report.json"
+    return original_json.with_name(new_name)
 
-def _iterate(
-    html_section,
-    json_output,
-    count,
-    debug,
-    capture_element_values,
-    capture_element_attributes,
-):
-    _debug(debug, '========== Start New Iteration ==========', '    ' * count)
-    _debug(debug, 'HTML_SECTION:\n{}'.format(html_section))
-    _debug(debug, 'JSON_OUTPUT:\n{}'.format(json_output))
-    for part in html_section:
-        if not isinstance(part, str):
-            # for python2 - check if part is unicode
-            try:
-                string_is_unicode = isinstance(part, unicode)
-            # for python3 - catch error when trying to use the name 'unicode'
-            except NameError:
-                string_is_unicode = False
-            # no matter what - keep going
-            finally:
-                # if part is not unicode, record it
-                if not string_is_unicode:
-                    if not json_output.get(part.name):
-                        json_output[part.name] = list()
-                    new_json_output_for_subparts = dict()
-                    if part.attrs and capture_element_attributes:
-                        new_json_output_for_subparts = {'_attributes': part.attrs}
-                    count += 1
-                    json_output[part.name].append(
-                        _iterate(
-                            part,
-                            new_json_output_for_subparts,
-                            count,
-                            debug=debug,
-                            capture_element_values=capture_element_values,
-                            capture_element_attributes=capture_element_attributes,
-                        )
-                    )
-                # this will only be true in python2 - handle an entry that is unicode
-                else:
-                    if capture_element_values:
-                        _record_element_value(part, json_output)
-        else:
-            if capture_element_values:
-                _record_element_value(part, json_output)
-    return json_output
+# Load amended HTML file
+def load_html(path: Path) -> BeautifulSoup:
+    """Load HTML file and parse using BeautifulSoup (str)"""
+    return BeautifulSoup(path.read_text(encoding="utf-8"), "html.parser")
 
+# Find revisions in amended HTML
+def find_revisions(soup: BeautifulSoup) -> list:
+    """Find in-line revisions using R# superscripts"""
+    revised = []
+    for sup in soup.find_all("sup"):                        # all superscripts
+        strong = sup.find("strong", style=REV_INDICATOR)    # bold, red superscripts
+        if strong:
+            revised.append(sup.parent)
+    return revised
 
-def convert(
-    html_string,
-    debug=False,
-    capture_element_values=True,
-    capture_element_attributes=True,
-):
-    """Convert the html string to json."""
-    soup = bs4.BeautifulSoup(html_string, 'html.parser')
-    children = [child for child in soup.contents]
-    return _iterate(
-        children,
-        {},
-        0,
-        debug=debug,
-        capture_element_values=capture_element_values,
-        capture_element_attributes=capture_element_attributes,
-    )
+def clean_revisions(node) -> str:
+    """Remove HTML formatted <sup> for clean revisions"""
+    for sup in node.find_all("sup"):
+        sup.decompose()
+    return node.get_text(" ", strip=True)
+
+# Revise JSON
+def apply_revisions(json_data: dict, soup: BeautifulSoup):
+    """Patch HTML revisions to JSON fields"""
+    for node in find_revisions(soup):                               # fixed function name
+        value_td = node if node.name == "td" else node.find_parent("td")
+        if not value_td:
+            continue                                        # skip if no <td> found
+        label_td = value_td.find_previous_sibling("td")     # fixed to singular
+        if not label_td:
+            continue
+        key = label_td.get_text(strip=True).rstrip(":").lower().replace(" ","_")
+        value = clean_revisions(value_td)                  # fixed function name
+        json_data.setdefault("plugins", {}).setdefault("sample", {}).setdefault("results", {})[key] = value
+
+def main():
+    amended_html = find_amended_html(BASE_DIR)                  # find latest HTML
+    original_json = find_original_json(amended_html, BASE_DIR)  # find original JSON
+    html_version = parse_html_version(amended_html)             # extract version number from amended HTML
+    with open(original_json, "r", encoding="utf-8") as file:    # fixed encoding typo
+        json_data = json.load(file)                             # load JSON into dictionary
+    soup = load_html(amended_html)                              # load amended HTML
+    apply_revisions(json_data, soup)                            # apply HTML revisions to JSON
+    output_json = name_amended_json(original_json, html_version)   # fixed function name
+    with open(output_json, "w", encoding="utf-8") as file:      # fixed encoding typo
+        json.dump(json_data, file, indent=2)
+    print(f"Amended JSON written to {output_json.name}")        # fixed typo in variable
+
+if __name__ == "__main__":
+    main()
