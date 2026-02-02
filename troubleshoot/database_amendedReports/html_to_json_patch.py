@@ -15,12 +15,12 @@ REV_INDICATOR = re.compile(r"color\s*:\s*red")          # finds red revision mar
 
 # Load amended HTML file
 def load_html(path: Path) -> BeautifulSoup:
-    """Load HTML file and parse using BeautifulSoup (str)"""
+    """Load amended HTML and parse into BeautifulSoup string"""
     return BeautifulSoup(path.read_text(encoding="utf-8"), "html.parser")
 
 # Find revisions in amended HTML
 def find_revisions(soup: BeautifulSoup) -> list:
-    """Find in-line revisions using R# superscripts"""
+    """Search for bold, red superscripts denoting in-line revisions"""
     revised = []
     for sup in soup.find_all("sup"):                        # all superscripts
         strong = sup.find("strong", style=REV_INDICATOR)    # bold, red superscripts
@@ -29,14 +29,14 @@ def find_revisions(soup: BeautifulSoup) -> list:
     return revised
 
 def clean_revisions(node) -> str:
-    """Remove HTML formatted <sup> for clean revisions"""
+    """Clean revisions by removing revision markers (<sup>)"""
     for sup in node.find_all("sup"):
         sup.decompose()
     return node.get_text(" ", strip=True)
 
 # Revise JSON
 def update_existing_key(obj, target_key, new_value):
-    """Recursively update existing keys in nested dicts/lists"""
+    """Update fields with keys that exist in the original JSON (no new fields)"""
     if isinstance(obj, dict):
         for k, v in obj.items():
             if k == target_key:
@@ -48,7 +48,7 @@ def update_existing_key(obj, target_key, new_value):
             update_existing_key(item, target_key, new_value)
 
 def extract_report_id_revision(soup: BeautifulSoup) -> str | None:
-    """Extract amended Report ID value from HTML if revised"""
+    """Extract new report ID if amended in HTML"""
     for node in find_revisions(soup):
         value_td = node if node.name == "td" else node.find_parent("td")
         if not value_td:
@@ -63,7 +63,7 @@ def extract_report_id_revision(soup: BeautifulSoup) -> str | None:
     return None
 
 def apply_revisions(json_data: dict, soup: BeautifulSoup):
-    """Patch HTML revisions to JSON fields"""
+    """Patch original JSON with HTML amendments"""
     for node in find_revisions(soup):
         value_td = node if node.name == "td" else node.find_parent("td")
         if not value_td:
@@ -84,7 +84,7 @@ def apply_revisions(json_data: dict, soup: BeautifulSoup):
         update_existing_key(json_data, key, value)
 
 def apply_report_id_updates(json_data: dict, amended_report_id: str):
-    """Apply amended Report ID across dependent JSON fields"""
+    """Patch original JSON with HTML amendments specific to report IDs"""
     base_id = re.sub(r"-v\d+$", "", amended_report_id)
 
     update_existing_key(json_data, "_id", amended_report_id)
@@ -103,6 +103,7 @@ def name_amended_json(amended_html: Path, amended_report_id: str | None) -> Path
     return amended_html.with_suffix(".json")
 
 def main():
+    """Patching JSON"""
     if len(sys.argv) != 3:
         raise RuntimeError("Usage: python html_to_json_patch.py amended.html original.json")
 
