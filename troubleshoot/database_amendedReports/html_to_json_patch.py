@@ -34,6 +34,19 @@ def clean_revisions(node) -> str:
         sup.decompose()
     return node.get_text(" ", strip=True)
 
+def generate_key_variants(label: str) -> list:
+    """Generate possible JSON key variants from an HTML label (some with underscores, some with spaces)"""
+    base = label.rstrip(":").strip().lower()
+
+    variants = {
+        base,
+        base.replace(" ", "_"),
+        re.sub(r"[^\w\s%]", "", base),                 # remove punctuation except %
+        re.sub(r"[^\w\s%]", "", base).replace(" ", "_")
+    }
+
+    return list(variants)
+
 # Revise JSON
 def update_existing_key(obj, target_key, new_value):
     """Update fields with keys that exist in the original JSON (no new fields)"""
@@ -74,9 +87,11 @@ def apply_revisions(json_data: dict, soup: BeautifulSoup):
 
         key = label_td.get_text(strip=True).rstrip(":").lower().replace(" ","_")
 
-        # EXCEPTION 1: blood sample id = normal_id
+        # exceptions: known HTML to JSON label mismatches
         if key == "blood_sample_id":
             key = "normal_id"
+        elif key == "site_of_biopsy/surgery":
+            key = "site_of_biopsy"
 
         value = clean_revisions(value_td)
 
@@ -103,7 +118,7 @@ def name_amended_json(amended_html: Path, amended_report_id: str | None) -> Path
     return amended_html.with_suffix(".json")
 
 def main():
-    """Patching JSON"""
+    """Combine functions to patch JSON"""
     if len(sys.argv) != 3:
         raise RuntimeError("Usage: python html_to_json_patch.py amended.html original.json")
 
