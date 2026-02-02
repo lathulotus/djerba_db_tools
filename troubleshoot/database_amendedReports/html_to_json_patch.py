@@ -1,65 +1,24 @@
 """Reads amended HTML and appends changes to existing JSON to create an amended JSON"""
-# Usage: Run this in the directory containing the original JSON and amended HTML
+# Usage: Run this in the directory containing the amended HTML and original JSON
 # $ module load djerba
-# $ python html_to_json_patch.py
+# $ python html_to_json_patch.py amended.html original.json
 
+import sys
 import re
 import json
 from pathlib import Path
 from bs4 import BeautifulSoup
 
-# Find files based on regex
-BASE_DIR = Path(__file__).resolve().parent
-VERSION_REGEX = re.compile(r"v(\d+)", re.IGNORECASE)    # finds v1, v2, v3, etc in file name
-REV_INDICATOR = re.compile(r"color\s*:\s*red")          # finds R1, R2, R3, etc in HTML file
+# Regex patterns
+VERSION_REGEX = re.compile(r"v(\d+)", re.IGNORECASE)    # finds v1, v2, v3, etc
+REV_INDICATOR = re.compile(r"color\s*:\s*red")          # finds red revision markers in HTML
 
-def find_amended_html(base_dir: Path) -> Path:
-    """Find the amended HTML file with latest version in name"""
-    html_files = list(base_dir.glob("*.html"))          # find all HTML files
-    if not html_files:
-        raise FileNotFoundError("Found no HTML files in directory.")
-    
-    latest_file = None
-    latest_version = -1
-
-    for file in html_files:
-        match = VERSION_REGEX.search(file.name)
-        if match:
-            version = int(match.group(1))       # converts version to integer
-            if version > latest_version:        # return latest version
-                latest_version = version
-                latest_file = file
-    
-    if not latest_file:                         # different naming convention
-        raise ValueError("No HTML files contain version in their name (v1, v2, etc).")
-    return latest_file                          # latest amended HTML
-
-def find_original_json(latest_html: Path, base_dir: Path) -> Path:
-    """Find the original JSON to patch"""
-    base_match = re.split(r"-v|_report", latest_html.stem, maxsplit=1)[0]       # matches report ID
-
-    candidate_json = [f for f in base_dir.glob("*.json") if f.stem.startswith(base_match)]
-    if not candidate_json:
-        raise FileNotFoundError(f"Found no JSON files matching base '{base_match}'")
-
-    lowest_version = float("inf")
-    original_json = None
-    for file in candidate_json:
-        match = VERSION_REGEX.search(file.name)         # search for version in JSON name
-        version = int(match.group(1)) if match else 0
-        if version < lowest_version:                    # original json is being amended
-            lowest_version = version
-            original_json = file
-    return original_json
-
-def name_amended_json(amended_html: Path, amended_report_id: str) -> Path:
-    """Write file name for amended JSON using amended report ID"""
-    return amended_html.with_name(f"{amended_report_id}_report.clinical.json")
-
+# Load amended HTML file
 def load_html(path: Path) -> BeautifulSoup:
     """Load HTML file and parse using BeautifulSoup (str)"""
     return BeautifulSoup(path.read_text(encoding="utf-8"), "html.parser")
 
+# Find revisions in amended HTML
 def find_revisions(soup: BeautifulSoup) -> list:
     """Find in-line revisions using R# superscripts"""
     revised = []
@@ -75,6 +34,7 @@ def clean_revisions(node) -> str:
         sup.decompose()
     return node.get_text(" ", strip=True)
 
+# Revise JSON
 def update_existing_key(obj, target_key, new_value):
     """Recursively update existing keys in nested dicts/lists"""
     if isinstance(obj, dict):
@@ -114,14 +74,17 @@ def apply_revisions(json_data: dict, soup: BeautifulSoup):
 
         key = label_td.get_text(strip=True).rstrip(":").lower().replace(" ","_")
 
+        # handle known field name exception
         if key == "blood_sample_id":
             key = "normal_id"
 
         value = clean_revisions(value_td)
+
+        # update existing fields instead of appending new ones
         update_existing_key(json_data, key, value)
 
 def apply_report_id_updates(json_data: dict, amended_report_id: str):
-    """Apply amended Report ID to dependent JSON fields"""
+    """Apply amended Report ID across dependent JSON fields"""
     base_id = re.sub(r"-v\d+$", "", amended_report_id)
 
     update_existing_key(json_data, "_id", amended_report_id)
@@ -133,9 +96,18 @@ def apply_report_id_updates(json_data: dict, amended_report_id: str):
         old_key = next(iter(html_cache))
         html_cache[f"{amended_report_id}_report.clinical"] = html_cache.pop(old_key)
 
+def name_amended_json(amended_html: Path, amended_report_id: str | None) -> Path:
+    """Write file name for amended JSON"""
+    if amended_report_id:
+        return amended_html.with_name(f"{amended_report_id}_report.clinical.json")
+    return amended_html.with_suffix(".json")
+
 def main():
-    amended_html = find_amended_html(BASE_DIR)                  # find latest HTML
-    original_json = find_original_json(amended_html, BASE_DIR)  # find original JSON
+    if len(sys.argv) != 3:
+        raise RuntimeError("Usage: python html_to_json_patch.py amended.html original.json")
+
+    amended_html = Path(sys.argv[1])
+    original_json = Path(sys.argv[2])
 
     with open(original_json, "r", encoding="utf-8") as file:
         json_data = json.load(file)                             # load JSON into dictionary
@@ -146,9 +118,8 @@ def main():
     amended_report_id = extract_report_id_revision(soup)
     if amended_report_id:
         apply_report_id_updates(json_data, amended_report_id)
-        output_json = name_amended_json(amended_html, amended_report_id)
-    else:
-        output_json = amended_html.with_suffix(".json")
+
+    output_json = name_amended_json(amended_html, amended_report_id)
 
     with open(output_json, "w", encoding="utf-8") as file:
         json.dump(json_data, file, indent=2)
