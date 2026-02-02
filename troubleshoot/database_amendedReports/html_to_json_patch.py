@@ -3,8 +3,6 @@
 # $ module load djerba
 # $ python html_to_json_patch.py
 
-import os
-import sys
 import re
 import json
 from pathlib import Path
