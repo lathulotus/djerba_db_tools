@@ -45,7 +45,7 @@ def find_original_json(latest_html: Path, base_dir: Path) -> Path:
     lowest_version = float("inf")
     original_json = None
     for file in candidate_json:
-        match = VERSION_REGEX.search(file.name)            # search for version in JSON name
+        match = VERSION_REGEX.search(file.name)         # search for version in JSON name
         version = int(match.group(1)) if match else 0
         if version < lowest_version:                    # original json is being amended
             lowest_version = version
