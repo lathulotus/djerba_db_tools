@@ -101,6 +101,8 @@ def apply_revisions(json_data: dict, soup: BeautifulSoup):
             key_variants.append("tumour_id")
         elif "site_of_biopsy/surgery" in key_variants:
             key_variants.append("site_of_biopsy")
+        elif "patient_lims_id" in key_variants:
+            key_variants.append("donor")
 
         value = normalize_value(clean_revisions(value_td))
 
