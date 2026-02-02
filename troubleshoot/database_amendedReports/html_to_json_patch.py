@@ -74,7 +74,7 @@ def apply_revisions(json_data: dict, soup: BeautifulSoup):
 
         key = label_td.get_text(strip=True).rstrip(":").lower().replace(" ","_")
 
-        # handle known field name exception
+        # EXCEPTION 1: blood sample id = normal_id
         if key == "blood_sample_id":
             key = "normal_id"
 
