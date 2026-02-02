@@ -41,11 +41,17 @@ def generate_key_variants(label: str) -> list:
     variants = {
         base,
         base.replace(" ", "_"),
-        re.sub(r"[^\w\s%]", "", base),                 # remove punctuation except %
+        re.sub(r"[^\w\s%]", "", base),
         re.sub(r"[^\w\s%]", "", base).replace(" ", "_")
     }
 
     return list(variants)
+
+def normalize_value(value: str):
+    """Convert comma-separated values into list, otherwise return string"""
+    if "," in value:
+        return [v.strip() for v in value.split(",") if v.strip()]
+    return value
 
 # Revise JSON
 def update_existing_key(obj, target_key, new_value):
@@ -85,18 +91,21 @@ def apply_revisions(json_data: dict, soup: BeautifulSoup):
         if not label_td:
             continue
 
-        key = label_td.get_text(strip=True).rstrip(":").lower().replace(" ","_")
+        label = label_td.get_text(strip=True)
+        key_variants = generate_key_variants(label)
 
         # exceptions: known HTML to JSON label mismatches
-        if key == "blood_sample_id":
-            key = "normal_id"
-        elif key == "site_of_biopsy/surgery":
-            key = "site_of_biopsy"
+        if "blood_sample_id" in key_variants:
+            key_variants.append("normal_id")
+        elif "tumour_sample_id" in key_variants:
+            key_variants.append("tumour_id")
+        elif "site_of_biopsy/surgery" in key_variants:
+            key_variants.append("site_of_biopsy")
 
-        value = clean_revisions(value_td)
+        value = normalize_value(clean_revisions(value_td))
 
-        # update existing fields instead of appending new ones
-        update_existing_key(json_data, key, value)
+        for key in key_variants:
+            update_existing_key(json_data, key, value)
 
 def apply_report_id_updates(json_data: dict, amended_report_id: str):
     """Patch original JSON with HTML amendments specific to report IDs"""
