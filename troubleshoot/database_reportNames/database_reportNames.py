@@ -84,7 +84,7 @@ class database(logger):
 
                 if match:
                     base_id, version = match.groups()
-                    report_id = f"{base_id}-{version}-{analysis_type}"
+                    report_id = f"{base_id}-{version}_{analysis_type}"
                 else:
                     # Fallback if no version pattern is found
                     report_id = f"{original_report_id}-{analysis_type}"
