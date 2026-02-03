@@ -87,7 +87,7 @@ class database(logger):
                     report_id = f"{base_id}-{version}_{analysis_type}"
                 else:
                     # Fallback if no version pattern is found
-                    report_id = f"{original_report_id}-{analysis_type}"
+                    report_id = f"{original_report_id}_{analysis_type}"
             else:
                 report_id = original_report_id
 
