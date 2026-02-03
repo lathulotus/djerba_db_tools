@@ -5,14 +5,14 @@ Supported query types when searching through clinical reports stored by Djerba o
 
 ## 1. Single Report ID
 - Input: report ID
-- Processing: ```report_id```
+- Processing: ```_id```
 - Output: single JSON report
 
 <br>
 
 ## 2. Bulk Report IDs
 - Input: multiple report IDs (as a comma-separated list? or as a text/excel file?)
-- Processing: ```report_id```
+- Processing: ```_id```
 - Output: multiple JSON reports
 
 <br>
