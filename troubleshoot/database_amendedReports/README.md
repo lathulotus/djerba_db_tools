@@ -6,5 +6,5 @@ CouchDB only stores JSON files. Amended reports are manually edited using an ```
 **TASK**: Modify the JSON instead of HTML (thereby running djerba.py update)
 1. Read amended HTML and compare to existing/original JSON
 2. Edit modifications from amended HTML to existing JSON
-3. Use this as a basis to write instructions on hot to modify JSON instead of HTML
+3. Use this as a basis to write instructions on how to modify JSON instead of HTML
 4. Allowing team to run ```djerba.py update``` to upload to CouchDB and generate PDF
