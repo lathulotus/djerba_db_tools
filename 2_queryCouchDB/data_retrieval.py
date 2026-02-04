@@ -1,22 +1,106 @@
-# Retrieve data from reports on CouchDB for querying
-# Usage:
+"""
+Command-line scripts for retrieving reports stored by Djerba on CouchDB.
 
-# Environment
+Modes for querying CouchDB:
+    1. Fetch single report by report ID
+    2. Fetch bulk reports by list of report IDs
+    3. Filter reports by metadata fields
+"""
+
+# Packages
 import os
-import re
 import json
-import requests
 import logging
-from glob import glob
-from dotenv import load_dotenv
+import requests
+from typing import List, Dict, Any
+from djerba.core.base import base as core_base
 
-load_dotenv()
+# Retrieve reports
+class couchdb_reader(core_base):
+    """Read-only access to retrieve reports stored on CouchDB."""
 
-class CouchDBClient:
-    def __init__(self):
-        self.base_url = os.getenv("COUCH_URL")
-        self.db_name = os.getenv("COUCH_DB")
+    def __init__(self, log_level=logging.INFO, log_path=None):
+        """Initialize CouchDB connection using .env variables."""
+        self.couch_url = (os.environ.get("COUCH_URL")).rstrip("/")
+        self.couch_db = os.environ.get("COUCH_DB")
+        self.couch_user = os.environ.get("COUCH_USER")
+        self.couch_pass = os.environ.get("COUCH_PASS")
+
+        # warning for missing variables
+        missing = [name for name, value in{
+            "COUCH_URL": self.couch_url,
+            "COUCH_DB": self.couch_db,
+            "COUCH_USER": self.couch_user,
+            "COUCH_PASS": self.couch_pass
+        }.items() if value is None]
+        if missing:
+            raise RuntimeError(f"Missing required environment variable(s): {missing}")
+        
+        # authorize log in
+        self.auth = (self.couch_user, self.couch_pass)
+        logger_name = "djerba:couchdb_reader"
+        self.logger = self.get_logger(log_level, logger_name, log_path)
 
 
-# 
+    def fetch_single(self, report_id: str) -> dict[str, Any]:
+        """Retrieve single report based on report ID."""
+        url = f"{self.couch_url}/{self.couch_db}/{report_id}"
+        self.logger.info(f"Fetching report by ID: {report_id}")
+
+        # get file from couchDB
+        response = requests.get(url, auth=self.auth)
+        
+        # status of request
+        response.raise_for_status()
+
+        return response.json()
+    
+
+    def fetch_bulk(self, report_ids: list[str]) -> list[dict[str, Any]]:
+        """Retrieve multiple reports based on a list of report IDs."""
+        url = f"{self.couch_url}/{self.couch_db}/_bulk_get"
+        docIDs = {"docs": [{"id": repID for repID in report_ids}]}
+        self.logger.info(f"Fetching {len(report_ids)} reports.")
+
+        #get files from couchDB
+        response = requests.post(
+            url,
+            auth=self.auth,
+            headers={"Content-Type": "applications/json"},
+            data=json.dumps(docIDs)
+        )
+
+        # status of request
+        response.raise_for_status()
+
+        # output of bulk fetching
+        documents = []
+        for result in response.json()["results"]:
+            for doc in result["docs"]:
+                if "ok" in doc:
+                    documents.append(doc["ok"])
+        
+        return documents
+    
+    
+    def fetch_metadata(self, selector: dict[str, Any]) -> list[dict[str, Any]]:
+        """Retrieve reports based on metadata filtering queried via Mango."""
+
+        url = f"{self.couch_url}/{self.couch_db}/_find"
+        querying ={"selector": selector}
+        self.logger.info(f"Running metadata query: {selector}")
+
+        # get files from couchDB
+        response = requests.post(
+            url,
+            auth=self.auth,
+            headers={"Content-Type": "application/json"},
+            data=json.dumps(querying)
+        )
+
+        # status of request
+        response.raise_for_status()
+
+        return response.json().get("docs", [])
+
 
