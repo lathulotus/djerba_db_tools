@@ -12,61 +12,36 @@ COUCH_PASS=insert_password
 ```
 
 ## Fetch Single Report
+
 ```
-from couchdb_reader import couchdb_reader
-reader=couchdb_reader()
-report=reader.fetch_single("report_id-v1")
-print(report.keys())
+python fetch_reports.py --report-id SAMPLE-REPORT1_v1
 ```
 
 ## Fetch Multiple Reports
 ```
-from couchdb_reader import couchdb_reader
-reader=couchdb_reader()
-reports=reader.fetch_bulk(["report_id1-v1","report_id2-v1","report_id3-v1"])
-print(reports[0]["config"][case_overview])
+python fetch_reports.py --bulk-ids REPORT_IDs.txt
 ```
 
 ## Filter Metadata Fields
 ### Filtering simple fields or getting a range of data based on date or report type.
 ```
-"metadata": {
-  "report_date": "2024-10-12"
-}
+CODE
 ```
 
 ```
-selector = {
-    "metadata.report_date": {
-        "$gte": "2024-01-01",
-        "$lte": "2024-12-31"
-    }
-}
-
-reports = reader.fetch_metadata(selector)
+CODE
 ```
 
 ### Filtering specific fields such as primary cancer type or biomarker values.
 ```
-selector = {
-    "config.case_overview.primary_cancer": "Ovarian Cancer"
-}
-reports = reader.fetch_metadata(selector)
+CODE
 ```
 
 ```
-selector = {
-    "results.biomarkers.HRD": "Positive"
-}
-reports = reader.fetch_metadata(selector)
+CODE
 ```
 
 ### Combined filtering of specific fields such as both primary cancer type and biomarker values.
 ```
-selector = {
-    "config.case_overview.primary_cancer": "Ovarian Cancer",
-    "results.biomarkers.HRD": "Positive",
-    "results.biomarkers.MSI": "Stable"
-}
-reports = reader.fetch_metadata(selector)
+CODE
 ```
