@@ -11,10 +11,21 @@ COUCH_USER=insert_username
 COUCH_PASS=insert_password
 ```
 
+## View Query Options
+To view all query options for metadata filtering beyond what is shown in this guide, visit **[query_types](./query_types.md)**. Alternatively, use the following code:
+```
+python fetch_report.py --help
+```
+
 ## Fetch Single Report
 To fetch a single report based on a known report ID, use the following example. Replace ```SAMPLE-REPORT_v1``` with the ID of the single report that needs to be fetched.
 ```
 python fetch_report.py --report-id SAMPLE-REPORT_v1
+```
+
+To save results as a JSON file, use the following code:
+```
+python fetch_report.py --report-id SAMPLE-REPORT_v1 > sample-report_v1.json
 ```
 
 ## Fetch Multiple Reports
@@ -24,7 +35,12 @@ python fetch_report.py --bulk-ids REPORT_IDs.txt
 ```
 
 ## Filter Metadata Fields
-Filtering simple fields or getting a range of data based on date or report type.
+Filtering simple fields or getting a range of data based on date:
+```
+python fetch_report.py --last-updated 2026-01-01
+```
+
+Filtering simple fields based on the report type:
 ```
 python fetch_report.py --report-type clinical
 ```
@@ -34,7 +50,9 @@ To filter specific metadata fields, use the following example for primary cancer
 python fetch_report.py --primary-cancer "Ovarian Cancer"
 ```
 
-Combined filtering of specific fields such as both primary cancer type and report type.
+## Combined Metadata Filtering
+Combined filtering of metadata fields is supported. Simply input multiple filters according to their query syntax as follows:
 ```
 python fetch_report.py --report-type clinical --primary-cancer "Ovarian Cancer"
 ```
+
