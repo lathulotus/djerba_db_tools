@@ -12,36 +12,29 @@ COUCH_PASS=insert_password
 ```
 
 ## Fetch Single Report
-
+To fetch a single report based on a known report ID, use the following example. Replace ```SAMPLE-REPORT_v1``` with the ID of the single report that needs to be fetched.
 ```
-python fetch_reports.py --report-id SAMPLE-REPORT1_v1
+python fetch_report.py --report-id SAMPLE-REPORT_v1
 ```
 
 ## Fetch Multiple Reports
+To fetch a number of reports based on known report IDs, use the following example. This requires a text file containing each report ID found on a new line.
 ```
-python fetch_reports.py --bulk-ids REPORT_IDs.txt
+python fetch_report.py --bulk-ids REPORT_IDs.txt
 ```
 
 ## Filter Metadata Fields
-### Filtering simple fields or getting a range of data based on date or report type.
+Filtering simple fields or getting a range of data based on date or report type.
 ```
-CODE
-```
-
-```
-CODE
+python fetch_report.py --report-type clinical
 ```
 
-### Filtering specific fields such as primary cancer type or biomarker values.
+To filter specific metadata fields, use the following example for primary cancer type. 
 ```
-CODE
-```
-
-```
-CODE
+python fetch_report.py --primary-cancer "Ovarian Cancer"
 ```
 
-### Combined filtering of specific fields such as both primary cancer type and biomarker values.
+Combined filtering of specific fields such as both primary cancer type and report type.
 ```
-CODE
+python fetch_report.py --report-type clinical --primary-cancer "Ovarian Cancer"
 ```

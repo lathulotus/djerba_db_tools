@@ -119,6 +119,16 @@ def main():
     )
 
     parser.add_argument(
+        "--report-type",
+        help = "Report attribut (clinical, research, failed, supplementary)"
+    )
+
+    parser.add_argument(
+        "--last-update",
+        help = "Reports updated on date YYYY-MM-DD"
+    )
+
+    parser.add_argument(
         "--primary-cancer",
         help = "Filter reports by primary cancer type"
     )
@@ -149,6 +159,14 @@ def main():
     
     # Metadata query
     selector = {}
+
+    if args.report_type:
+        selector["attributes"] = args.report_type
+    
+    if args.last_updated:
+        selector["config.case_overview.last_updated"] - {
+            "$gte": args.last_updated
+        }
 
     if args.primary_cancer:
         selector["config.case_overview.primary_cancer"] = args.primary_cancer
