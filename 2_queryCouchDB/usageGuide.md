@@ -1,5 +1,5 @@
-# How to Query on CouchDB
-A guide to querying on CouchDB.
+# How to Query CouchDB
+A guide to querying CouchDB.
 
 ## Setup
 Load from environment.
