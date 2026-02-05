@@ -12,6 +12,7 @@ import os
 import json
 import logging
 import requests
+import argparse
 from typing import Any
 from djerba.core.base import base as core_base
 
@@ -96,5 +97,69 @@ class couchdb_reader(core_base):
         response.raise_for_status()
 
         return response.json().get("docs", [])
+
+
+def main():
+    """Commandline interface for report fetching from CouchDB.
+    Usage: fetch_reports --report-id report-id_v1
+    """
+
+    parser = argparse.ArgumentParser(
+        description = "Fetch Djerba reports from couchDB"
+    )
+
+    parser.add_argument(
+        "--report-id",
+        help = "Fetch a single report based on report ID"
+    )
+
+    parser.add_argument(
+        "--bulk-ids",
+        help = "Fetch multiple reports based on a list of report IDs \n Input text file of report IDs, one per line."
+    )
+
+    parser.add_argument(
+        "--primary-cancer",
+        help = "Filter reports by primary cancer type"
+    )
+
+    # OTHER QUERY FIELDS?
+
+    args = parser.parse_args()
+    reader = couchdb_reader()
+
+    # Single report
+    if args.report_id:
+        report = reader.fetch_single(args.report_id)
+        print(json.dumps(report, indent=2))
+        return
+    
+    # Bulk reports
+    if args.bulk_ids:
+        with open(args.bulk_ids) as id_file:
+            report_ids=[
+                line.strip()
+                for line in id_file
+                if line.strip()
+            ]
+        
+        reports = reader.fetch_bulk(report_ids)
+        print(json.dumps(reports, indent=2))
+        return
+    
+    # Metadata query
+    selector = {}
+
+    if args.primary_cancer:
+        selector["config.case_overview.primary_cancer"] = args.primary_cancer
+    
+    # OTHER QUERY FIELDS?
+
+    if selector:
+        reports = reader.fetch_metadata(selector)
+        print(json.dumps(reports, indent=2))
+        return
+    
+    parser.error("No valid query arguments provided")
 
 
