@@ -1,7 +1,7 @@
 # Querying CouchDB
 Querying CouchDB database to assess reports stored by Djerba. Supported queries include specific report IDs for single and bulk data retrieval. Querying by metadata fields (i.e., report type, date, cancer type) further allows for bulk data retrieval by data type. This supports downstream assessment of variables production of summary tables and assessment of relationships and/or trends.
 
-Query script found under **[query_data_retrieval](./query_data_retrieval.md)**.
+Query script found under **[query_data_retrieval](./query_data_retrieval.py)**.
 
 ### Clinical vs Research
 CouchDB contains a vast amount of clinical reports along with research reports resulting from failed clinical reports. RUO reports generated on request are not archived on the database. Briefly, differences in metadata fields are as follows:
