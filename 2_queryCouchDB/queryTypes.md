@@ -1,5 +1,5 @@
 # Query Types
-Supported query types when searching through clinical reports stored by Djerba on the CouchDB database.
+Supported query types when searching through reports stored by Djerba on the CouchDB database.
 
 <br>
 
