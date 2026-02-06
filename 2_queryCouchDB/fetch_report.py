@@ -122,6 +122,7 @@ def main():
 
     # metadata querying: sample information
     parser.add_argument("--oncotree-code", help="OncoTree cancer code")
+    parser.add_argument("--sample-type", help="Type of sample extracted")
     parser.add_argument("--estimated-purity", type=float, help="Estimated cancer cell content (%)")
     parser.add_argument("--estimated-ploidy", type=float, help="Estimated ploidy")
     parser.add_argument("--callability", type=float, help="Callability (%)")
@@ -131,6 +132,9 @@ def main():
     parser.add_argument("--tmb", type=float, help="Tumor mutation burden")
     parser.add_argument("--msi", type=float, help="Microsatellite instability")
     parser.add_argument("--hrd", type=float, help="Homologous recombination deficiency")
+    parser.add_argument("--tmb-alteration", help="Filter by TMB alteration status (TMB-H, TMB-L)")
+    parser.add_argument("--msi-alteration", help="Filter by MSI status (MSI, MSS)")
+    parser.add_argument("--hrd-alteration", help="Filter by HRD status (HR Deficient, HR Proficient, HRD, HRP)")
 
     # metadata querying: cnv
     parser.add_argument("--cnv-gene", help="CNV gene name")
@@ -185,6 +189,9 @@ def main():
 
     if args.oncotree_code:
         selector["sample.results.OncoTree Code"] = args.oncotree_code
+    
+    if args.sample_type:
+        selector["sample.results.Sample Type"] = args.sample_type
 
     if args.estimated_purity is not None:
         selector["sample.results.Estimated Cancer Cell Content (%)"] = args.estimated_purity
@@ -206,6 +213,15 @@ def main():
 
     if args.hrd is not None:
         selector["genomic_landscape.results.genomic_biomarker.HRD.Genomic biomarker value"] = args.hrd
+
+    if args.tmb_alteration:
+        selector["genomic_landscape.results.genomic_biomarkers.TMB.Genomic biomarker alteration"] = args.tmb_alteration
+
+    if args.msi_alteration:
+        selector["genomic_landscape.results.genomic_biomarkers.MSI.Genomic biomarker alteration"] = args.msi_alteration
+
+    if args.hrd_alteration:
+        selector["genomic_landscape.results.genomic_biomarkers.HRD.Genomic biomarker alteration"] = args.hrd_alteration
 
     if args.cnv_gene:
         selector["wgts.cnv_purple.results.body.Gene"] = args.cnv_gene
