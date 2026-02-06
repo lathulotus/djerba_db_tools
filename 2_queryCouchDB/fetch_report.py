@@ -108,45 +108,59 @@ def main():
 
     # single vs bulk retrieval
     parser.add_argument("--report-id", help="Fetch a single report by ID")
-    parser.add_argument("--bulk-ids", help="Fetch multiple reports from text file of report IDs")
+    parser.add_argument("--bulk-ids", help="Fetch multiple reports from text file containing report IDs")
 
     # metadata querying: general
     parser.add_argument("--report-type", help="Possible search types: clinical, research, supplementary, failed")
-    parser.add_argument("--last-updated", help="Reports updated on or after YYYY-MM-DD")
+    parser.add_argument("--last-update", help="Reports updated on or after YYYY-MM-DD")
 
     # metadata querying: case overview
     parser.add_argument("--assay", help="Assay type")
     parser.add_argument("--primary-cancer", help="Primary cancer diagnosis")
-    parser.add_argument("--site-of-biopsy", help="Biopsy site or surgery location")
+    parser.add_argument("--biopsy-site", help="Biopsy site or surgery location")
     parser.add_argument("--study", help="Study name of research/clinical project")
 
     # metadata querying: sample information
     parser.add_argument("--oncotree-code", help="OncoTree cancer code")
     parser.add_argument("--sample-type", help="Type of sample extracted")
-    parser.add_argument("--estimated-purity", type=float, help="Estimated cancer cell content (%)")
-    parser.add_argument("--estimated-ploidy", type=float, help="Estimated ploidy")
+    parser.add_argument("--purity", type=float, help="Estimated cancer cell content (%)")
+    parser.add_argument("--ploidy", type=float, help="Estimated ploidy")
     parser.add_argument("--callability", type=float, help="Callability (%)")
     parser.add_argument("--coverage", type=float, help="Mean coverage")
 
     # metadata querying: biomarkers
-    parser.add_argument("--tmb", type=float, help="Tumor mutation burden")
-    parser.add_argument("--msi", type=float, help="Microsatellite instability")
-    parser.add_argument("--hrd", type=float, help="Homologous recombination deficiency")
+    parser.add_argument("--tmb-value", type=float, help="Tumor mutation burden")
+    parser.add_argument("--msi-value", type=float, help="Microsatellite instability")
+    parser.add_argument("--hrd-value", type=float, help="Homologous recombination deficiency")
     parser.add_argument("--tmb-alteration", help="Filter by TMB alteration status (TMB-H, TMB-L)")
     parser.add_argument("--msi-alteration", help="Filter by MSI status (MSI, MSS)")
     parser.add_argument("--hrd-alteration", help="Filter by HRD status (HR Deficient, HR Proficient, HRD, HRP)")
 
     # metadata querying: cnv
+    parser.add_argument("--pga", type=int, help="Percent genome altered")
+    parser.add_argument("--cnv-total", type=int, help="Total CNV events")
     parser.add_argument("--cnv-gene", help="CNV gene name")
     parser.add_argument("--cnv-alteration", help="CNV alteration type")
     parser.add_argument("--cnv-chromosome", help="CNV chromosome")
     parser.add_argument("--cnv-oncokb", help="CNV OncoKB level")
 
     # metadata querying: snv_indel
+    parser.add_argument("--snv-somatic", type=int, help="Total somatic SNVs")
+    parser.add_argument("--snv-coding", type=int, help="Coding SNVs")
+    parser.add_argument("--snv-oncogenic", type=int, help="Oncogenic SNVs")
     parser.add_argument("--snv-gene", help="SNV gene name")
     parser.add_argument("--snv-protein", help="Protein alteration")
     parser.add_argument("--snv-type", help="SNV alteration type")
+    parser.add_argument("--snv-vaf", type=float, help="Variant allele frequency")
+    parser.add_argument("--snv-depth", help="Read depth")
+    parser.add_argument("--snv-loh", type=lambda x: x.lower() == "true", help="Loss of heterozygosity (true or false)")
+    parser.add_argument("--snv-chromosome", help="Chromosome")
     parser.add_argument("--snv-oncokb", help="SNV OncoKB level")
+
+    # metadata querying: fusion
+    parser.add_argument("--fusion-total", type=int, help="Total fusion events")
+    parser.add_argument("--fusion-clinical", type=int, help="Clinically relevant fusions")
+    parser.add_argument("--fusion-nccn", type=int, help="NCCN relevant fusions")
 
     # wrapper
     args = parser.parse_args()
@@ -170,9 +184,9 @@ def main():
     if args.report_type:
         selector["attributes"] = args.report_type
 
-    if args.last_updated:
+    if args.last_update:
         selector["config.case_overview.last_updated"] = {
-            "$gte": args.last_updated
+            "$gte": args.last_update
         }
 
     if args.assay:
@@ -181,8 +195,8 @@ def main():
     if args.primary_cancer:
         selector["config.case_overview.primary_cancer"] = args.primary_cancer
 
-    if args.site_of_biopsy:
-        selector["config.case_overview.site_of_biopsy"] = args.site_of_biopsy
+    if args.biopsy_site:
+        selector["config.case_overview.site_of_biopsy"] = args.biopsy_site
 
     if args.study:
         selector["config.case_overview.study"] = args.study
@@ -193,11 +207,11 @@ def main():
     if args.sample_type:
         selector["sample.results.Sample Type"] = args.sample_type
 
-    if args.estimated_purity is not None:
-        selector["sample.results.Estimated Cancer Cell Content (%)"] = args.estimated_purity
+    if args.purity is not None:
+        selector["sample.results.Estimated Cancer Cell Content (%)"] = args.purity
 
-    if args.estimated_ploidy is not None:
-        selector["sample.results.Estimated Ploidy"] = args.estimated_ploidy
+    if args.ploidy is not None:
+        selector["sample.results.Estimated Ploidy"] = args.ploidy
 
     if args.callability is not None:
         selector["sample.results.Callability (%)"] = args.callability
@@ -205,14 +219,14 @@ def main():
     if args.coverage is not None:
         selector["sample.results.Coverage (mean)"] = args.coverage
 
-    if args.tmb is not None:
-        selector["genomic_landscape.results.genomic_biomarker.TMB.Genomic biomarker value"] = args.tmb
+    if args.tmb_value is not None:
+        selector["genomic_landscape.results.genomic_biomarker.TMB.Genomic biomarker value"] = args.tmb_value
 
-    if args.msi is not None:
-        selector["genomic_landscape.results.genomic_biomarker.MSI.Genomic biomarker value"] = args.msi
+    if args.msi_value is not None:
+        selector["genomic_landscape.results.genomic_biomarker.MSI.Genomic biomarker value"] = args.msi_value
 
-    if args.hrd is not None:
-        selector["genomic_landscape.results.genomic_biomarker.HRD.Genomic biomarker value"] = args.hrd
+    if args.hrd_value is not None:
+        selector["genomic_landscape.results.genomic_biomarker.HRD.Genomic biomarker value"] = args.hrd_value
 
     if args.tmb_alteration:
         selector["genomic_landscape.results.genomic_biomarkers.TMB.Genomic biomarker alteration"] = args.tmb_alteration
@@ -223,6 +237,12 @@ def main():
     if args.hrd_alteration:
         selector["genomic_landscape.results.genomic_biomarkers.HRD.Genomic biomarker alteration"] = args.hrd_alteration
 
+    if args.pga is not None:
+        selector["wgts.cnv_purple.results.percent genome altered"] = args.pga
+
+    if args.cnv_total is not None:
+        selector["wgts.cnv_purple.results.total variants"] = args.cnv_total
+    
     if args.cnv_gene:
         selector["wgts.cnv_purple.results.body.Gene"] = args.cnv_gene
 
@@ -235,6 +255,15 @@ def main():
     if args.cnv_oncokb:
         selector["wgts.cnv_purple.results.body.OncoKB"] = args.cnv_oncokb
 
+    if args.snv_somatic is not None:
+        selector["wgts.snv_indel.results.somatic mutations"] = args.snv_somatic
+
+    if args.snv_coding is not None:
+        selector["wgts.snv_indel.results.coding sequence mutations"] = args.snv_coding
+
+    if args.snv_oncogenic is not None:
+        selector["wgts.snv_indel.results.oncogenic mutations"] = args.snv_oncogenic
+    
     if args.snv_gene:
         selector["wgts.snv_indel.results.body.Gene"] = args.snv_gene
 
@@ -244,8 +273,29 @@ def main():
     if args.snv_type:
         selector["wgts.snv_indel.results.body.type"] = args.snv_type
 
+    if args.snv_vaf is not None:
+        selector["wgts.snv_indel.results.body.vaf"] = args.snv_vaf
+
+    if args.snv_depth:
+        selector["wgts.snv_indel.results.body.depth"] = args.snv_depth
+
+    if args.snv_loh:
+        selector["wgts.snv_indel.results.body.LOH"] = args.snv_loh
+
+    if args.snv_chromosome:
+        selector["wgts.snv_indel.results.body.Chromosome"] = args.snv_chromosome
+
     if args.snv_oncokb:
         selector["wgts.snv_indel.results.body.OncoKB"] = args.snv_oncokb
+
+    if args.fusion_total is not None:
+        selector["fusion.results.Total variants"] = args.fusion_total
+
+    if args.fusion_clinical is not None:
+        selector["fusion.results.Clinically relevant variants"] = args.fusion_clinical
+
+    if args.fusion_nccn is not None:
+        selector["fusion.results.nccn_relevant_variants"] = args.fusion_nccn
 
     if selector:
         print(json.dumps(reader.fetch_metadata(selector), indent=2))
