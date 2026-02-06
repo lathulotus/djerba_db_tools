@@ -3,20 +3,20 @@ import json
 import os
 import argparse
 
-def get_couchdb_database(url, db_name, username=None, password=None):
+def get_couchdb_database(couch_url, couch_db, username=None, password=None):
     """
     Connects to CouchDB and returns the specified database object.
     """
     try:
         if username and password:
-            couch = couchdb.Server(url, username=username, password=password)
+            couch = couchdb.Server(couch_url, username=username, password=password)
         else:
-            couch = couchdb.Server(url)
+            couch = couchdb.Server(couch_url)
         
-        if db_name not in couch:
-            raise ValueError(f"Database '{db_name}' does not exist on the server.")
+        if couch_db not in couch:
+            raise ValueError(f"Database '{couch_db}' does not exist on the server.")
         
-        return couch[db_name]
+        return couch[couch_db]
     except Exception as e:
         print(f"Error connecting to CouchDB: {e}")
         raise
@@ -65,8 +65,8 @@ def main():
     parser = argparse.ArgumentParser(
         description="Query CouchDB for JSON documents based on HRD status."
     )
-    parser.add_argument("--couchdb_url", required=True, help="URL of the CouchDB server (e.g., http://localhost:5984)")
-    parser.add_argument("--db_name", required=True, help="Name of the CouchDB database")
+    parser.add_argument("--couchdb_couch_url", required=True, help="URL of the CouchDB server (e.g., http://localhost:5984)")
+    parser.add_argument("--couch_db", required=True, help="Name of the CouchDB database")
     parser.add_argument("--username", help="CouchDB username (optional)")
     parser.add_argument("--password", help="CouchDB password (optional)")
     parser.add_argument("--output_dir", default="downloaded_jsons", help="Directory to save downloaded JSONs")
@@ -84,7 +84,7 @@ def main():
         return
 
     try:
-        db = get_couchdb_database(args.couchdb_url, args.db_name, args.username, args.password)
+        db = get_couchdb_database(args.couch_url, args.couch_db, args.username, args.password)
         query = build_mango_query(
             hrd_status=args.hrd_status
         )
