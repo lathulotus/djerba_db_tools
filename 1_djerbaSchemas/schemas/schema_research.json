@@ -277,7 +277,7 @@
                                         "Genomic biomarker alteration":{
                                             "description": "Biomarker title",
                                             "type": "string",
-                                            "enum": ["MSS", "Microsatellite Stable (MSS)"]
+                                            "enum": ["MSS", "MSI"]
                                         }
                                     }
                                 },
@@ -292,7 +292,7 @@
                                         "Genomic biomarker alteration":{
                                             "description": "Biomarker title",
                                             "type": "string",
-                                            "enum": ["HRD Proficient"]
+                                            "enum": ["HR Proficient", "HR Deficient", "HRP", "HRD"]
                                         }
                                     }
                                 }
