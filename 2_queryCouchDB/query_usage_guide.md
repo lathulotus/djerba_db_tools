@@ -37,7 +37,7 @@ python fetch_report.py --bulk-ids REPORT_IDs.txt
 ## Filter Metadata Fields
 Filtering simple fields or getting a range of data based on date:
 ```
-python fetch_report.py --last-updated 2026-01-01
+python fetch_report.py --last-update 2026-01-01
 ```
 
 Filtering simple fields based on the report type:
