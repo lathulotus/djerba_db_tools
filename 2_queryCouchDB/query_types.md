@@ -90,5 +90,6 @@ This results JSON files for report(s) that satisfy query requirements.
 |------|------------|------------|-----------|
 | `--report-type` | Report Type | Type of report | plugins.genomic_landscape.attributes |
 | `--last-update` | Last Update | Date the report was last modified | last_updated |
-Note that last_updated value is stored as MM/DD/YY_24:12:00Z
+
+- Note that last_updated value is stored as MM/DD/YY_24:12:00Z
 
