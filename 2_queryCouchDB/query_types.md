@@ -12,7 +12,7 @@ This results in a JSON file with one single report.
 
 
 ## 2. Bulk Report IDs
-This results in a JSON file containing more than one report.
+This results in multiple JSON files for each report.
 
 | Flag | Query Type | Definition | JSON Path |
 |------|------------|------------|-----------|
@@ -20,7 +20,7 @@ This results in a JSON file containing more than one report.
 
 
 ## 3. Filter by Metadata
-This results in a single JSON file containing report(s) that satisfy query requirements.
+This results JSON files for report(s) that satisfy query requirements.
 
 ### 3a. Case Overview
 | Flag | Query Type | Definition | JSON Path |
@@ -84,7 +84,7 @@ This results in a single JSON file containing report(s) that satisfy query requi
 
 
 ## 4. Combined Metadata Filters
-This results in a single JSON file containing report(s) that satisfy query requirements.
+This results JSON files for report(s) that satisfy query requirements.
 
 | Flag | Query Type | Definition | JSON Path |
 |------|------------|------------|-----------|
