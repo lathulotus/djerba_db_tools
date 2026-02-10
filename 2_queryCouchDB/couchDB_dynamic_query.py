@@ -190,7 +190,7 @@ def main():
         hrd_status=args.hrd_status,
         msi_status=args.msi_status,
         tmb_status=args.tmb_status,
-        hrd_value=args.hrd_value
+        hrd_value=args.hrd_value,
         msi_value=args.msi_value,
         tmb_value=args.tmb_value,
         cancer_type=args.cancer_type,
