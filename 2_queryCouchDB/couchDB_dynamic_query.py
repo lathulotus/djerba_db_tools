@@ -59,7 +59,7 @@ def read_credentials(file_path):
     return username, password
 
 
-def build_mango_query(hrd_status=None):
+def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, project=None, study=None, donor=None, assay=None):
     """
     Builds a CouchDB Mango query selector based on the HRD status filter.
     """
@@ -67,6 +67,24 @@ def build_mango_query(hrd_status=None):
 
     if hrd_status:
         selector["plugins.genomic_landscape.results.genomic_biomarkers.HRD.Genomic biomarker alteration"] = hrd_status
+
+    if msi_status:
+        selector["plugins.genomic_landscape.results.genomic_biomarkers.MSI.Genomic biomarker alteration"] = msi_status
+
+    if tmb_status:
+        selector["plugins.genomic_landscape.results.genomic_biomarkers.TMB.Genomic biomarker alteration"] = tmb_status
+
+    if project:
+        selector["config.input_params_helper.project"] = project
+
+    if study:
+        selector["plugins.case_overview.results.study"] = study
+
+    if donor:
+        selector["config.input_params_helper.donor"] = donor        #plugins.case_overview.results.donor
+    
+    if assay:
+        selector["config.input_params_helper.assay"] = assay        #plugins.case_overview.results.assay
 
     return {"selector": selector}
 
@@ -106,8 +124,14 @@ def main():
     parser.add_argument("--password", help="CouchDB password (optional if using credentials_file)")
     parser.add_argument("--credentials_file", help="Path to credentials file (username: x, password: x)")
     parser.add_argument("--output_dir", default="downloaded_jsons", help="Directory to save downloaded JSONs")
-    parser.add_argument("--hrd_status", required=True,
-                        help="Filter by HRD status (e.g., 'HR Proficient', 'HR Deficient')")
+
+    parser.add_argument("--hrd_status", help="Filter by HRD status (e.g., 'HR Proficient', 'HR Deficient')")
+    parser.add_argument("--msi_status", help="Filter by MSI status (e.g., 'MSS', 'MSI')")
+    parser.add_argument("--tmb_status", help="Filter by TMB status (e.g., 'TMB-L', 'TMB-H')")
+    parser.add_argument("--project", help="Filter by project name")
+    parser.add_argument("--study", help="Filter by study name")
+    parser.add_argument("--donor", help="Filter by donor ID")
+    parser.add_argument("--assay", help="Filter by assay type (e.g., 'WGTS', 'WGS', 'TAR')")
 
     args = parser.parse_args()
 
@@ -127,7 +151,14 @@ def main():
         return
 
     # Build query
-    query = build_mango_query(hrd_status=args.hrd_status)
+    query = build_mango_query(
+        hrd_status=args.hrd_status
+        msi_status=args.msi_status,
+        tmb_status=args.tmb_status,
+        project=args.project,
+        study=args.study,
+        donor=args.donor,
+        assay=args.assay)
 
     # Download documents
     try:
