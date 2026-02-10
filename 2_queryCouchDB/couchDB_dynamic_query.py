@@ -59,7 +59,7 @@ def read_credentials(file_path):
     return username, password
 
 
-def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, project=None, study=None, donor=None, assay=None):
+def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_value=None, msi_value=None, tmb_value=None, cancer_type=None, assay=None, project=None, study=None, donor=None, report_type=None):
     """
     Builds a CouchDB Mango query selector based on the HRD status filter.
     """
@@ -74,6 +74,21 @@ def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, project
     if tmb_status:
         selector["plugins.genomic_landscape.results.genomic_biomarkers.TMB.Genomic biomarker alteration"] = tmb_status
 
+    if hrd_value:
+        selector["plugins.genomic_landscape.results.genomic_biomarkers.HRD.Genomic biomarker value"] = hrd_value
+
+    if msi_value:
+        selector["plugins.genomic_landscape.results.genomic_biomarkers.MSI.Genomic biomarker value"] = msi_value
+
+    if tmb_value:
+        selector["plugins.genomic_landscape.results.genomic_biomarkers.TMB.Genomic biomarker value"] = tmb_value
+
+    if cancer_type:
+        selector["plugins.case_overview.results.primary_cancer"] = cancer_type
+
+    if assay:
+        selector["config.input_params_helper.assay"] = assay        #plugins.case_overview.results.assay
+
     if project:
         selector["config.input_params_helper.project"] = project
 
@@ -83,8 +98,9 @@ def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, project
     if donor:
         selector["config.input_params_helper.donor"] = donor        #plugins.case_overview.results.donor
     
-    if assay:
-        selector["config.input_params_helper.assay"] = assay        #plugins.case_overview.results.assay
+    if report_type:
+        selector["plugins.genomic_landscape.attributes"] = report_type
+
 
     return {"selector": selector}
 
@@ -128,10 +144,16 @@ def main():
     parser.add_argument("--hrd_status", help="Filter by HRD status (e.g., 'HR Proficient', 'HR Deficient')")
     parser.add_argument("--msi_status", help="Filter by MSI status (e.g., 'MSS', 'MSI')")
     parser.add_argument("--tmb_status", help="Filter by TMB status (e.g., 'TMB-L', 'TMB-H')")
+    parser.add_argument("--hrd_value", help="Filter by HRD biomarker value")
+    parser.add_argument("--msi_value", help="Filter by MSI biomarker value")
+    parser.add_argument("--tmb_value", help="Filter by TMB biomarker value")
+    parser.add_argument("--cancer_type", help="Primary cancer diagnosis")
+    parser.add_argument("--assay", help="Filter by assay type (e.g., 'WGTS', 'WGS', 'TAR')")
     parser.add_argument("--project", help="Filter by project name")
     parser.add_argument("--study", help="Filter by study name")
     parser.add_argument("--donor", help="Filter by donor ID")
-    parser.add_argument("--assay", help="Filter by assay type (e.g., 'WGTS', 'WGS', 'TAR')")
+    parser.add_argument("--report_type", help="Filter by report type (e.g., 'clinical', 'research')")
+
 
     args = parser.parse_args()
 
@@ -155,10 +177,15 @@ def main():
         hrd_status=args.hrd_status
         msi_status=args.msi_status,
         tmb_status=args.tmb_status,
+        hrd_value=args.hrd_value
+        msi_value=args.msi_value,
+        tmb_value=args.tmb_value,
+        cancer_type=args.cancer_type,
+        assay=args.assay,
         project=args.project,
         study=args.study,
         donor=args.donor,
-        assay=args.assay)
+        report_type=args.report_type)
 
     # Download documents
     try:
