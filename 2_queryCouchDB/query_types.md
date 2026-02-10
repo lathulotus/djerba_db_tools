@@ -3,26 +3,20 @@ Supported query types when searching through reports stored by Djerba on the Cou
 
 <br>
 
-## 1. Single Report ID
-This results in a JSON file with one single report.
+## 1. General Search
+This results in a JSON file per report for report(s) that satisfy query requirements.
 
 | Flag | Query Type | Definition | JSON Path |
 |------|------------|------------|-----------|
-| `--report-id` | Report ID | Query by a single report identifier | _id |
+| `--report_id` | Report ID | Report identifier | _id |
+| `--report_type` | Report Type | Type of report | plugins.genomic_landscape.attributes |
+| `--last_update` | Last Update | Date the report was last modified | last_updated |
 
 
-## 2. Bulk Report IDs
-This results in multiple JSON files for each report.
-
-| Flag | Query Type | Definition | JSON Path |
-|------|------------|------------|-----------|
-| `--bulk-ids` | Bulk Report IDs | Query by multiple report identifiers provided in a text file | _id |
-
-
-## 3. Filter by Metadata
+## 2. Filter by Metadata
 This results JSON files for report(s) that satisfy query requirements.
 
-### 3a. Case Overview
+### 2a. Case Overview
 | Flag | Query Type | Definition | JSON Path |
 |------|------------|------------|-----------|
 | `--assay` | Assay | Assay used for sequencing | plugins.case_overview.results.assay |
@@ -32,7 +26,7 @@ This results JSON files for report(s) that satisfy query requirements.
 | `--project` | Project |Project name | config.input_params_helper.project |
 | `--donor` | Donor | Donor ID | config.input_params_helper.donor |
 
-### 3b. Sample Information
+### 2b. Sample Information
 | Flag | Query Type | Definition | JSON Path |
 |------|------------|------------|-----------|
 | `--oncotree_code` | OncoTree Code | OncoTree-standardized cancer classification | plugins.sample.results.OncoTree Code |
@@ -42,7 +36,7 @@ This results JSON files for report(s) that satisfy query requirements.
 | `--callability` | Callability | Percentage of genome considered callable | plugins.sample.results.Callability (%) |
 | `--coverage` | Coverage | Average sequencing coverage | plugins.sample.results.Coverage (mean) |
 
-### 3c. Genomic Landscape: Biomarkers
+### 2c. Genomic Landscape: Biomarkers
 | Flag | Query Type | Definition | JSON Path |
 |------|------------|------------|-----------|
 | `--tmb_value` | TMB Value | Tumor mutation burden per Mb | plugins.genomic_landscape.results.genomic_biomarker.TMB.Genomic biomarker value |
@@ -52,7 +46,7 @@ This results JSON files for report(s) that satisfy query requirements.
 | `--msi_status` | MSI Status | MSI status | plugins.genomic_landscape.results.genomic_biomarkers.MSI.Genomic biomarker alteration |
 | `--hrd_status` | HRD Status | HRD status | plugins.genomic_landscape.results.genomic_biomarkers.HRD.Genomic biomarker alteration |
 
-### 3d. CNV Data
+### 2d. CNV Data
 | Flag | Query Type | Definition | JSON Path |
 |------|------------|------------|-----------|
 | `--pga` | Percent Genome Altered | Percentage genome altered by CNVs | plugins.wgts.cnv_purple.results.percent genome altered |
@@ -62,7 +56,7 @@ This results JSON files for report(s) that satisfy query requirements.
 | `--cnv_chromosome` | CNV Chromosome | Genomic locus of CNV | plugins.wgts.cnv_purple.results.body.Chromosome |
 | `--cnv_oncokb` | CNV OncoKB | OncoKB level of evidence for CNV | plugins.wgts.cnv_purple.results.body.OncoKB |
 
-### 3e. SNV/Indel Data
+### 2e. SNV/Indel Data
 | Flag | Query Type | Definition | JSON Path |
 |------|------------|------------|-----------|
 | `--snv_somatic` | Somatic SNV Count | Total number of somatic SNVs/indels | plugins.wgts.snv_indel.results.somatic mutations |
@@ -77,20 +71,11 @@ This results JSON files for report(s) that satisfy query requirements.
 | `--snv_chromosome` | SNV Chromosome | Genomic locus of variant | plugins.wgts.snv_indel.results.body.Chromosome |
 | `--snv_oncokb` | SNV OncoKB | OncoKB level of evidence | plugins.wgts.snv_indel.results.body.OncoKB |
 
-### 3f. Fusion
+### 2f. Fusion
 | Flag | Query Type | Definition | JSON Path |
 |------|------------|------------|-----------|
 | `--fusion_total` | Fusion Total | Total number of fusion events | plugins.fusion.results.Total variants |
 | `--fusion_clinical` | Clinical Fusions | Fusions with clinical relevance | plugins.fusion.results.Clinically relevant variants |
 | `--fusion_nccn` | NCCN Fusions | Fusions relevant per NCCN guidelines | plugins.fusion.results.nccn_relevant_variants |
-
-
-## 4. Combined Metadata Filters
-This results JSON files for report(s) that satisfy query requirements.
-
-| Flag | Query Type | Definition | JSON Path |
-|------|------------|------------|-----------|
-| `--report_type` | Report Type | Type of report | plugins.genomic_landscape.attributes |
-| `--last_update` | Last Update | Date the report was last modified | plugins.case_overview.last_updated |
 
 
