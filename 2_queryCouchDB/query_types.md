@@ -29,6 +29,8 @@ This results JSON files for report(s) that satisfy query requirements.
 | `--primary-cancer` | Primary Cancer | Cancer diagnosis | plugins.case_overview.results.primary_cancer |
 | `--biopsy-site` | Biopsy Site | Location of biopsy or surgery | plugins.case_overview.results.site_of_biopsy |
 | `--study` | Study | Research study or program identifier | plugins.case_overview.results.study |
+| `--project` | Project |Project name | config.input_params_helper.project |
+| `--donor` | Donor | Donor ID | config.input_params_helper.donor |
 
 ### 3b. Sample Information
 | Flag | Query Type | Definition | JSON Path |
@@ -89,7 +91,6 @@ This results JSON files for report(s) that satisfy query requirements.
 | Flag | Query Type | Definition | JSON Path |
 |------|------------|------------|-----------|
 | `--report-type` | Report Type | Type of report | plugins.genomic_landscape.attributes |
-| `--last-update` | Last Update | Date the report was last modified | last_updated |
+| `--last-update` | Last Update | Date the report was last modified | plugins.case_overview.last_updated |
 
-- Note that last_updated value is stored as MM/DD/YY_24:12:00Z
 
