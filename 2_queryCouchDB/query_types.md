@@ -58,7 +58,7 @@ This results JSON files for report(s) that satisfy query requirements.
 | `--pga` | Percent Genome Altered | Percentage genome altered by CNVs | plugins.wgts.cnv_purple.results.percent genome altered |
 | `--cnv_total` | CNV Total | Total number of CNVs | plugins.wgts.cnv_purple.results.total variants |
 | `--cnv_gene` | CNV Gene | Genes affected by copy number change | plugins.wgts.cnv_purple.results.body.Gene |
-| `--cnv_alteration` | CNV Alteration | Type of CNV event | plugins.wgts.cnv_purple.results.body.Alteration |
+| `--cnv_type` | CNV Alteration | Type of CNV event | plugins.wgts.cnv_purple.results.body.Alteration |
 | `--cnv_chromosome` | CNV Chromosome | Genomic locus of CNV | plugins.wgts.cnv_purple.results.body.Chromosome |
 | `--cnv_oncokb` | CNV OncoKB | OncoKB level of evidence for CNV | plugins.wgts.cnv_purple.results.body.OncoKB |
 

@@ -59,7 +59,7 @@ def read_credentials(file_path):
     return username, password
 
 
-def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_value=None, msi_value=None, tmb_value=None, cancer_type=None, assay=None, project=None, study=None, donor=None, report_type=None):
+def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_value=None, msi_value=None, tmb_value=None, cancer_type=None, cnv_genes=None, snv_genes=None, cnv_type=None, snv_type=None, assay=None, project=None, donor=None, report_type=None):
     """
     Builds a CouchDB Mango query selector based on the HRD status filter.
     """
@@ -85,6 +85,18 @@ def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_val
 
     if cancer_type:
         selector["plugins.case_overview.results.primary_cancer"] = cancer_type
+    
+    if cnv_genes:
+        selector["plugins.wgts.cnv_purple.results.body.Gene"] = cnv_genes
+
+    if snv_genes:
+        selector["plugins.wgts.snv_indel.results.body.Gene"] = snv_genes
+
+    if cnv_type:
+        selector["plugins.wgts.cnv_purple.results.body.Alteration"] = cnv_type
+    
+    if snv_type:
+        selector["plugins.wgts.snv_indel.results.body.Type"] = snv_type
 
     if assay:
         selector["config.input_params_helper.assay"] = assay        #plugins.case_overview.results.assay
@@ -92,14 +104,11 @@ def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_val
     if project:
         selector["config.input_params_helper.project"] = project
 
-    if study:
-        selector["plugins.case_overview.results.study"] = study
-
     if donor:
         selector["config.input_params_helper.donor"] = donor        #plugins.case_overview.results.donor
     
     if report_type:
-        selector["plugins.genomic_landscape.attributes"] = report_type
+        selector["config.input_params_helper.attributes"] = report_type      #plugins.genomic_landscape.attributes
 
 
     return {"selector": selector}
@@ -148,9 +157,13 @@ def main():
     parser.add_argument("--msi_value", help="Filter by MSI biomarker value")
     parser.add_argument("--tmb_value", help="Filter by TMB biomarker value")
     parser.add_argument("--cancer_type", help="Primary cancer diagnosis")
+    parser.add_argument("--cnv_genes", help="Filter by genes containing CNVs")
+    parser.add_argument("--snv_genes", help="Filter by genes containing SNVs")
+    parser.add_argument("--cnv_type", help="Filter by type of CNV event (e.g., 'Amplification', 'Deletion')")
+    parser.add_argument("--snv_type", help="Filter by type of SNV event (e.g., 'Missense Mutation', 'Frame Shift Ins', 'Splice Site')")
+
     parser.add_argument("--assay", help="Filter by assay type (e.g., 'WGTS', 'WGS', 'TAR')")
     parser.add_argument("--project", help="Filter by project name")
-    parser.add_argument("--study", help="Filter by study name")
     parser.add_argument("--donor", help="Filter by donor ID")
     parser.add_argument("--report_type", help="Filter by report type (e.g., 'clinical', 'research')")
 
@@ -174,18 +187,22 @@ def main():
 
     # Build query
     query = build_mango_query(
-        hrd_status=args.hrd_status
+        hrd_status=args.hrd_status,
         msi_status=args.msi_status,
         tmb_status=args.tmb_status,
         hrd_value=args.hrd_value
         msi_value=args.msi_value,
         tmb_value=args.tmb_value,
         cancer_type=args.cancer_type,
+        cnv_genes=args.cnv_genes,
+        snv_genes=args.snv_genes,
+        cnv_type=args.cnv_type,
+        snv_type=args.snv_type,
         assay=args.assay,
         project=args.project,
-        study=args.study,
         donor=args.donor,
         report_type=args.report_type)
+    
 
     # Download documents
     try:
