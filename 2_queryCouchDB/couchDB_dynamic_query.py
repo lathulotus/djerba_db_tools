@@ -59,7 +59,7 @@ def read_credentials(file_path):
     return username, password
 
 
-def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_value=None, msi_value=None, tmb_value=None, cancer_type=None, cnv_genes=None, snv_genes=None, cnv_type=None, snv_type=None, assay=None, project=None, donor=None, report_type=None):
+def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_value=None, msi_value=None, tmb_value=None, cancer_type=None, cnv_genes=None, snv_genes=None, cnv_type=None, snv_type=None, assay=None, project=None, donor=None, report_type=None, report_id=None, date=None):
     """
     Builds a CouchDB Mango query selector based on the HRD status filter.
     """
@@ -110,6 +110,11 @@ def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_val
     if report_type:
         selector["config.input_params_helper.attributes"] = report_type      #plugins.genomic_landscape.attributes
 
+    if report_id:
+        selector["_id"] = report_id
+
+    if date:
+        selector["last_updated"] = date         # string timestamp - DD/MM/YYYY_HH:MM:SSZ
 
     return {"selector": selector}
 
@@ -166,6 +171,8 @@ def main():
     parser.add_argument("--project", help="Filter by project name")
     parser.add_argument("--donor", help="Filter by donor ID")
     parser.add_argument("--report_type", help="Filter by report type (e.g., 'clinical', 'research')")
+    parser.add_argument("--report_id", help="Filter by report ID")
+    parser.add_argument("--date", help="Filter by date of last update")
 
 
     args = parser.parse_args()
@@ -201,7 +208,9 @@ def main():
         assay=args.assay,
         project=args.project,
         donor=args.donor,
-        report_type=args.report_type)
+        report_type=args.report_type,
+        report_id=args.report_id,
+        date=args.date)
     
 
     # Download documents
