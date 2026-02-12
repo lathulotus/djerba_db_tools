@@ -22,7 +22,7 @@ def get_couchdb_database(url, db_name, username=None, password=None):
     try:
         if username and password:
             protocol, rest = url.split("://", 1)
-            auth_url = f"{protocol}://{username}:{password}@{rest}"
+            url = f"{protocol}://{username}:{password}@{rest}"
             couch = couchdb.Server(url)
         else:
             couch = couchdb.Server(url)
