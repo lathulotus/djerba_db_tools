@@ -21,11 +21,15 @@ import argparse
 def get_couchdb_database(url, db_name, username=None, password=None):
     try:
         if username and password:
-            couch = couchdb.Server(url, username=username, password=password)
+            protocol, rest = url.split("://", 1)
+            auth_url = f"{protocol}://{username}:{password}@{rest}"
+            couch = couchdb.Server(url)
         else:
             couch = couchdb.Server(url)
 
-        if db_name not in couch:
+        try:
+            return couch[db_name]
+        except couchdb.http.ResourceNotFound:
             raise ValueError(f"Database '{db_name}' does not exist on the server.")
 
         return couch[db_name]
