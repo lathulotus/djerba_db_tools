@@ -12,15 +12,6 @@
        * It will construct a couchDB mango query dynamically based on the input filters
        * It will fetch documents matching the query and save them to an output directory."""
 
-"""Usage:
-python3 couchDB_dynamic_query.py \
---couchdb_url URL \
---db_name DATABASE \
---username USERNAME \
---password PASSWORD \
---queryFilter FILTER
-"""
-
 import couchdb
 import json
 import os
