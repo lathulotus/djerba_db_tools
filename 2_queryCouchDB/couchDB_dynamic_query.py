@@ -14,8 +14,8 @@
 
 """Usage:
 python3 couchDB_dynamic_query.py \
---couchdb_url http://djerba-dev-db.gsi.oicr.on.ca:5984/ \
---db_name djerba_copy_20260108 \
+--couchdb_url URL \
+--db_name DATABASE \
 --username USERNAME \
 --password PASSWORD \
 --queryFilter FILTER
