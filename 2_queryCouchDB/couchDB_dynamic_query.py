@@ -61,7 +61,7 @@ def read_credentials(file_path):
     return username, password
 
 
-def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_value=None, msi_value=None, tmb_value=None, cancer_type=None, cnv_genes=None, snv_genes=None, cnv_type=None, snv_type=None, assay=None, project=None, donor=None, report_type=None, report_id=None, date=None):
+def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_value=None, msi_value=None, tmb_value=None, cancer_type=None, cnv_genes=None, snv_genes=None, cnv_type=None, snv_type=None, assay=None, project=None, donor=None, report_type=None, report_id=None, date=None, limit=100000):
     """
     Builds a CouchDB Mango query selector based on the HRD status filter.
     """
@@ -118,7 +118,7 @@ def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_val
     if date:
         selector["last_updated"] = date         # string timestamp - DD/MM/YYYY_HH:MM:SSZ
 
-    return {"selector": selector}
+    return {"selector": selector, "limit":limit}
 
 
 def download_documents(db, query, output_dir):
