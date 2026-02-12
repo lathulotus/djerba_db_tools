@@ -23,9 +23,7 @@ def get_couchdb_database(url, db_name, username=None, password=None):
         if username and password:
             protocol, rest = url.split("://", 1)
             url = f"{protocol}://{username}:{password}@{rest}"
-            couch = couchdb.Server(url)
-        else:
-            couch = couchdb.Server(url)
+        couch = couchdb.Server(url)
 
         try:
             return couch[db_name]
