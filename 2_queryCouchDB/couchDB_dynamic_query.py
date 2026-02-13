@@ -113,7 +113,7 @@ def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_val
 
         elem = {"Gene": gene}
         if alteration:
-            elem["Alteration"] = alteration
+            elem["Type"] = alteration
         
         selector["plugins.wgts.snv_indel.results.body"] = {"$elemMatch": elem}
     
