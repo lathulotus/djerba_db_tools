@@ -87,13 +87,8 @@ def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_val
     
     if cnv:
         parts = cnv.split()
-        if len(parts) == 1:
-            gene = parts[0]
-            mutation_type = None
-        elif len(parts) == 2:
-            gene, mutation_type = parts
-        else:
-            raise ValueError("--cnv must be 'gene' or 'gene alteration'")
+        gene = parts[0]
+        mutation_type = parts[1]
 
         elem = {"Gene": gene}
         if mutation_type:
@@ -102,14 +97,9 @@ def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_val
         selector["plugins.wgts.cnv_purple.results.body"] = {"$elemMatch": elem}
 
     if snv:
-        parts = snv.split()
-        if len(parts) == 1:
-            gene = parts[0]
-            mutation_type = None
-        elif len(parts) == 2:
-            gene, mutation_type = parts
-        else:
-            raise ValueError("--snv must be 'gene' or 'gene alteration'")
+        parts = snv.split(" ", 1)
+        gene = parts[0]
+        mutation_type = parts[1]
 
         elem = {"Gene": gene}
         if mutation_type:
