@@ -88,7 +88,7 @@ def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_val
     if cnv:
         parts = cnv.split()
         gene = parts[0]
-        mutation_type = parts[1]
+        mutation_type = parts[1] if len(parts) > 1 else None
 
         elem = {"Gene": gene}
         if mutation_type:
@@ -99,7 +99,7 @@ def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_val
     if snv:
         parts = snv.split(" ", 1)
         gene = parts[0]
-        mutation_type = parts[1]
+        mutation_type = parts[1] if len(parts) > 1 else None
 
         elem = {"Gene": gene}
         if mutation_type:
