@@ -61,7 +61,7 @@ def read_credentials(file_path):
     return username, password
 
 
-def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_value=None, msi_value=None, tmb_value=None, cnv_genes=None, snv_genes=None, cnv_type=None, snv_type=None, purity=None, ploidy=None, coverage=None, cancer_type=None, biopsy_site=None, assay=None, project=None, study=None, donor=None, report_type=None, report_id=None, date=None, limit=None):
+def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_value=None, msi_value=None, tmb_value=None, cnv=None, snv=None, purity=None, ploidy=None, coverage=None, cancer_type=None, biopsy_site=None, assay=None, project=None, study=None, donor=None, report_type=None, report_id=None, date=None, limit=None):
     """
     Builds a CouchDB Mango query selector based on the HRD status filter.
     """
@@ -85,17 +85,37 @@ def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_val
     if tmb_value:
         selector["plugins.genomic_landscape.results.genomic_biomarkers.TMB.Genomic biomarker value"] = tmb_value
     
-    if cnv_genes:
-        selector["plugins.wgts.cnv_purple.results.body.Gene"] = cnv_genes
+    if cnv:
+        parts = cnv.split()
+        if len(parts) == 1:
+            gene = parts[0]
+            alteration = None
+        elif len(parts) == 2:
+            gene, alteration = parts
+        else:
+            raise ValueError("--cnv must be 'gene' or 'gene alteration'")
 
-    if snv_genes:
-        selector["plugins.wgts.snv_indel.results.body.Gene"] = snv_genes
+        elem = {"Gene": gene}
+        if alteration:
+            elem["Alteration"] = alteration
+        
+        selector["plugins.wgts.cnv_purple.results.body"] = {"$elemMatch": elem}
 
-    if cnv_type:
-        selector["plugins.wgts.cnv_purple.results.body.Alteration"] = cnv_type
-    
-    if snv_type:
-        selector["plugins.wgts.snv_indel.results.body.Type"] = snv_type
+    if snv:
+        parts = snv.split()
+        if len(parts) == 1:
+            gene = parts[0]
+            alteration = None
+        elif len(parts) == 2:
+            gene, alteration = parts
+        else:
+            raise ValueError("--snv must be 'gene' or 'gene alteration'")
+
+        elem = {"Gene": gene}
+        if alteration:
+            elem["Alteration"] = alteration
+        
+        selector["plugins.wgts.snv_indel.results.body"] = {"$elemMatch": elem}
     
     if purity:
         selector["plugins.sample.results.Estimated Cancer Cell Content (%)"] = purity
@@ -181,10 +201,8 @@ def main():
     parser.add_argument("--hrd_value", help="Filter by HRD biomarker value")
     parser.add_argument("--msi_value", help="Filter by MSI biomarker value")
     parser.add_argument("--tmb_value", help="Filter by TMB biomarker value")
-    parser.add_argument("--cnv_genes", help="Filter by genes containing CNVs")
-    parser.add_argument("--snv_genes", help="Filter by genes containing SNVs")
-    parser.add_argument("--cnv_type", help="Filter by type of CNV event (e.g., 'Amplification', 'Deletion')")
-    parser.add_argument("--snv_type", help="Filter by type of SNV event (e.g., 'Missense Mutation', 'Frame Shift Ins', 'Splice Site')")
+    parser.add_argument("--cnv", help="Filter by CNVs based on GENE (e.g., TP53) or GENE ALTERATION (e.g., TP53 amplification)")
+    parser.add_argument("--snv", help="Filter by SNVs based on GENE (e.g., TP53) or GENE ALTERATION (e.g., TP53 Nonsense Mutation)")
     parser.add_argument("--purity", help="Filter by estimated tumour purity")
     parser.add_argument("--ploidy", help="Filter by estimated chromosomal copy number")
     parser.add_argument("--coverage", help="Filter by average coverage")
@@ -227,10 +245,8 @@ def main():
         hrd_value=args.hrd_value,
         msi_value=args.msi_value,
         tmb_value=args.tmb_value,
-        cnv_genes=args.cnv_genes,
-        snv_genes=args.snv_genes,
-        cnv_type=args.cnv_type,
-        snv_type=args.snv_type,
+        cnv=args.cnv,
+        snv=args.snv,
         purity=args.purity,
         ploidy=args.ploidy,
         coverage=args.coverage,
