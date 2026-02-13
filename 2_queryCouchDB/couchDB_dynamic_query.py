@@ -100,7 +100,7 @@ def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_val
         if len(cnv_filters) == 1:
             selector.update(cnv_filters[0])
         else:
-            selector["$or"] = cnv_filters
+            selector["$and"] = cnv_filters
 
     snv_filters=[]
     if snv:
@@ -117,7 +117,7 @@ def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_val
         if len(snv_filters) == 1:
             selector.update(snv_filters[0])
         else:
-            selector["$or"] = snv_filters
+            selector["$and"] = snv_filters
     
     if purity:
         selector["plugins.sample.results.Estimated Cancer Cell Content (%)"] = purity
