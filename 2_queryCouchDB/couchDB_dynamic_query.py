@@ -89,15 +89,15 @@ def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_val
         parts = cnv.split()
         if len(parts) == 1:
             gene = parts[0]
-            alteration = None
+            mutation_type = None
         elif len(parts) == 2:
-            gene, alteration = parts
+            gene, mutation_type = parts
         else:
             raise ValueError("--cnv must be 'gene' or 'gene alteration'")
 
         elem = {"Gene": gene}
-        if alteration:
-            elem["Alteration"] = alteration
+        if mutation_type:
+            elem["Alteration"] = mutation_type
         
         selector["plugins.wgts.cnv_purple.results.body"] = {"$elemMatch": elem}
 
@@ -105,17 +105,17 @@ def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_val
         parts = snv.split()
         if len(parts) == 1:
             gene = parts[0]
-            alteration = None
+            mutation_type = None
         elif len(parts) == 2:
-            gene, alteration = parts
+            gene, mutation_type = parts
         else:
             raise ValueError("--snv must be 'gene' or 'gene alteration'")
 
         elem = {"Gene": gene}
-        if alteration:
-            elem["Type"] = alteration
+        if mutation_type:
+            elem["type"] = mutation_type
         
-        selector["plugins.wgts.snv_indel.results.body"] = {"$elemMatch": elem}
+        selector["plugins.wgts.snv_indel.results.Body"] = {"$elemMatch": elem}
     
     if purity:
         selector["plugins.sample.results.Estimated Cancer Cell Content (%)"] = purity
