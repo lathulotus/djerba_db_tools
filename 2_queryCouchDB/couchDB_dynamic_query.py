@@ -16,6 +16,7 @@ import couchdb
 import json
 import os
 import argparse
+from datetime import datetime, timedelta
 
 
 def get_couchdb_database(url, db_name, username=None, password=None):
@@ -153,7 +154,25 @@ def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_val
         selector["_id"] = report_id
 
     if date:
-        selector["last_updated"] = date         # string timestamp - DD/MM/YYYY_HH:MM:SSZ
+        if len(date) == 1:
+            year,month,day = map(int, date[0].split("/"))
+            day_start = datetime(year,month,day)
+            day_end = day_start + timedelta(days=1)
+        elif len(date) == 2:
+            year0,month0,day0 = map(int, date[0].split("/"))
+            year1,month1,day1 = map(int, date[1].split("/"))
+
+            day_start = datetime(year0,month0,day0)
+            day_end = datetime(year1,month1,day1)+timedelta(days=1)
+
+        start = day_start.strftime("%d/$m/%Y")+"_00:00:00Z"
+        end = day_end.strftime("%d/%m/%Y")+"_00:00:00Z"
+
+        selector["last_updated"] = {
+            "$gte": start,
+            "$lt": end
+        }
+        #selector["last_updated"] = date         # string timestamp - DD/MM/YYYY_HH:MM:SSZ
 
     if limit is None:
         limit=100000    # maximum if none specified
@@ -217,7 +236,7 @@ def main():
     parser.add_argument("--donor", help="Filter by donor ID")
     parser.add_argument("--report_type", help="Filter by report type (e.g., 'clinical', 'research')")
     parser.add_argument("--report_id", help="Filter by report ID")
-    parser.add_argument("--date", help="Filter by date of last update")
+    parser.add_argument("--date", nargs="+", help="Filter by last update based on single date (YYYY/MM/DD) or range (YYYY/MM/DD YYYY/MM/DD)")
 
     parser.add_argument("--limit", help="Maximum number of documents to return. Defaults to 100000 if not specified")
     parser.add_argument("--count", action="store_true", help="Returns number of reports satisfying the filters without downloading files")
