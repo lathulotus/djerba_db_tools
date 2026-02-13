@@ -61,7 +61,7 @@ def read_credentials(file_path):
     return username, password
 
 
-def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_value=None, msi_value=None, tmb_value=None, cancer_type=None, cnv_genes=None, snv_genes=None, cnv_type=None, snv_type=None, assay=None, project=None, donor=None, report_type=None, report_id=None, date=None, limit=None):
+def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_value=None, msi_value=None, tmb_value=None, cnv_genes=None, snv_genes=None, cnv_type=None, snv_type=None, purity=None, ploidy=None, coverage=None, cancer_type=None, biopsy_site=None, assay=None, project=None, study=None, donor=None, report_type=None, report_id=None, date=None, limit=None):
     """
     Builds a CouchDB Mango query selector based on the HRD status filter.
     """
@@ -84,9 +84,6 @@ def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_val
 
     if tmb_value:
         selector["plugins.genomic_landscape.results.genomic_biomarkers.TMB.Genomic biomarker value"] = tmb_value
-
-    if cancer_type:
-        selector["plugins.case_overview.results.primary_cancer"] = cancer_type
     
     if cnv_genes:
         selector["plugins.wgts.cnv_purple.results.body.Gene"] = cnv_genes
@@ -99,12 +96,30 @@ def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_val
     
     if snv_type:
         selector["plugins.wgts.snv_indel.results.body.Type"] = snv_type
+    
+    if purity:
+        selector["plugins.sample.results.Estimated Cancer Cell Content (%)"] = purity
+    
+    if ploidy:
+        selector["plugins.sample.results.Estimated Ploidy"] = ploidy
+
+    if coverage:
+        selector["plugins.sample.results.Coverage (mean)"] = coverage
+
+    if cancer_type:
+        selector["plugins.case_overview.results.primary_cancer"] = cancer_type
+    
+    if biopsy_site:
+        selector["plugins.case_overview.results.site_of_biopsy"] = biopsy_site
 
     if assay:
         selector["config.input_params_helper.assay"] = assay        #plugins.case_overview.results.assay
 
     if project:
         selector["config.input_params_helper.project"] = project
+
+    if study:
+        selector["plugins.case_overview.results.study"] = study
 
     if donor:
         selector["config.input_params_helper.donor"] = donor        #plugins.case_overview.results.donor
@@ -166,14 +181,19 @@ def main():
     parser.add_argument("--hrd_value", help="Filter by HRD biomarker value")
     parser.add_argument("--msi_value", help="Filter by MSI biomarker value")
     parser.add_argument("--tmb_value", help="Filter by TMB biomarker value")
-    parser.add_argument("--cancer_type", help="Primary cancer diagnosis")
     parser.add_argument("--cnv_genes", help="Filter by genes containing CNVs")
     parser.add_argument("--snv_genes", help="Filter by genes containing SNVs")
     parser.add_argument("--cnv_type", help="Filter by type of CNV event (e.g., 'Amplification', 'Deletion')")
     parser.add_argument("--snv_type", help="Filter by type of SNV event (e.g., 'Missense Mutation', 'Frame Shift Ins', 'Splice Site')")
+    parser.add_argument("--purity", help="Filter by estimated tumour purity")
+    parser.add_argument("--ploidy", help="Filter by estimated chromosomal copy number")
+    parser.add_argument("--coverage", help="Filter by average coverage")
+    parser.add_argument("--cancer_type", help="FIlter by primary cancer diagnosis")
+    parser.add_argument("--biopsy_site", help="Filter by site of biopsy")
 
     parser.add_argument("--assay", help="Filter by assay type (e.g., 'WGTS', 'WGS', 'TAR')")
     parser.add_argument("--project", help="Filter by project name")
+    parser.add_argument("--study", help="Filter by study name")
     parser.add_argument("--donor", help="Filter by donor ID")
     parser.add_argument("--report_type", help="Filter by report type (e.g., 'clinical', 'research')")
     parser.add_argument("--report_id", help="Filter by report ID")
@@ -207,13 +227,18 @@ def main():
         hrd_value=args.hrd_value,
         msi_value=args.msi_value,
         tmb_value=args.tmb_value,
-        cancer_type=args.cancer_type,
         cnv_genes=args.cnv_genes,
         snv_genes=args.snv_genes,
         cnv_type=args.cnv_type,
         snv_type=args.snv_type,
+        purity=args.purity,
+        ploidy=args.ploidy,
+        coverage=args.coverage,
+        cancer_type=args.cancer_type,
+        biopsy_site=args.biopsy_site,
         assay=args.assay,
         project=args.project,
+        study=args.study,
         donor=args.donor,
         report_type=args.report_type,
         report_id=args.report_id,
