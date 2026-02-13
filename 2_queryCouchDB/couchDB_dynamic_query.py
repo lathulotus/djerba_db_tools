@@ -85,27 +85,39 @@ def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_val
     if tmb_value:
         selector["plugins.genomic_landscape.results.genomic_biomarkers.TMB.Genomic biomarker value"] = tmb_value
     
+    cnv_filters=[]
     if cnv:
-        parts = cnv.split()
-        gene = parts[0]
-        mutation_type = parts[1] if len(parts) > 1 else None
+        for cnv_single in cnv:
+            parts = cnv.split(" ", 1)
+            gene = parts[0]
+            mutation_type = parts[1] if len(parts) > 1 else None
 
-        elem = {"Gene": gene}
-        if mutation_type:
-            elem["Alteration"] = mutation_type
-        
-        selector["plugins.wgts.cnv_purple.results.body"] = {"$elemMatch": elem}
+            elem = {"Gene": gene}
+            if mutation_type:
+                elem["Alteration"] = mutation_type
+            
+            cnv_filters.append({"plugins.wgts.cnv_purple.results.body": {"$elemMatch": elem}})
+        if len(cnv_filters) == 1:
+            selector.update(cnv_filters[0])
+        else:
+            selector["$or"] = cnv_filters
 
+    snv_filters=[]
     if snv:
-        parts = snv.split(" ", 1)
-        gene = parts[0]
-        mutation_type = parts[1] if len(parts) > 1 else None
+        for snv_single in snv:
+            parts = snv.split(" ", 1)
+            gene = parts[0]
+            mutation_type = parts[1] if len(parts) > 1 else None
 
-        elem = {"Gene": gene}
-        if mutation_type:
-            elem["type"] = mutation_type
-        
-        selector["plugins.wgts.snv_indel.results.Body"] = {"$elemMatch": elem}
+            elem = {"Gene": gene}
+            if mutation_type:
+                elem["type"] = mutation_type
+            
+            snv_filters.append({"plugins.wgts.snv_indel.reslts.Body": {"$elemMatch": elem}})
+        if len(snv_filters) == 1:
+            selector.update(snv_filters[0])
+        else:
+            selector["$or"] = snv_filters
     
     if purity:
         selector["plugins.sample.results.Estimated Cancer Cell Content (%)"] = purity
@@ -191,8 +203,8 @@ def main():
     parser.add_argument("--hrd_value", help="Filter by HRD biomarker value")
     parser.add_argument("--msi_value", help="Filter by MSI biomarker value")
     parser.add_argument("--tmb_value", help="Filter by TMB biomarker value")
-    parser.add_argument("--cnv", help="Filter by CNVs based on GENE (e.g., TP53) or GENE ALTERATION (e.g., TP53 amplification)")
-    parser.add_argument("--snv", help="Filter by SNVs based on GENE (e.g., TP53) or GENE ALTERATION (e.g., TP53 Nonsense Mutation)")
+    parser.add_argument("--cnv", action="append", help="Filter by CNVs based on GENE (e.g., TP53) or GENE ALTERATION (e.g., TP53 amplification)")
+    parser.add_argument("--snv", action="append", help="Filter by SNVs based on GENE (e.g., TP53) or GENE ALTERATION (e.g., TP53 Nonsense Mutation)")
     parser.add_argument("--purity", help="Filter by estimated tumour purity")
     parser.add_argument("--ploidy", help="Filter by estimated chromosomal copy number")
     parser.add_argument("--coverage", help="Filter by average coverage")
