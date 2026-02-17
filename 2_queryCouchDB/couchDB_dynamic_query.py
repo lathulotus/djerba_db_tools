@@ -187,13 +187,13 @@ def download_documents(db, query, output_dir, page_size=500):
         for doc in results:
             doc_id = doc["_id"]
             file_path = os.path.join(output_dir, f"{doc_id}.json")
-        try:
-            with open(file_path, "w") as f:
-                json.dump(doc, f, indent=2)
-            print(f"Downloaded document '{doc_id}' to '{file_path}'")
-            downloaded_count += 1
-        except Exception as e:
-            print(f"Error saving document '{doc_id}': {e}")
+            try:
+                with open(file_path, "w") as f:
+                    json.dump(doc, f, indent=2)
+                print(f"Downloaded document '{doc_id}' to '{file_path}'")
+                downloaded_count += 1
+            except Exception as e:
+                print(f"Error saving document '{doc_id}': {e}")
         
         skip += len(results)
     
