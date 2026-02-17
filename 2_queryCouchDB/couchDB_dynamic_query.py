@@ -31,7 +31,6 @@ def get_couchdb_database(url, db_name, username=None, password=None):
         except couchdb.http.ResourceNotFound:
             raise ValueError(f"Database '{db_name}' does not exist on the server.")
 
-        return couch[db_name]
     except Exception as e:
         print(f"Error connecting to CouchDB: {e}")
         raise
@@ -114,7 +113,7 @@ def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_val
             if mutation_type:
                 elem["type"] = mutation_type
             
-            snv_filters.append({"plugins.wgts.snv_indel.reslts.Body": {"$elemMatch": elem}})
+            snv_filters.append({"plugins.wgts.snv_indel.results.Body": {"$elemMatch": elem}})
         if len(snv_filters) == 1:
             selector.update(snv_filters[0])
         else:
@@ -289,7 +288,7 @@ def main():
             reports = db.find(query)
             count=sum(1 for _ in reports)
             print(f"Number of reports satisfying the filters: {count}")
-        except:
+        except Exception as e:
             print(f"An error occurred while downloading documents: {e}")
     else:
         try:
