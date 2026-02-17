@@ -168,8 +168,9 @@ def download_documents(db, query, output_dir, page_size=500):
     Extracts matching documents across each page in database
     """
 
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    if output_dir is not None:
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
 
     downloaded_count = 0
     skip = 0
@@ -185,19 +186,19 @@ def download_documents(db, query, output_dir, page_size=500):
             break
 
         for doc in results:
-            doc_id = doc["_id"]
-            file_path = os.path.join(output_dir, f"{doc_id}.json")
-            try:
-                with open(file_path, "w") as f:
-                    json.dump(doc, f, indent=2)
-                print(f"Downloaded document '{doc_id}' to '{file_path}'")
-                downloaded_count += 1
-            except Exception as e:
-                print(f"Error saving document '{doc_id}': {e}")
+            downloaded_count +=1
+
+            if output_dir:
+                doc_id = doc["_id"]
+                file_path = os.path.join(output_dir, f"{doc_id}.json")
+                try:
+                    with open(file_path, "w") as f:
+                        json.dump(doc, f, indent=2)
+                    print(f"Downloaded document '{doc_id}' to '{file_path}'")
+                except Exception as e:
+                    print(f"Error saving document '{doc_id}': {e}")
         
         skip += len(results)
-    
-    print(f"Successfully downloaded {downloaded_count} documents.")
     return downloaded_count
 
 
@@ -227,11 +228,11 @@ def main():
 
         # Export downloaded documents or document count
         if args.count:
-            reports = db.find(query)
-            count=sum(1 for _ in reports)
-            print(f"Number of reports satisfying the filters: {count}")
+            total_count=download_documents(db, query, output_dir=None, page_size=args.page_size)
+            print(f"Number of reports satisfying the filters: {total_count}")
         else:
-            download_documents(db, query, args.output_dir, page_size=args.page_size)
+            total_count=download_documents(db, query, args.output_dir, page_size=args.page_size)
+            print(f"Successfully downloaded {total_count} documents.")
     except Exception as e:
         print(f"An error occurred: {e}")
 
