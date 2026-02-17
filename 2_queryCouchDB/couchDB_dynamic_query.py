@@ -34,12 +34,12 @@ def build_elemMatch_selector(array_path, elem):
     array_expr = getfield_helper(array_path)
 
     return {
-        "$expr": {
+        "$and": [{
             "$elemMatch": {
                 "input": array_expr,
                 "cond": elem
             }
-        }
+        }]
     }
 
 
