@@ -180,7 +180,7 @@ def download_documents(db, query, output_dir, page_size=500):
         paged_query["skip"] = skip
     
         print(f"Executing query with skip={skip}, limit={page_size}")
-        results = list(db.find(query))
+        results = list(db.find(paged_query))
         if not results:
             break
 
