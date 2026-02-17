@@ -1,157 +1,102 @@
 """
-1. Identify couchDB connection details: script will require the URL, username, and password
-2. Define the parameters paths with the JSON for filtering: Based on the built schemas
-       * project: config.input_params_helper.project
-       * donor: config.input_params_helper.donor
-       * assay: config.input_params_helper.assay
-       * HRD: plugins.genomic_landscape.results.genomic_biomarkers.HRD.Genomic biomarker alteration
-       * MSI: plugins.genomic_landscape.results.genomic_biomarkers.MSI.Genomic biomarker alteration
-       * TMB: plugins.genomic_landscape.results.genomic_biomarkers.TMB.Genomic biomarker alteration
-3. Develop the script:
-       * It will use the couchdb Python library
-       * It will construct a couchDB mango query dynamically based on the input filters
-       * It will fetch documents matching the query and save them to an output directory."""
+Use couchDB python library to apply specified mango queries based on input filters to ouput JSONs for reports satisfying filters (or report counts)
+    1. Identify couchDB connection details based on text file containing host, port, username, and password
+    2. Identify filters to apply based on YAML file containing specified query
+    3. Define parameters paths to search based on non-null values in YAML
+
+Usage:
+    python3 couchdb_query.py --login_file login.txt --filters_file filters.yaml --output_dir ./query_output"""
 
 import couchdb
 import json
 import os
 import argparse
+import yaml
 from datetime import datetime, timedelta
 
 
-def get_couchdb_database(url, db_name, username=None, password=None):
+def read_login_file(file_path):
+    """
+    Reads input file and returns dict with couchDB login info
+    """
+    params = {}
+    with open(file_path, "r") as f:
+        for line in f:
+            if ':' in line:
+                key, value = line.strip().split(':', 1)
+                params[key.strip()] = value.strip()
+    return params
+
+
+def read_filters_yaml(file_path):
+    """
+    Reads YAML file containing query filters
+    """
+    with open(file_path, "r") as f:
+        return yaml.safe_load(f)
+
+
+def get_couchdb_database(host, port, db_name, username=None, password=None):
+    """
+    Connects to couchDB using login info and returns specified database object
+    """
     try:
+        url = f"http://{host}:{port}/"
         if username and password:
-            protocol, rest = url.split("://", 1)
-            url = f"{protocol}://{username}:{password}@{rest}"
+            from urllib.parse import urlparse, urlunparse
+            scheme, netloc, path, params, query, fragment = urlparse(url)
+            netloc = f'{username}:{password}@{host}:{port}'
+            url = urlunparse((scheme, netloc, path, params, query, fragment))
         couch = couchdb.Server(url)
 
-        try:
-            return couch[db_name]
-        except couchdb.http.ResourceNotFound:
+        if db_name not in couch:
             raise ValueError(f"Database '{db_name}' does not exist on the server.")
-
+        return couch[db_name]
     except Exception as e:
-        print(f"Error connecting to CouchDB: {e}")
+        print (f"Error connecting to couchDB: {e}")
         raise
 
 
-def read_credentials(file_path):
+def build_mango_query(filters: dict):
     """
-    Reads a credentials file formatted as:
-    username: <username>
-    password: <password>
-    """
-    username = None
-    password = None
-    try:
-        with open(file_path, "r") as f:
-            for line in f:
-                line = line.strip()
-                if line.startswith("username:"):
-                    username = line.split(":", 1)[1].strip()
-                elif line.startswith("password:"):
-                    password = line.split(":", 1)[1].strip()
-    except Exception as e:
-        raise ValueError(f"Error reading credentials file: {e}")
-
-    if not username or not password:
-        raise ValueError("Credentials file must contain both username and password.")
-
-    return username, password
-
-
-def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_value=None, msi_value=None, tmb_value=None, cnv=None, snv=None, purity=None, ploidy=None, coverage=None, cancer_type=None, biopsy_site=None, assay=None, project=None, study=None, donor=None, report_type=None, report_id=None, date=None, limit=None):
-    """
-    Builds a CouchDB Mango query selector based on the HRD status filter.
+    Builds a CouchDB Mango query selector based on dictionary of filters
+    Only filters with non-None values are added to selector
     """
     selector = {}
 
-    if hrd_status:
-        selector["plugins.genomic_landscape.results.genomic_biomarkers.HRD.Genomic biomarker alteration"] = hrd_status
+    #Map flter keys to document paths
+    filter_map = {
+        "report_id": "_id",
+        "donor": "config.input_params_helper.donor",                #plugins.case_overview.results.donor
+        "project": "config.input_params_helper.project",
+        "study": "plugins.case_overview.results.study",
+        "report_type": "config.input_params_helper.attributes",     #plugins.genomic_landscape.attributes
 
-    if msi_status:
-        selector["plugins.genomic_landscape.results.genomic_biomarkers.MSI.Genomic biomarker alteration"] = msi_status
+        "cancer_type": "plugins.case_overview.results.primary_cancer",
+        "oncotree_code": "plugins.sample.results.OncoTree Code",
+        "assay": "config.input_params_helper.assay",                #plugins.case_overview.results.assay
+        "biopsy_site": "plugins.case_overview.results.site_of_biopsy",
+        "sample_type": "plugins.sample.results.Sample Type",
 
-    if tmb_status:
-        selector["plugins.genomic_landscape.results.genomic_biomarkers.TMB.Genomic biomarker alteration"] = tmb_status
+        "purity": "plugins.sample.results.Estimated Cancer Cell Content (%)",
+        "ploidy": "plugins.sample.results.Estimated Ploidy",
+        "coverage": "plugins.sample.results.Coverage (mean)",
+        "callability": "plugins.sample.results.Callability (%)",
+        
+        "hrd_status": "plugins.genomic_landscape.results.genomic_biomarkers.HRD.Genomic biomarker alteration",
+        "msi_status": "plugins.genomic_landscape.results.genomic_biomarkers.MSI.Genomic biomarker alteration",
+        "tmb_status": "plugins.genomic_landscape.results.genomic_biomarkers.TMB.Genomic biomarker alteration",
+        "hrd_value": "plugins.genomic_landscape.results.genomic_biomarkers.HRD.Genomic biomarker value",
+        "msi_value": "plugins.genomic_landscape.results.genomic_biomarkers.MSI.Genomic biomarker value",
+        "tmb_value": "plugins.genomic_landscape.results.genomic_biomarkers.TMB.Genomic biomarker value",
 
-    if hrd_value:
-        selector["plugins.genomic_landscape.results.genomic_biomarkers.HRD.Genomic biomarker value"] = hrd_value
+        "fusion_total": "plugins.fusion.results.Total variants",
+        "fusion_clinical": "plugins.fusion.results.Clinically relevant variants",
+        "fusion_nccn": "plugins.fusion.results.nccn_relevant_variants"
+    }
 
-    if msi_value:
-        selector["plugins.genomic_landscape.results.genomic_biomarkers.MSI.Genomic biomarker value"] = msi_value
-
-    if tmb_value:
-        selector["plugins.genomic_landscape.results.genomic_biomarkers.TMB.Genomic biomarker value"] = tmb_value
     
-    cnv_filters=[]
-    if cnv:
-        for cnv_single in cnv:
-            parts = cnv.split(" ", 1)
-            gene = parts[0]
-            mutation_type = parts[1] if len(parts) > 1 else None
-
-            elem = {"Gene": gene}
-            if mutation_type:
-                elem["Alteration"] = mutation_type
-            
-            cnv_filters.append({"plugins.wgts.cnv_purple.results.body": {"$elemMatch": elem}})
-        if len(cnv_filters) == 1:
-            selector.update(cnv_filters[0])
-        else:
-            selector["$and"] = cnv_filters
-
-    snv_filters=[]
-    if snv:
-        for snv_single in snv:
-            parts = snv.split(" ", 1)
-            gene = parts[0]
-            mutation_type = parts[1] if len(parts) > 1 else None
-
-            elem = {"Gene": gene}
-            if mutation_type:
-                elem["type"] = mutation_type
-            
-            snv_filters.append({"plugins.wgts.snv_indel.results.Body": {"$elemMatch": elem}})
-        if len(snv_filters) == 1:
-            selector.update(snv_filters[0])
-        else:
-            selector["$and"] = snv_filters
-    
-    if purity:
-        selector["plugins.sample.results.Estimated Cancer Cell Content (%)"] = purity
-    
-    if ploidy:
-        selector["plugins.sample.results.Estimated Ploidy"] = ploidy
-
-    if coverage:
-        selector["plugins.sample.results.Coverage (mean)"] = coverage
-
-    if cancer_type:
-        selector["plugins.case_overview.results.primary_cancer"] = cancer_type
-    
-    if biopsy_site:
-        selector["plugins.case_overview.results.site_of_biopsy"] = biopsy_site
-
-    if assay:
-        selector["config.input_params_helper.assay"] = assay        #plugins.case_overview.results.assay
-
-    if project:
-        selector["config.input_params_helper.project"] = project
-
-    if study:
-        selector["plugins.case_overview.results.study"] = study
-
-    if donor:
-        selector["config.input_params_helper.donor"] = donor        #plugins.case_overview.results.donor
-    
-    if report_type:
-        selector["config.input_params_helper.attributes"] = report_type      #plugins.genomic_landscape.attributes
-
-    if report_id:
-        selector["_id"] = report_id
-
+    date = filters.get("date")
     if date:
         if len(date) == 1:
             year,month,day = map(int, date[0].split("/"))
@@ -164,34 +109,84 @@ def build_mango_query(hrd_status=None, msi_status=None, tmb_status=None, hrd_val
             day_start = datetime(year0,month0,day0)
             day_end = datetime(year1,month1,day1)+timedelta(days=1)
 
-        start = day_start.strftime("%d/$m/%Y")+"_00:00:00Z"
+        start = day_start.strftime("%d/%m/%Y")+"_00:00:00Z"
         end = day_end.strftime("%d/%m/%Y")+"_00:00:00Z"
 
-        selector["last_updated"] = {
-            "$gte": start,
-            "$lt": end
-        }
-        #selector["last_updated"] = date         # string timestamp - DD/MM/YYYY_HH:MM:SSZ
+        selector["last_updated"] = {"$gte": start, "$lt": end}
 
-    if limit is None:
-        limit=100000    # maximum if none specified
+    
+    cnv = filters.get("cnv")
+    if cnv:
+        cnv_filters=[]
+        for cnv_single in cnv:
+            parts = cnv_single.split(" ", 1)
+            gene = parts[0]
+            mutation_type = parts[1] if len(parts) > 1 else None
 
-    return {"selector": selector, "limit":limit}
+            elem = {"Gene": gene}
+            if mutation_type:
+                elem["Alteration"] = mutation_type
+            
+            cnv_filters.append({"plugins.wgts.cnv_purple.results.body": {"$elemMatch": elem}})
+        
+        if len(cnv_filters) == 1:
+            selector.update(cnv_filters[0])
+        else:
+            selector["$and"] = cnv_filters
+
+    
+    snv = filters.get("snv")
+    if snv:
+        snv_filters=[]
+        for snv_single in snv:
+            parts = snv_single.split(" ", 1)
+            gene = parts[0]
+            mutation_type = parts[1] if len(parts) > 1 else None
+
+            elem = {"Gene": gene}
+            if mutation_type:
+                elem["type"] = mutation_type
+            
+            snv_filters.append({"plugins.wgts.snv_indel.results.Body": {"$elemMatch": elem}})
+        
+        if len(snv_filters) == 1:
+            selector.update(snv_filters[0])
+        else:
+            selector["$and"] = snv_filters
+    
+    
+    for key, path in filter_map.items():
+        value = filters.get(key)
+        if value is not None:
+            selector[path] = value
+
+    return {"selector": selector}
 
 
-def download_documents(db, query, output_dir):
+def download_documents(db, query, output_dir, page_size=500):
+    """
+    Extracts matching documents across each page in database
+    """
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    print(f"Executing query: {json.dumps(query)}")
-
-    results = db.find(query)
     downloaded_count = 0
+    skip = 0
 
-    for doc in results:
-        doc_id = doc.id
-        file_path = os.path.join(output_dir, f"{doc_id}.json")
+    while True:
+        paged_query = query.copy()
+        paged_query["limit"] = page_size
+        paged_query["skip"] = skip
+    
+        print(f"Executing query with skip={skip}, limit={page_size}")
+        results = list(db.find(query))
+        if not results:
+            break
+
+        for doc in results:
+            doc_id = doc["_id"]
+            file_path = os.path.join(output_dir, f"{doc_id}.json")
         try:
             with open(file_path, "w") as f:
                 json.dump(doc, f, indent=2)
@@ -199,102 +194,46 @@ def download_documents(db, query, output_dir):
             downloaded_count += 1
         except Exception as e:
             print(f"Error saving document '{doc_id}': {e}")
-
+        
+        skip += len(results)
+    
     print(f"Successfully downloaded {downloaded_count} documents.")
     return downloaded_count
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Query CouchDB JSON documents based on HRD status filter."
-    )
-    parser.add_argument("--couchdb_url", required=True, help="URL of the CouchDB server (e.g., http://localhost:5984)")
-    parser.add_argument("--db_name", required=True, help="Name of the CouchDB database")
-    parser.add_argument("--username", help="CouchDB username (optional if using credentials_file)")
-    parser.add_argument("--password", help="CouchDB password (optional if using credentials_file)")
-    parser.add_argument("--credentials_file", help="Path to credentials file (username: x, password: x)")
-    parser.add_argument("--output_dir", default="downloaded_jsons", help="Directory to save downloaded JSONs")
-
-    parser.add_argument("--hrd_status", help="Filter by HRD status (e.g., 'HR Proficient', 'HR Deficient')")
-    parser.add_argument("--msi_status", help="Filter by MSI status (e.g., 'MSS', 'MSI')")
-    parser.add_argument("--tmb_status", help="Filter by TMB status (e.g., 'TMB-L', 'TMB-H')")
-    parser.add_argument("--hrd_value", help="Filter by HRD biomarker value")
-    parser.add_argument("--msi_value", help="Filter by MSI biomarker value")
-    parser.add_argument("--tmb_value", help="Filter by TMB biomarker value")
-    parser.add_argument("--cnv", action="append", help="Filter by CNVs based on GENE (e.g., TP53) or GENE ALTERATION (e.g., TP53 amplification)")
-    parser.add_argument("--snv", action="append", help="Filter by SNVs based on GENE (e.g., TP53) or GENE ALTERATION (e.g., TP53 Nonsense Mutation)")
-    parser.add_argument("--purity", help="Filter by estimated tumour purity")
-    parser.add_argument("--ploidy", help="Filter by estimated chromosomal copy number")
-    parser.add_argument("--coverage", help="Filter by average coverage")
-    parser.add_argument("--cancer_type", help="FIlter by primary cancer diagnosis")
-    parser.add_argument("--biopsy_site", help="Filter by site of biopsy")
-
-    parser.add_argument("--assay", help="Filter by assay type (e.g., 'WGTS', 'WGS', 'TAR')")
-    parser.add_argument("--project", help="Filter by project name")
-    parser.add_argument("--study", help="Filter by study name")
-    parser.add_argument("--donor", help="Filter by donor ID")
-    parser.add_argument("--report_type", help="Filter by report type (e.g., 'clinical', 'research')")
-    parser.add_argument("--report_id", help="Filter by report ID")
-    parser.add_argument("--date", nargs="+", help="Filter by last update based on single date (YYYY/MM/DD) or range (YYYY/MM/DD YYYY/MM/DD)")
-
-    parser.add_argument("--limit", help="Maximum number of documents to return. Defaults to 100000 if not specified")
+    parser = argparse.ArgumentParser(description="Query CouchDB JSON documents using login and filter files")
+    parser.add_argument("--login_file", required=True, help="Path to login.txt with CouchDB parameters")
+    parser.add_argument("--filters_file", required=True, help="Path to YAML file with query filters")
+    parser.add_argument("--output_dir", default="downloaded_jsons", help="Directory to save downloaded JSON files")
+    parser.add_argument("--page_size", type=int, default=500, help="Number of documents to fetch per page")
     parser.add_argument("--count", action="store_true", help="Returns number of reports satisfying the filters without downloading files")
-
     args = parser.parse_args()
 
-    # Load credentials from file if provided
-    if args.credentials_file:
-        try:
-            args.username, args.password = read_credentials(args.credentials_file)
-        except Exception as e:
-            print(f"Failed to read credentials: {e}")
-            return
-
-    # Connect to CouchDB
     try:
-        db = get_couchdb_database(args.couchdb_url, args.db_name, args.username, args.password)
-    except Exception as e:
-        print(f"Could not connect to CouchDB: {e}")
-        return
+        # Read login info
+        login_params = read_login_file(args.login_file)
+        db = get_couchdb_database(
+            host=login_params.get("host"),
+            port=login_params.get("port"),
+            db_name=login_params.get("db_name"),
+            username=login_params.get("username"),
+            password=login_params.get("password")
+        )
 
-    # Build query
-    query = build_mango_query(
-        hrd_status=args.hrd_status,
-        msi_status=args.msi_status,
-        tmb_status=args.tmb_status,
-        hrd_value=args.hrd_value,
-        msi_value=args.msi_value,
-        tmb_value=args.tmb_value,
-        cnv=args.cnv,
-        snv=args.snv,
-        purity=args.purity,
-        ploidy=args.ploidy,
-        coverage=args.coverage,
-        cancer_type=args.cancer_type,
-        biopsy_site=args.biopsy_site,
-        assay=args.assay,
-        project=args.project,
-        study=args.study,
-        donor=args.donor,
-        report_type=args.report_type,
-        report_id=args.report_id,
-        date=args.date,
-        limit=args.limit)
-    
+        # Read filters from YAML
+        filters = read_filters_yaml(args.filters_file)
+        query = build_mango_query(filters)
 
-    # Download documents or output document count
-    if args.count:
-        try:
+        # Export downloaded documents or document count
+        if args.count:
             reports = db.find(query)
             count=sum(1 for _ in reports)
             print(f"Number of reports satisfying the filters: {count}")
-        except Exception as e:
-            print(f"An error occurred while downloading documents: {e}")
-    else:
-        try:
-            download_documents(db, query, args.output_dir)
-        except Exception as e:
-            print(f"An error occurred while downloading documents: {e}")
+        else:
+            download_documents(db, query, args.output_dir, page_size=args.page_size)
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 
 if __name__ == "__main__":

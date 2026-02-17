@@ -1,20 +1,31 @@
 date: null
 report_id: null
-report_type: null
+donor: null
 project: null
 study: null
-donor: null
+report_type: null
+
 cancer_type: null
-biopsy_site: null
+oncotree_code: null
 assay: null
-cnv: null
-snv: null
+biopsy_site: null
+sample_type: null
+
+purity: null
+ploidy: null
+coverage: null
+callability: null
+
 hrd_status: null
 hrd_value: null
 msi_status: null
 msi_value: null
 tmb_status: null
 tmb_value: null
-purity: null
-ploidy: null
-coverage: null
+
+fusion_total: null
+fusion_clinical: null
+fusion_nccn: null
+
+cnv: null
+snv: null
