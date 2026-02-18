@@ -26,6 +26,10 @@ tmb_value: null
 fusion_total: null
 fusion_clinical: null
 fusion_nccn: null
+fusion:
+  - gene: null
+  - frame: null
+  - mutation effect: null
 
 cnv: null
 snv: null

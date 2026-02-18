@@ -92,7 +92,7 @@ def build_mango_query(filters: dict):
 
         "fusion_total": "plugins.fusion.results.Total variants",
         "fusion_clinical": "plugins.fusion.results.Clinically relevant variants",
-        "fusion_nccn": "plugins.fusion.results.nccn_relevant_variants"
+        "fusion_nccn": "plugins.fusion.results.nccn_relevant_variants",
     }
 
     date = filters.get("date")
@@ -112,6 +112,37 @@ def build_mango_query(filters: dict):
         end = day_end.strftime("%d/%m/%Y")+"_00:00:00Z"
 
         selector["last_updated"] = {"$gte": start, "$lt": end}
+
+    fusion = filters.get("fusion")
+    if fusion:
+        fusion_gene = []
+        fusion_effect = {}
+
+        for fusion_obj in fusion:
+            if isinstance(fusion_obj, dict):
+                for key, value in fusion_obj.items():
+                    if key == "gene":
+                        gene_list = [g.strip() for g in value.split(",")]
+                        if len(gene_list) == 1:
+                            gene_name = gene_list[0]
+                            fusion_gene.append({"fusion": {"$regex": gene_name}})
+                        elif len(gene_list) ==2:
+                            gene1, gene2 = gene_list
+                            fusion_gene.extend([{"fusion": f"{gene1}::{gene2}"}, {"fusion": f"{gene2}::{gene1}"}])                            
+                    else:
+                        if value is None:
+                            continue
+                        fusion_effect[key] = value
+            else:
+                gene_name = fusion_obj
+                fusion_gene.append({"fusion": {"$regex": gene_name}})
+
+        fusion_selector = {}
+        if fusion_gene:
+            fusion_selector["$or"] = fusion_gene
+        for key, value in fusion_effect.items():
+            fusion_selector[key] = value
+        selector["plugins.fusion.results.body"] = {"$elemMatch": fusion_selector}
 
     cnv = filters.get("cnv")
     if cnv:
