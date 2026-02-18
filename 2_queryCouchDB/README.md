@@ -20,7 +20,7 @@ password: password
 ```
 
 ## Filters for Querying
-Filters **must** be set by running a `filters.yaml` file after the `filters_file` flag. Filters should be defined within the pre-existing YAML file, in which fields that are not being searched should be set to `null`. Filters file is required.
+Filters **must** be set by running a `filters.yaml` file after the `filters_file` flag. Filters should be defined within the [pre-existing YAML file](./filters.yaml), in which fields that are not being searched should be set to `null`. Filters file is required.
 
 Visit **[query_types](./query_types.md)** to view supported filter types, definitions, and example.
 
