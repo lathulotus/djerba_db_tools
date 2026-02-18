@@ -156,7 +156,6 @@ def build_mango_query(filters: dict):
         "fusion_nccn": "plugins.fusion.results.nccn_relevant_variants"
     }
 
-    
     date = filters.get("date")
     if date:
         if len(date) == 1:

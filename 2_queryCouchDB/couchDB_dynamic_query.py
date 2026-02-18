@@ -123,7 +123,6 @@ def build_mango_query(filters: dict):
         "fusion_nccn": "plugins.fusion.results.nccn_relevant_variants"
     }
 
-    
     date = filters.get("date")
     if date:
         if len(date) == 1:
@@ -142,7 +141,6 @@ def build_mango_query(filters: dict):
 
         selector["last_updated"] = {"$gte": start, "$lt": end}
 
-    
     cnv = filters.get("cnv")
     if cnv:
         cnv_filters=[]
@@ -162,7 +160,6 @@ def build_mango_query(filters: dict):
         else:
             selector["$and"] = cnv_filters
 
-    
     snv = filters.get("snv")
     if snv:
         snv_filters=[]
@@ -181,7 +178,6 @@ def build_mango_query(filters: dict):
             selector.update(snv_filters[0])
         else:
             selector["$and"] = snv_filters
-    
     
     for key, path in filter_map.items():
         value = filters.get(key)
