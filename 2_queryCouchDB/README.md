@@ -1,20 +1,34 @@
-# Querying CouchDB
-Querying CouchDB database to assess reports stored by Djerba. Supported queries include specific report IDs for single and bulk data retrieval. Querying by metadata fields (i.e., report type, date, cancer type) further allows for bulk data retrieval by data type. This supports downstream assessment of variables production of summary tables and assessment of relationships and/or trends.
+# Querying CouchDB: Usage Guide
+Querying CouchDB database to assess reports stored by Djerba. Complete script can be found under **[couchDB_dynamic_query.py](./couchDB_dynamic_query.py)**.
 
-Query script found under **[query_couchdb](./query_couchdb.py)**.
 
-### Clinical vs Research
-CouchDB contains a vast amount of clinical reports along with research reports resulting from failed clinical reports. RUO reports generated on request are not archived on the database. Briefly, differences in metadata fields are as follows:
-- **Clinical reports** are patient-oriented and support metadata fields such as ```primary_cancer``` and associated ```OncoTree Code```. As such, downstream ```treatment_options``` plugins are supported. Further fields include ```site_of_biopsy```, ```sample type``` and ```percent genome altered```.
-- **Research reports** are data-oriented and do not support metadata fields such as ```primary_cancer``` and associated ```OncoTree Code```. As such, reports do not support the treatment options subheading. Further fields specific to the clinical reports appear as ```NA```.
+Usage to download filtered reports:
+> `python3 couchdb_query.py --login_file login.txt --filters_file filters.yaml --output_dir ./output_folder`
 
-<br>
+Usage to count reports without download:
+> `python3 couchdb_query.py --login_file login.txt --filters_file filters.yaml --count`
 
-# Query Types
-Major queries include fetching single or bulk reports by report ID(s). Metadata filtering supports searching by general fields such as report types and date. Extensive metadata filtering supports searching by specific fields such as cancer type and biomarker value, useful for trend assessment. Query types can be viewed under **[query_types](./query_types.md)**.
+## Login Credentials
+Connection **must** be authenticated by setting host, port, database name, and login credentials. Such values can be saved as a text file and be run alongside the `login_file` flag. Login file is required. Text file to be organized as follows:
 
-<br>
+```
+host: djerba-dev-db.gsi.oicr.on.ca
+port: 5984
+db_name: database_name
+username: username
+password: password
+```
 
-# Usage Guide
-Documentation on how to query CouchDB can be found under **[query_usage_guide](./query_usage_guide.md)**.
+## Filters for Querying
+Filters **must** be set by running a `filters.yaml` file after the `filters_file` flag. Filters should be defined within the pre-existing YAML file, in which fields that are not being searched should be set to `null`. Filters file is required.
 
+Visit **[query_types](./query_types.md)** to view supported filter types, definitions, and example.
+
+## Downloading Files
+To download all reports that satisfy the set filters, `--output_dir` can be set to specify a path to a directory that holds all reports. Otherwise, this defaults to the folder in which the command is run.
+
+## Count Only
+To assess report counts without downloading reports that satisfy the set filters, `--count` can be run at the end. This exports an integer representing reports that satisfy the filters.
+
+## Page Size
+Current script is run across all reports found in the specified database. The page size across which reports are assessed can be set using the `--page_size` flag, which takes integers. Otherwise, this defaults to `500`.
