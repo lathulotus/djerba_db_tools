@@ -58,8 +58,8 @@ def get_couchdb_database(host, port, db_name, username=None, password=None):
         raise
 
 
-plugin_format = {
-    "_id": "_design/query_plugin_format",
+query_dotted_fields = {
+    "_id": "_design/query_dotted_fields",
     "views": {
         "snv_genes": {
             "map": """function(doc) {
@@ -93,27 +93,27 @@ plugin_format = {
 }
 
 
-def plugin_format_upload(db):
-    if "query_plugin_format" in db:
+def query_dotted_fields_upload(db):
+    if "query_dotted_fields" in db:
         return
-    db.save(plugin_format)
+    db.save(query_dotted_fields)
     print("Uploaded query-supported plugin format doc.")
 
 
 def query_snv(db, gene, mutation_type=None):
     if mutation_type:
-        rows = db.view("query_plugin_format/snv_genes", key=[gene, mutation_type])
+        rows = db.view("query_dotted_fields/snv_genes", key=[gene, mutation_type])
     else:
-        rows = db.view("query_plugin_format/snv_genes", startkey=[gene], endkey=[gene, {}])
+        rows = db.view("query_dotted_fields/snv_genes", startkey=[gene], endkey=[gene, {}])
 
     return {row.value for row in rows}
 
 
 def query_cnv(db, gene, mutation_type=None):
     if mutation_type:
-        rows = db.view("query_plugin_format/cnv_genes", key=[gene, mutation_type])
+        rows = db.view("query_dotted_fields/cnv_genes", key=[gene, mutation_type])
     else:
-        rows = db.view("query_plugin_format/cnv_genes", startkey=[gene], endkey=[gene, {}])
+        rows = db.view("query_dotted_fields/cnv_genes", startkey=[gene], endkey=[gene, {}])
 
     return {row.value for row in rows}
 
@@ -240,7 +240,7 @@ def main():
             username=login_params.get("username"),
             password=login_params.get("password")
         )
-        plugin_format_upload(db)
+        query_dotted_fields_upload(db)
 
         # Read filters from YAML
         filters = read_filters_yaml(args.filters_file)
