@@ -14,7 +14,6 @@ import argparse
 import yaml
 from datetime import datetime, timedelta
 
-
 def read_login_file(file_path):
     """
     Reads input file and returns dict with couchDB login info
@@ -45,7 +44,7 @@ def get_couchdb_database(host, port, db_name, username=None, password=None):
         if username and password:
             from urllib.parse import urlparse, urlunparse
             scheme, netloc, path, params, query, fragment = urlparse(url)
-            netloc = f'{username}:{password}@{host}:{port}'
+            netloc = f"{username}:{password}@{host}:{port}"
             url = urlunparse((scheme, netloc, path, params, query, fragment))
         couch = couchdb.Server(url)
 
@@ -53,7 +52,7 @@ def get_couchdb_database(host, port, db_name, username=None, password=None):
             raise ValueError(f"Database '{db_name}' does not exist on the server.")
         return couch[db_name]
     except Exception as e:
-        print (f"Error connecting to couchDB: {e}")
+        print(f"Error connecting to couchDB: {e}")
         raise
 
 
@@ -64,7 +63,7 @@ def build_mango_query(filters: dict):
     """
     selector = {}
 
-    #Map flter keys to document paths
+    # Map filter keys to document paths
     filter_map = {
         "report_id": "_id",
         "donor": "config.input_params_helper.donor",                #plugins.case_overview.results.donor
@@ -82,7 +81,7 @@ def build_mango_query(filters: dict):
         "ploidy": "plugins.sample.results.Estimated Ploidy",
         "coverage": "plugins.sample.results.Coverage (mean)",
         "callability": "plugins.sample.results.Callability (%)",
-        
+
         "hrd_status": "plugins.genomic_landscape.results.genomic_biomarkers.HRD.Genomic biomarker alteration",
         "msi_status": "plugins.genomic_landscape.results.genomic_biomarkers.MSI.Genomic biomarker alteration",
         "tmb_status": "plugins.genomic_landscape.results.genomic_biomarkers.TMB.Genomic biomarker alteration",
@@ -95,24 +94,54 @@ def build_mango_query(filters: dict):
         "fusion_nccn": "plugins.fusion.results.nccn_relevant_variants",
     }
 
+    # Searching numeric values
+    numeric_range_fields = ["purity", "ploidy", "coverage", "callability", "hrd_value", "msi_value", "tmb_value"]
+    cutoff = 0.0001
+    for field in numeric_range_fields:
+        value = filters.get(field)
+        if value is None:
+            continue
+        path = filter_map[field]
+
+        # Searching rounded value
+        if isinstance(value, (int, float)):
+            selector[path] = {"$gte": value - cutoff, "$lte": value + cutoff}
+            continue
+
+        # Searching ranges
+        if isinstance(value, str) and "," in value:
+            parts = value.split(",")
+            if len(parts) == 2:
+                minVal = float(parts[0].strip())
+                maxVal = float(parts[1].strip())
+                selector[path] = {"$gte": minVal, "$lte": maxVal}
+
+    # Searching date
     date = filters.get("date")
     if date:
+        if isinstance(date, (list, tuple)):
+            date = [d for d in date if d]
+        else:
+            date = [date]
+
         if len(date) == 1:
-            year,month,day = map(int, date[0].split("/"))
-            day_start = datetime(year,month,day)
+            year, month, day = map(int, date[0].split("/"))
+            day_start = datetime(year, month, day)
             day_end = day_start + timedelta(days=1)
         elif len(date) == 2:
-            year0,month0,day0 = map(int, date[0].split("/"))
-            year1,month1,day1 = map(int, date[1].split("/"))
+            year0, month0, day0 = map(int, date[0].split("/"))
+            year1, month1, day1 = map(int, date[1].split("/"))
+            day_start = datetime(year0, month0, day0)
+            day_end = datetime(year1, month1, day1) + timedelta(days=1)
 
-            day_start = datetime(year0,month0,day0)
-            day_end = datetime(year1,month1,day1)+timedelta(days=1)
+        else:
+            day_start = day_end = None
+        if day_start and day_end:
+            start = day_start.strftime("%d/%m/%Y") + "_00:00:00Z"
+            end = day_end.strftime("%d/%m/%Y") + "_00:00:00Z"
+            selector["last_updated"] = {"$gte": start, "$lt": end}
 
-        start = day_start.strftime("%d/%m/%Y")+"_00:00:00Z"
-        end = day_end.strftime("%d/%m/%Y")+"_00:00:00Z"
-
-        selector["last_updated"] = {"$gte": start, "$lt": end}
-
+    # Searching fusion genes
     fusion = filters.get("fusion")
     if fusion:
         fusion_gene = []
@@ -122,31 +151,33 @@ def build_mango_query(filters: dict):
             if isinstance(fusion_obj, dict):
                 for key, value in fusion_obj.items():
                     if key == "gene":
+                        if not value:
+                            continue
                         gene_list = [g.strip() for g in value.split(",")]
                         if len(gene_list) == 1:
-                            gene_name = gene_list[0]
-                            fusion_gene.append({"fusion": {"$regex": gene_name}})
-                        elif len(gene_list) ==2:
+                            fusion_gene.append({"fusion": {"$regex": gene_list[0]}})
+                        elif len(gene_list) == 2:
                             gene1, gene2 = gene_list
-                            fusion_gene.extend([{"fusion": f"{gene1}::{gene2}"}, {"fusion": f"{gene2}::{gene1}"}])                            
+                            fusion_gene.extend([{"fusion": f"{gene1}::{gene2}"}, {"fusion": f"{gene2}::{gene1}"}])
                     else:
-                        if value is None:
-                            continue
-                        fusion_effect[key] = value
+                        if value:
+                            fusion_effect[key] = value
             else:
-                gene_name = fusion_obj
-                fusion_gene.append({"fusion": {"$regex": gene_name}})
+                if fusion_obj:
+                    fusion_gene.append({"fusion": {"$regex": fusion_obj}})
 
         fusion_selector = {}
         if fusion_gene:
             fusion_selector["$or"] = fusion_gene
-        for key, value in fusion_effect.items():
-            fusion_selector[key] = value
-        selector["plugins.fusion.results.body"] = {"$elemMatch": fusion_selector}
+        fusion_selector.update(fusion_effect)
 
+        if fusion_selector:
+            selector["plugins.fusion.results.body"] = {"$elemMatch": fusion_selector}
+
+    # Searching CNVs
     cnv = filters.get("cnv")
     if cnv:
-        cnv_filters=[]
+        cnv_filters = []
         for cnv_single in cnv:
             parts = cnv_single.split(" ", 1)
             gene = parts[0]
@@ -155,19 +186,19 @@ def build_mango_query(filters: dict):
             elem = {"Gene": gene}
             if mutation_type:
                 elem["Alteration"] = mutation_type
-            
+
             cnv_filters.append({
-                "plugins.wgts.cnv_purple.results.body": {
-                 "$elemMatch": elem}})
-        
+                "plugins.wgts.cnv_purple.results.body": {"$elemMatch": elem}})
+
         if len(cnv_filters) == 1:
             selector.update(cnv_filters[0])
         else:
             selector["$and"] = cnv_filters
 
+    # Searching SNVs
     snv = filters.get("snv")
     if snv:
-        snv_filters=[]
+        snv_filters = []
         for snv_single in snv:
             parts = snv_single.split(" ", 1)
             gene = parts[0]
@@ -176,17 +207,19 @@ def build_mango_query(filters: dict):
             elem = {"Gene": gene}
             if mutation_type:
                 elem["type"] = mutation_type
-            
+
             snv_filters.append({
-                "plugins.wgts.snv_indel.results.Body": {
-                    "$elemMatch": elem}})
-        
+                "plugins.wgts.snv_indel.results.Body": {"$elemMatch": elem}})
+
         if len(snv_filters) == 1:
             selector.update(snv_filters[0])
         else:
             selector["$and"] = snv_filters
-    
+
+    # Assigning fields
     for key, path in filter_map.items():
+        if key in numeric_range_fields:
+            continue
         value = filters.get(key)
         if value is not None:
             selector[path] = value
@@ -199,9 +232,8 @@ def download_documents(db, query, output_dir, page_size=500):
     Extracts matching documents across each page in database
     """
 
-    if output_dir is not None:
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
+    if output_dir and not os.path.exists(output_dir):
+        os.makedirs(output_dir)
 
     downloaded_count = 0
     skip = 0
@@ -210,14 +242,14 @@ def download_documents(db, query, output_dir, page_size=500):
         paged_query = query.copy()
         paged_query["limit"] = page_size
         paged_query["skip"] = skip
-    
+
         print(f"Executing query with skip={skip}, limit={page_size}")
         results = list(db.find(paged_query))
         if not results:
             break
 
         for doc in results:
-            downloaded_count +=1
+            downloaded_count += 1
 
             if output_dir:
                 doc_id = doc["_id"]
@@ -228,7 +260,7 @@ def download_documents(db, query, output_dir, page_size=500):
                     print(f"Downloaded document '{doc_id}' to '{file_path}'")
                 except Exception as e:
                     print(f"Error saving document '{doc_id}': {e}")
-        
+
         skip += len(results)
     return downloaded_count
 
@@ -259,10 +291,10 @@ def main():
 
         # Export downloaded documents or document count
         if args.count:
-            total_count=download_documents(db, query, output_dir=None, page_size=args.page_size)
+            total_count = download_documents(db, query, output_dir=None, page_size=args.page_size)
             print(f"Number of reports satisfying the filters: {total_count}")
         else:
-            total_count=download_documents(db, query, args.output_dir, page_size=args.page_size)
+            total_count = download_documents(db, query, args.output_dir, page_size=args.page_size)
             print(f"Successfully downloaded {total_count} documents.")
     except Exception as e:
         print(f"An error occurred: {e}")
