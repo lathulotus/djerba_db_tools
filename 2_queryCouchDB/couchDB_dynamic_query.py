@@ -69,7 +69,7 @@ def build_mango_query(filters: dict):
         "donor": "config.input_params_helper.donor",                #plugins.case_overview.results.donor
         "project": "config.input_params_helper.project",
         "study": "plugins.case_overview.results.study",
-        "report_type": "config.input_params_helper.attributes",     #plugins.genomic_landscape.attributes
+        "report_type": "plugins.case_overview.attributes",     #plugins.genomic_landscape.attributes
 
         "cancer_type": "plugins.case_overview.results.primary_cancer",
         "oncotree_code": "plugins.sample.results.OncoTree Code",
@@ -223,6 +223,12 @@ def build_mango_query(filters: dict):
         value = filters.get(key)
         if value is not None:
             selector[path] = value
+        if key == "report_type":
+            if isinstance(value, list):
+                selector[path] = {"$all": value}
+            else:
+                selector[path] = {"$in": [value]}
+            continue
 
     return {"selector": selector}
 
