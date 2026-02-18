@@ -15,34 +15,6 @@ import yaml
 from datetime import datetime, timedelta
 
 
-def getfield_helper(path):
-    """
-    Nested $getField expression for field names containing dots
-    """
-    parts = path.split(".")
-    expr = "$doc"
-
-    for part in parts:
-        expr = {"$getField": {"field": part, "input": expr}}
-    return expr
-
-
-def build_elemMatch_selector(array_path, elem):
-    """
-    Builds $elemMatch selector to parse through body/Body array within plugins
-    """
-    array_expr = getfield_helper(array_path)
-
-    return {
-        "$and": [{
-            "$elemMatch": {
-                "input": array_expr,
-                "cond": elem
-            }
-        }]
-    }
-
-
 def read_login_file(file_path):
     """
     Reads input file and returns dict with couchDB login info
@@ -153,7 +125,9 @@ def build_mango_query(filters: dict):
             if mutation_type:
                 elem["Alteration"] = mutation_type
             
-            cnv_filters.append(build_elemMatch_selector("plugins.wgts.cnv_purple.results.body", elem))
+            cnv_filters.append({
+                "plugins.wgts.cnv_purple.results.body": {
+                 "$elemMatch": elem}})
         
         if len(cnv_filters) == 1:
             selector.update(cnv_filters[0])
@@ -172,7 +146,9 @@ def build_mango_query(filters: dict):
             if mutation_type:
                 elem["type"] = mutation_type
             
-            snv_filters.append(build_elemMatch_selector("plugins.wgts.snv_indel.results.Body", elem))
+            snv_filters.append({
+                "plugins.wgts.snv_indel.results.Body": {
+                    "$elemMatch": elem}})
         
         if len(snv_filters) == 1:
             selector.update(snv_filters[0])
