@@ -33,5 +33,4 @@ if not os.path.exists(html_path):
 
 pdfkit.from_url(html_path, report_name+'_report.clinical.pdf', options=options)
 
-
 # Upload amended HTML to CouchDB
