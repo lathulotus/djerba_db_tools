@@ -1,5 +1,5 @@
 ## Amended Reports
-> [Repository](./amended_reports) | [Ticket]()
+> [Repository](.) | [Ticket]()
 
 CouchDB only stores JSON files. Amended reports are manually edited using an ```html_to_pdf.py``` script, thereby not producing nor editing and JSON files to be saved onto CouchDB. As such, amended reports do not get archived on CouchDB. Modifying the script to automatically upload HTMLs to the database could allow amended reports to be archived.
 
