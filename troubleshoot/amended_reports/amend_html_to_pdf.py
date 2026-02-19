@@ -8,6 +8,7 @@ import os
 import pdfkit
 import sys
 from time import strftime
+from djerba.database import database
 
 if len(sys.argv)==2:
     report_id = sys.argv[1]
@@ -34,3 +35,13 @@ if not os.path.exists(html_path):
 pdfkit.from_url(html_path, report_name+'_report.clinical.pdf', options=options)
 
 # Upload amended HTML to CouchDB
+db = database()
+doc_id = f"{report_id}-v{version}"
+report_data = {}
+report_data = db.attach_file(report_data, html_path, "text/html")
+
+uploaded, rid = db.upload(report_data)
+if uploaded:
+    print(f"Upload of document {rid} to database successful.")
+else:
+    print(f"Upload of document {rid} to database FAILED.")
