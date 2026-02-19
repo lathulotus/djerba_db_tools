@@ -29,8 +29,8 @@ class database(logger):
     def create_document(self, report_id, data):
         couch_info = {
             '_id': report_id,
-            'last_updated': time.strftime("%d/%m/%Y_%H:%M:%SZ", time.gmtime())
-            #'last_updated': time.strftime("%Y-%m-%d", time.gmtime())               #Edit d/m/y to y/m/d, remove timestamp
+            #'last_updated': time.strftime("%d/%m/%Y_%H:%M:%SZ", time.gmtime())    # old date format
+            'last_updated': time.strftime("%Y-%m-%d", time.gmtime())               # edit d/m/y to y/m/d, remove timestamp
         }
         doc = {**couch_info, **data}
         return doc
