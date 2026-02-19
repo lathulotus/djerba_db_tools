@@ -17,7 +17,7 @@ Query types are laid out in the **[filters YAML file](./filters.yaml)**. File ca
 | `sample_type` | Type of sample | single entry | `FFPE  tissue block` |
 
 
-## General Variables: Qualitative
+## General Numeric Variables
 | Filter | Definition | Type | Example |
 |--------|------------|------|---------|
 | `purity` | Estimated tumour purity % | integer | `75` |
