@@ -73,7 +73,7 @@ class database(logger):
             attributes = (
                 report_data
                 .get("plugins", {})
-                .get("supplement.body", {})
+                .get("case_overview", {})
                 .get("attributes", [])
             )
             analysis_type = "_".join(attributes) if attributes else None
