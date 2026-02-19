@@ -1,7 +1,7 @@
 # Troubleshooting
 
-## Report Names
-> [Repository](./database_reportNames) | [Ticket 1679](https://jira.oicr.on.ca/browse/GCGI-1679)
+## Archiving by Report Types
+> [Repository](./archiving_reportTypes) | [Ticket 1679](https://jira.oicr.on.ca/browse/GCGI-1679)
 
 CouchDB only stores the most updated versions of reports due to Djerba overwriting documents with the same report IDs (409 Conflict). Therefore, a failed clinical report may be lost after being overwritten by the resulting RUO report. Changing naming convention can prevent reports from being overwrittenn.
 
@@ -12,14 +12,13 @@ CouchDB only stores the most updated versions of reports due to Djerba overwriti
 
 
 ## Amended Reports
-> [Repository](./database_amendedReports) | [Ticket]()
+> [Repository](./amended_reports) | [Ticket]()
 
-CouchDB only stores JSON files. Amended reports are manually edited using an ```html_to_pdf.py``` script, thereby not producing nor editing and JSON files. As such, amended reports do not get archived on CouchDB. Modifying the JSON file rather than the HTML could allow for archiving of JSONs.
+CouchDB only stores JSON files. Amended reports are manually edited using an ```html_to_pdf.py``` script, thereby not producing nor editing and JSON files to be saved onto CouchDB. As such, amended reports do not get archived on CouchDB. Modifying the script to automatically upload HTMLs to the database could allow amended reports to be archived.
 
-**TASK**: Modify the JSON instead of HTML (thereby running djerba.py update)
-1. Read amended HTML and compare to existing/original JSON
-2. Edit modifications from amended HTML to existing JSON
-3. Use this as a basis to write instructions on how to modify JSON instead of HTML
-4. Allowing team to run ```djerba.py update``` to upload to CouchDB and generate PDF
+**TASK**: Update `html_to_pdf.py` script to upload HTML
+1. Use upload logic from djerba.py update
+2. Modify script to upload HTML upon run
+3. Account for HTML documents during querying
 
 
