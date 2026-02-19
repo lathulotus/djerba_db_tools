@@ -70,6 +70,7 @@ def build_mango_query(filters: dict):
         "project": "config.input_params_helper.project",
         "study": "plugins.case_overview.results.study",
         "report_type": "plugins.case_overview.attributes",     #plugins.genomic_landscape.attributes
+        "version": "core.core_version",
 
         "cancer_type": "plugins.case_overview.results.primary_cancer",
         "oncotree_code": "plugins.sample.results.OncoTree Code",

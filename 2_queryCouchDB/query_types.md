@@ -10,6 +10,7 @@ Query types are laid out in the **[filters YAML file](./filters.yaml)**. File ca
 | `project` | Project name | single entry | `PROJECT` |
 | `study` | Study name | single entry | `STUDY` |
 | `report_type` | Report type | single entry | `clinical`, `research` |
+| `version` | Report version | single entry | `1.10.0` |
 | `cancer_type` | Primary cancer diagnosis | single entry | `pancreatic adenocarcinoma` |
 | `oncotree_code` | Oncotree code | single entry | `PAAD` |
 | `assay` | Assay type | single entry | `WGTS` |
