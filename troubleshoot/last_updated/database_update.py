@@ -1,4 +1,3 @@
-#djerba.src.lib.djerba.core.database.py
 """Interface with a CouchDB instance for JSON report documents"""
 
 
