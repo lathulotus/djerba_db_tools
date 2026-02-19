@@ -20,21 +20,21 @@ Query types are laid out in the **[filters YAML file](./filters.yaml)**. File ca
 ## General Numeric Variables
 | Filter | Definition | Type | Example |
 |--------|------------|------|---------|
-| `purity` | Estimated tumour purity % | integer | `75` |
-| `ploidy` | Estimated chromosomal copy number | single entry | `2.75` |
-| `coverage` | Average read coverage | single entry | `75.0` |
-| `callability` | Percent of callable genome | single entry | `75.0` |
+| `purity` | Estimated tumour purity % | single integer, comme-separated range | `75` or `70,80` |
+| `ploidy` | Estimated chromosomal copy number | single integer, comme-separated range | `2.75` or `2,3` |
+| `coverage` | Average read coverage | single integer, comme-separated range | `75.0` or `70,80` |
+| `callability` | Percent of callable genome | single integer, comme-separated range | `75.0` or `70,80` |
 
 
 ## Biological Variables: Biomarkers
 | Filter | Definition | Type | Example |
 |--------|------------|------|---------|
 | `hrd_status` | HRD status | single entry | `HR Proficient` |
-| `hrd_value` | HRD value per Mb | single entry | `0.0751` |
+| `hrd_value` | HRD value per Mb | single integer, comme-separated range | `0.0751` or `0.06,0.08` |
 | `msi_status` | MSI status | single entry | `MSS` |
-| `msi_value` | HRD value per Mb | single entry | `2.075` |
+| `msi_value` | HRD value per Mb | single integer, comme-separated range | `2.075` or `1.5,2.5` |
 | `tmb_status` | TMB status | single entry | `TMB-L` |
-| `tmb_value` | HRD value per Mb | single entry | `1.75` |
+| `tmb_value` | HRD value per Mb | single integer, comme-separated range | `1.75` or `1,2` |
 
 
 ## Biological Variables: Fusions
