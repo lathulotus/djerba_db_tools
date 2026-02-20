@@ -38,6 +38,7 @@ def extract_fields(doc):
         "coverage": safe_get(doc, ["plugins", "sample", "results", "Coverage (mean)"]),
         "callability": safe_get(doc, ["plugins", "sample", "results", "Callability (%)"]),
         "purity": safe_get(doc, ["plugins", "sample", "results", "Estimated Cancer Cell Content (%)"]),
+        "snv": safe_get(doc, ["plugins", "wgts.snv_indel", "results", "somatic mutations"])
     }
 
 
