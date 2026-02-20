@@ -1,7 +1,6 @@
 """Interface with a CouchDB instance for JSON report documents"""
 
 
-import re
 import configparser
 import json
 import logging
@@ -9,6 +8,7 @@ import os
 import requests
 import string
 import time
+import base64               # support HTML attachment
 import djerba.core.constants as cc
 import djerba.util.constants as constants
 import djerba.util.ini_fields as ini
@@ -33,6 +33,16 @@ class database(logger):
             'last_updated': time.strftime("%d/%m/%Y_%H:%M:%SZ", time.gmtime())
         }
         doc = {**couch_info, **data}
+        return doc
+    
+    def attach_file(self, doc, filename, content_type):
+        with open(filename, "rb") as file:
+            encoded = base64.b64encode(file.read()).decode("ascii")
+        doc["_attachments"] = doc.get("_attachments", {})
+        doc["_attachments"][os.path.basename(filename)] = {
+            "content_type": content_type,
+            "data": encoded
+        }
         return doc
     
     def get_upload_params(self):
@@ -66,34 +76,7 @@ class database(logger):
         Upload the report data structure to couchdb
         Full upload URL is intentionally not logged, as it contains the DB username/password
         """
-
-        original_report_id = report_data[cc.CORE][cc.REPORT_ID]
-
-        try:
-            attributes = (
-                report_data
-                .get("plugins", {})
-                .get("supplement.body", {})
-                .get("attributes", [])
-            )
-            analysis_type = "_".join(attributes) if attributes else None
-
-            if analysis_type:
-                # Match everything before v<number>
-                match = re.match(r"^(.*?)([vV]\d+)$", original_report_id)
-
-                if match:
-                    base_id, version = match.groups()
-                    report_id = f"{base_id}-{version}_{analysis_type}"
-                else:
-                    # Fallback if no version pattern is found
-                    report_id = f"{original_report_id}_{analysis_type}"
-            else:
-                report_id = original_report_id
-
-        except (KeyError, AttributeError, TypeError):
-            report_id = original_report_id
-
+        report_id = report_data[cc.CORE][cc.REPORT_ID]
         db, url = self.get_upload_params()
         headers = {'Content-Type': 'application/json'}
         attempts = 0
