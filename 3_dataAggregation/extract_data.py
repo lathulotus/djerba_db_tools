@@ -2,7 +2,7 @@
 Produce summary tables (excel/csv) containing relevant data from downloaded JSON files
 ex: coverage/quality vs time by HRD status
 
-usage: python3 extract_data.py
+usage: python3 extract_data.py --input ./input_folder --output output_name
 """
 
 import json
