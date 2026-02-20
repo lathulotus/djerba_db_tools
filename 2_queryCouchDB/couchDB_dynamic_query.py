@@ -70,157 +70,18 @@ def build_mango_query(filters: dict):
         "project": "config.input_params_helper.project",
         "study": "plugins.case_overview.results.study",
         "report_type": "plugins.case_overview.attributes",     #plugins.genomic_landscape.attributes
-        "version": "core.core_version",
-
         "cancer_type": "plugins.case_overview.results.primary_cancer",
-        "oncotree_code": "plugins.sample.results.OncoTree Code",
+        "oncotree_code": "plugins.sample.results.OncoTree code",
         "assay": "config.input_params_helper.assay",                #plugins.case_overview.results.assay
         "biopsy_site": "plugins.case_overview.results.site_of_biopsy",
         "sample_type": "plugins.sample.results.Sample Type",
-
-        "purity": "plugins.sample.results.Estimated Cancer Cell Content (%)",
-        "ploidy": "plugins.sample.results.Estimated Ploidy",
-        "coverage": "plugins.sample.results.Coverage (mean)",
-        "callability": "plugins.sample.results.Callability (%)",
-
         "hrd_status": "plugins.genomic_landscape.results.genomic_biomarkers.HRD.Genomic biomarker alteration",
         "msi_status": "plugins.genomic_landscape.results.genomic_biomarkers.MSI.Genomic biomarker alteration",
         "tmb_status": "plugins.genomic_landscape.results.genomic_biomarkers.TMB.Genomic biomarker alteration",
-        "hrd_value": "plugins.genomic_landscape.results.genomic_biomarkers.HRD.Genomic biomarker value",
-        "msi_value": "plugins.genomic_landscape.results.genomic_biomarkers.MSI.Genomic biomarker value",
-        "tmb_value": "plugins.genomic_landscape.results.genomic_biomarkers.TMB.Genomic biomarker value",
-
-        "fusion_total": "plugins.fusion.results.Total variants",
-        "fusion_clinical": "plugins.fusion.results.Clinically relevant variants",
-        "fusion_nccn": "plugins.fusion.results.nccn_relevant_variants",
+        "failed": "config.report_title.failed",
     }
-
-    # Searching numeric values
-    numeric_range_fields = ["purity", "ploidy", "coverage", "callability", "hrd_value", "msi_value", "tmb_value"]
-    cutoff = 0.0001
-    for field in numeric_range_fields:
-        value = filters.get(field)
-        if value is None:
-            continue
-        path = filter_map[field]
-
-        # Searching rounded value
-        if isinstance(value, (int, float)):
-            selector[path] = {"$gte": value - cutoff, "$lte": value + cutoff}
-            continue
-
-        # Searching ranges
-        if isinstance(value, str) and "," in value:
-            parts = value.split(",")
-            if len(parts) == 2:
-                minVal = float(parts[0].strip())
-                maxVal = float(parts[1].strip())
-                selector[path] = {"$gte": minVal, "$lte": maxVal}
-
-    # Searching date
-    date = filters.get("date")
-    if date:
-        if isinstance(date, (list, tuple)):
-            date = [d for d in date if d]
-        else:
-            date = [date]
-
-        if len(date) == 1:
-            year, month, day = map(int, date[0].split("/"))
-            day_start = datetime(year, month, day)
-            day_end = day_start + timedelta(days=1)
-        elif len(date) == 2:
-            year0, month0, day0 = map(int, date[0].split("/"))
-            year1, month1, day1 = map(int, date[1].split("/"))
-            day_start = datetime(year0, month0, day0)
-            day_end = datetime(year1, month1, day1) + timedelta(days=1)
-
-        else:
-            day_start = day_end = None
-        if day_start and day_end:
-            start = day_start.strftime("%d/%m/%Y") + "_00:00:00Z"
-            end = day_end.strftime("%d/%m/%Y") + "_00:00:00Z"
-            selector["last_updated"] = {"$gte": start, "$lt": end}
-
-    # Searching fusion genes
-    fusion = filters.get("fusion")
-    if fusion:
-        fusion_gene = []
-        fusion_effect = {}
-
-        for fusion_obj in fusion:
-            if isinstance(fusion_obj, dict):
-                for key, value in fusion_obj.items():
-                    if key == "gene":
-                        if not value:
-                            continue
-                        gene_list = [g.strip() for g in value.split(",")]
-                        if len(gene_list) == 1:
-                            fusion_gene.append({"fusion": {"$regex": gene_list[0]}})
-                        elif len(gene_list) == 2:
-                            gene1, gene2 = gene_list
-                            fusion_gene.extend([{"fusion": f"{gene1}::{gene2}"}, {"fusion": f"{gene2}::{gene1}"}])
-                    else:
-                        if value:
-                            fusion_effect[key] = value
-            else:
-                if fusion_obj:
-                    fusion_gene.append({"fusion": {"$regex": fusion_obj}})
-
-        fusion_selector = {}
-        if fusion_gene:
-            fusion_selector["$or"] = fusion_gene
-        fusion_selector.update(fusion_effect)
-
-        if fusion_selector:
-            selector["plugins.fusion.results.body"] = {"$elemMatch": fusion_selector}
-
-    # Searching CNVs
-    cnv = filters.get("cnv")
-    if cnv:
-        cnv_filters = []
-        for cnv_single in cnv:
-            parts = cnv_single.split(" ", 1)
-            gene = parts[0]
-            mutation_type = parts[1] if len(parts) > 1 else None
-
-            elem = {"Gene": gene}
-            if mutation_type:
-                elem["Alteration"] = mutation_type
-
-            cnv_filters.append({
-                "plugins.wgts.cnv_purple.results.body": {"$elemMatch": elem}})
-
-        if len(cnv_filters) == 1:
-            selector.update(cnv_filters[0])
-        else:
-            selector["$and"] = cnv_filters
-
-    # Searching SNVs
-    snv = filters.get("snv")
-    if snv:
-        snv_filters = []
-        for snv_single in snv:
-            parts = snv_single.split(" ", 1)
-            gene = parts[0]
-            mutation_type = parts[1] if len(parts) > 1 else None
-
-            elem = {"Gene": gene}
-            if mutation_type:
-                elem["type"] = mutation_type
-
-            snv_filters.append({
-                "plugins.wgts.snv_indel.results.Body": {"$elemMatch": elem}})
-
-        if len(snv_filters) == 1:
-            selector.update(snv_filters[0])
-        else:
-            selector["$and"] = snv_filters
-
     # Assigning fields
     for key, path in filter_map.items():
-        if key in numeric_range_fields:
-            continue
         value = filters.get(key)
         if value is not None:
             selector[path] = value
