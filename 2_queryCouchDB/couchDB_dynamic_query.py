@@ -225,6 +225,8 @@ def build_mango_query(filters: dict):
         if value is not None:
             selector[path] = value
         if key == "report_type":
+            if value is None:
+                continue
             if isinstance(value, list):
                 selector[path] = {"$all": value}
             else:
