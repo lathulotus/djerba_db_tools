@@ -122,7 +122,9 @@ def filter_files(input_dir, criteria):
                 raw_data = get_nested(data, path)
 
                 if raw_data is None:
-                    if criterion: is_match = False
+                    if criterion:
+                        is_match = False
+                        break
                     continue
 
                 try:
@@ -134,8 +136,9 @@ def filter_files(input_dir, criteria):
                             is_match = False
                             break
                 except:
-                    if criterion: is_match = False
-                    break
+                    if criterion:
+                        is_match = False
+                        break
 
             if is_match:
                 results.append({
@@ -251,9 +254,16 @@ def main():
     for m in matches:
         v = m['values']
         date_str = v.get('date_reported').strftime("%Y-%m-%d") if v.get('date_reported') else "N/A"
+        purity_val = v.get("purity", "N/A")
+
+        filtered = ""
+        for key, criterion in criteria.items():
+            if criterion:
+                val = v.get(key, "N/A")
+                filtered += f"{key}: {val}"
         
-        print(f"ID: {m['id']:<15} | Cov: {v.get('coverage'):<6} | Purity: {v.get('purity'):<5} | Date: {date_str:<10} | File: {m['file']}")
-        
+        print(f"ID: {m['id']} \t| Date: {date_str} | {filtered} | Purity: {purity_val} | File: {m['file']}")
+                
         if args.output_dir:
             shutil.copy(m['full_path'], os.path.join(args.output_dir, m['file']))
             
