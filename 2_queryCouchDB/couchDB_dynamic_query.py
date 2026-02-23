@@ -1,11 +1,11 @@
 """
-Use couchDB python library to apply specified mango queries based on input filters to ouput JSONs for reports satisfying filters (or report counts)
-    1. Identify couchDB connection details based on text file containing host, port, username, and password
-    2. Identify filters to apply based on YAML file containing specified query
-    3. Define parameters paths to search based on non-null values in YAML
+String-based querying (Mango) using input YAML filters to output specific reports:
+1. Connect to couchDB via credentials text file
+2. Specify filters via YAML filters file
+3. Define query parameters via non-null filters
 
 Usage:
-    python3 couchdb_query.py --login_file login.txt --filters_file filters.yaml --output_dir ./query_output"""
+    python3 couchDB_dynamic_query.py --login_file login.txt --filters_file filters.yaml --output_dir script1_output/"""
 
 import couchdb
 import json
@@ -15,9 +15,7 @@ import yaml
 from datetime import datetime, timedelta
 
 def read_login_file(file_path):
-    """
-    Reads input file and returns dict with couchDB login info
-    """
+    """ Reads input file and returns dict with couchDB login info """
     params = {}
     with open(file_path, "r") as f:
         for line in f:
@@ -28,17 +26,13 @@ def read_login_file(file_path):
 
 
 def read_filters_yaml(file_path):
-    """
-    Reads YAML file containing query filters
-    """
+    """ Reads YAML file containing query filters """
     with open(file_path, "r") as f:
         return yaml.safe_load(f)
 
 
 def get_couchdb_database(host, port, db_name, username=None, password=None):
-    """
-    Connects to couchDB using login info and returns specified database object
-    """
+    """ Connects to couchDB using login info and returns specified database object """
     try:
         url = f"http://{host}:{port}/"
         if username and password:
@@ -57,10 +51,7 @@ def get_couchdb_database(host, port, db_name, username=None, password=None):
 
 
 def build_mango_query(filters: dict):
-    """
-    Builds a CouchDB Mango query selector based on dictionary of filters
-    Only filters with non-None values are added to selector
-    """
+    """ Builds a CouchDB Mango query selector based on dictionary of filters & ignores null filters """
     selector = {}
 
     # Map filter keys to document paths
@@ -98,9 +89,7 @@ def build_mango_query(filters: dict):
 
 
 def download_documents(db, query, output_dir, page_size=500):
-    """
-    Extracts matching documents across each page in database
-    """
+    """ Extracts matching documents across each page in database """
 
     if output_dir and not os.path.exists(output_dir):
         os.makedirs(output_dir)

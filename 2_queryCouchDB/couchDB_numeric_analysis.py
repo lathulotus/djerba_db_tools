@@ -1,3 +1,12 @@
+"""
+Numeric-based analysis using flag filters to assess downloaded reports
+    1. Convert string values to integers
+    2. 
+
+Usage (example):
+    python3 couchDB_numeric_analysis.py --input_dir script1_output/ --coverage ">=115" --output_dir HRD_PASSED_FILTERED --plot
+"""
+
 import json
 import os
 import argparse
@@ -8,14 +17,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 def parse_version(version_str):
-    # Convert version string to a tuple of integers for comparison
+    """ Convert version string to a tuple of integers for comparison """
     try:
         return tuple(map(int, re.sub(r'[^\d.]', '', version_str).split('.')))
     except:
         return (0,)
 
 def get_nested(data, path):
-    # Get nested values from dict
+    """ Get nested values from dict """
     keys = path.split('/')
     for key in keys:
         if isinstance(data, dict):
@@ -61,7 +70,7 @@ def evaluate_criterion(value, criterion_str, value_type='float'):
     return False
 
 def transform_value(raw_val, value_type):
-    # Convert raw string to the appropriate type for comparison
+    """ Convert raw string to the appropriate type for comparison """
     raw_val = raw_val.strip()
     if value_type == 'float':
         return float(raw_val)
@@ -72,6 +81,7 @@ def transform_value(raw_val, value_type):
     return raw_val
 
 def filter_files(input_dir, criteria):
+    """ Apply numeric filters to input JSON files """
     results = []
     
     if not os.path.exists(input_dir):
@@ -83,8 +93,14 @@ def filter_files(input_dir, criteria):
         "coverage": ("plugins/sample/results/Coverage (mean)", 'float'),
         "purity": ("config/genomic_landscape/purity", 'float'),
         "callability": ("plugins/sample/results/Callability (%)", 'float'),
+        "ploidy": ("plugins/sample/results/Estimated Ploidy", 'float'),
         "djerba_version": ("core/core_version", 'version'),
-        "date_reported": ("plugins/supplement.body/results/extract_date", 'date')
+        "date_reported": ("plugins/supplement.body/results/extract_date", 'date'),
+
+        "cnv_pga": ("plugins/wgts.cnv_purple/results/percent genome altered", 'float'),
+        "cnv_clinical": ("plugins/wgts.cnv_purple/results/clinically relevant variants", 'float'),
+        "snv_oncogenic": ("plugins/wgts.snv_indel/results/oncogenic mutations", 'float'),
+        "fusion_clinical": ("plugins/fusion/results/Clinically relevant variants", 'float'),
     }
 
     for filename in os.listdir(input_dir):
@@ -132,6 +148,7 @@ def filter_files(input_dir, criteria):
     return results
 
 def plot_matches(matches, output_path=None):
+    """ Cumulative plot over time by coverage """
     if not matches:
         print("No matches to plot.")
         return
@@ -198,6 +215,11 @@ def main():
     parser.add_argument("--coverage", help="Criterion for coverage (e.g. '>115.5' or '[80, 100]')")
     parser.add_argument("--purity", help="Criterion for purity (e.g. '>0.5')")
     parser.add_argument("--callability", help="Criterion for callability")
+    parser.add_argument("--ploidy", help="Criterion for ploidy")
+    parser.add_argument("--cnv_pga", help="Criterion for percent genome altered")
+    parser.add_argument("--cnv_clinical", help="Criterion for number of clinically relevant CNVs")
+    parser.add_argument("--snv_oncogenic", help="Criterion for number of oncogenic SNVs")
+    parser.add_argument("--fusion_clinical", help="Criterion for number of clinically relevant fusions")
     parser.add_argument("--djerba_version", help="Criterion for version (e.g. '>1.11.1' or '[1.7.0, 1.12.0]')")
     parser.add_argument("--date_reported", help="Criterion for date (e.g. '>2025-01-01' or '[2024-01-01, 2025-12-31]')")
     parser.add_argument("--plot", action="store_true", help="Generate a plot of matches over time")
@@ -209,6 +231,11 @@ def main():
         "coverage": args.coverage,
         "purity": args.purity,
         "callability": args.callability,
+        "ploidy": args.ploidy,
+        "cnv_pga": args.cnv_pga,
+        "cnv_clinical": args.cnv_clinical,
+        "snv_oncogenic": args.snv_oncogenic,
+        "fusion_clinical": args.fusion_clinical,
         "djerba_version": args.djerba_version,
         "date_reported": args.date_reported
     }

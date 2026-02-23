@@ -1,10 +1,8 @@
-date: null
 report_id: null
 donor: null
 project: null
 study: null
 report_type: null
-version: null
 
 cancer_type: null
 oncotree_code: null
@@ -12,25 +10,7 @@ assay: null
 biopsy_site: null
 sample_type: null
 
-purity: null
-ploidy: null
-coverage: null
-callability: null
-
 hrd_status: null
-hrd_value: null
 msi_status: null
-msi_value: null
 tmb_status: null
-tmb_value: null
-
-fusion_total: null
-fusion_clinical: null
-fusion_nccn: null
-fusion:
-  - gene: null
-  - frame: null
-  - mutation effect: null
-
-cnv: null
-snv: null
+failed: null
