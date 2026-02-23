@@ -1,7 +1,5 @@
 """
-Numeric-based analysis using flag filters to assess downloaded reports
-    1. Convert string values to integers
-    2. 
+Numeric-based analysis using filter flags to assess downloaded reports
 
 Usage (example):
     python3 couchDB_numeric_analysis.py --input_dir script1_output/ --coverage ">=115" --output_dir HRD_PASSED_FILTERED --plot
@@ -212,7 +210,7 @@ def plot_matches(matches, output_path=None):
         plt.show()
 
 def main():
-    parser = argparse.ArgumentParser(description="Advanced Filter for local Djerba JSONs")
+    parser = argparse.ArgumentParser(description="Advanced numeric filter for local Djerba JSONs")
     parser.add_argument("--input_dir", required=True, help="Directory containing JSON files")
     parser.add_argument("--output_dir", help="Directory to save matching JSON files")
     parser.add_argument("--coverage", help="Criterion for coverage (e.g. '>115.5' or '[80, 100]')")

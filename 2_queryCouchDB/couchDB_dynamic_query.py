@@ -1,11 +1,9 @@
 """
-String-based querying (Mango) using input YAML filters to output specific reports:
-1. Connect to couchDB via credentials text file
-2. Specify filters via YAML filters file
-3. Define query parameters via non-null filters
+String-based querying (Mango) using input YAML filters for document retrieval:
 
 Usage:
-    python3 couchDB_dynamic_query.py --login_file login.txt --filters_file filters.yaml --output_dir script1_output/"""
+    python3 couchDB_dynamic_query.py --login_file login.txt --filters_file filters.yaml --output_dir script1_output/
+"""
 
 import couchdb
 import json
