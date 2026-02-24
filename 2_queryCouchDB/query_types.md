@@ -1,58 +1,60 @@
 # Query Types
-Query types are laid out in the **[filters YAML file](./filters.yaml)**. File can be directly altered to query fr specific filters. Fields that do not require querying should remain `null`. Individual JSON file(s) will be output for reports satisfying specific query requirements.
-
-## General Variables
-| Filter | Definition | Type | Example |
-|--------|------------|------|---------|
-| `date` | Date of last update | single entry | `2026/12/01` |
-| `report_id` | Report ID | single entry | `REPORT_123-v1` |
-| `donor` | Donor ID | single entry | `DONOR_123` |
-| `project` | Project name | single entry | `PROJECT` |
-| `study` | Study name | single entry | `STUDY` |
-| `report_type` | Report type | single entry | `clinical`, `research` |
-| `version` | Report version | single entry | `1.10.0` |
-| `cancer_type` | Primary cancer diagnosis | single entry | `pancreatic adenocarcinoma` |
-| `oncotree_code` | Oncotree code | single entry | `PAAD` |
-| `assay` | Assay type | single entry | `WGTS` |
-| `biopsy_site` | Biopsy/surgery | single entry | `left crest` |
-| `sample_type` | Type of sample | single entry | `FFPE  tissue block` |
+Querying couchDB supports string-based search via Mango and numeric-based search via Python. Filters may be set through YAML files and/or search flags, depending on the search focus.
 
 
-## General Numeric Variables
-| Filter | Definition | Type | Example |
-|--------|------------|------|---------|
-| `purity` | Estimated tumour purity % | single integer, comma-separated range | `75` or `70,80` |
-| `ploidy` | Estimated chromosomal copy number | single integer, comma-separated range | `2.75` or `2,3` |
-| `coverage` | Average read coverage | single integer, comma-separated range | `75.0` or `70,80` |
-| `callability` | Percent of callable genome | single integer, comma-separated range | `75.0` or `70,80` |
+## String-Based Querying
+Query types are laid out in the **[filters YAML file](./filters.yaml)**. Fields that do not require querying should remain `null`. Individual JSON file(s) will be output for reports satisfying specific query requirements.
+
+| Filter | Definition | Example |
+|--------|------------|---------|
+| `report_id` | Report ID | `REPORT_123-v1` |
+| `donor` | Donor ID | `DONOR_123` |
+| `project` | Project name | `PROJECT` |
+| `study` | Study name | `STUDY` |
+| `report_type` | Report | `clinical`, `research` |
+| `cancer_type` | Primary cancer diagnosis | `pancreatic adenocarcinoma` |
+| `oncotree_code` | Oncotree code | `PAAD` |
+| `assay` | Assay | `WGTS` |
+| `biopsy_site` | Biopsy/surgery | `left crest` |
+| `sample_type` | Type of sample | `FFPE  tissue block` |
+| `hrd_status` | HRD status | `HR Proficient` |
+| `msi_status` | MSI status | `MSS` |
+| `tmb_status` | TMB status | `TMB-L` |
+| `failed` | Report failure status | `false` |
 
 
-## Biological Variables: Biomarkers
-| Filter | Definition | Type | Example |
-|--------|------------|------|---------|
-| `hrd_status` | HRD status | single entry | `HR Proficient` |
-| `hrd_value` | HRD value per Mb | single integer, comma-separated range | `0.0751` or `0.06,0.08` |
-| `msi_status` | MSI status | single entry | `MSS` |
-| `msi_value` | HRD value per Mb | single integer, comma-separated range | `2.075` or `1.5,2.5` |
-| `tmb_status` | TMB status | single entry | `TMB-L` |
-| `tmb_value` | HRD value per Mb | single integer, comma-separated range | `1.75` or `1,2` |
+## Numeric-Based Querying
+Query filters can be input using the flag specified below. Individual JSON file(s) will be output for reports satisfying specific query requirements. For specific (rounded) searching, input a single integer formatted as `num` (i.e., `2`). For range searching, input a list formatted as `[min,max]` (i.e., `[0,4]`).
+| Filter | Definition | Example |
+|--------|------------|---------|
+| `--date_reported` | Date report created | `2026/12/01` |
+| `--djerba_version` | Report version | `1.10.0` |
+| `--coverage` | Average read coverage | `75.0` or `70,80` |
+| `--purity` | Estimated tumour purity % | `75` or `70,80` |
+| `--callability` | Percent of callable genome | `75.0` or `70,80` |
+| `--ploidy` | Estimated chromosomal copy number | `2.75` or `2,3` |
+| `--cnv_pga` | Percent genome altered | `2.75` or `2,3` |
+| `--cnv_clinical` | Clinically relevant CNVs | `2.75` or `2,3` |
+| `--snv_oncologival` | Oncologically relevant SNVs | `2.75` or `2,3` |
+| `--fusion_clinical` | Clinically relevant fusions | `2.75` or `2,3` |
 
 
-## Biological Variables: Fusions
-| Filter | Definition | Type | Example |
-|--------|------------|------|---------|
-| `fusion_total` | Total number of fusion events | integer | `5` |
-| `fusion_clinical` | Number of clinically relevant fusions | integer | `5` |
-| `fusion_nccn` | Number of NCCN relevant fusions | integer | `5` |
-| `fusion` |  |  |  |
-| `gene` | Genes involved in fusion event, single or pair | single, list of 2 | `SDC1` or `SDC1, BCL2L11` |
-| `frame` | Frame | single entry | `no effect` |
-| `mutation effect` | Fusion effect | single entry | `Likely Loss-of-function` |
+## Variant-Based Querying
+Query filters can be input using the flag specified below. Individual JSON file(s) will be output for reports satisfying specific query requirements. For specific gene searches, input a singular string containing the gene code. For pairs of genes or multiple genes in one case, input a list formatted as `[gene1,gene2]` (i.e., `[SDC1,BCL2L11]`). Filters are stacked, thus applying a specific gene and type filter searches for that gene + effect (i.e., TP53 amplification, KRAS missense).
+| Filter | Definition | Example |
+|--------|------------|---------|
+| `--cnv_gene` | CNV-containing gene | `TP53` |
+| `--cnv_type` | CNV type associated with search | `amplification` |
+| `--snv_gene` | SNV-containing gene | `KRAS` |
+| `--snv_type` | SNV type asssociated with search | `Missense Mutation` |
+| `--fusion_gene` | Fusion-containing gene(s) | `SDC1` or `SDC1, BCL2L11` |
+| `--fusion_effect` | Fusion effect | `Likely Loss-of-function` |
+| `--fusion_frame` | Fusion associated frame | `out of frame` |
 
 
-
-## Biological Variables: CNV, SNV, Indels
-| Filter | Definition | Type | Example |
-|--------|------------|------|---------|
-| `cnv` | CNV gene (and variant type) | gene, gene + effect | `TP53` or `TP53 amplification` |
-| `snv` | SNV gene (and variant type) | gene, gene + effect | `TP53` or `TP53 Missense Mutation` |
+## Archive of Past Filters
+| Filter | Definition | Example |
+|--------|------------|---------|
+| `hrd_value` | HRD value per Mb | `0.0751` or `0.06,0.08` |
+| `msi_value` | HRD value per Mb | `2.075` or `1.5,2.5` |
+| `tmb_value` | HRD value per Mb | `1.75` or `1,2` |
