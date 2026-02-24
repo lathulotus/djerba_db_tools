@@ -2,7 +2,7 @@
 Variant-based analysis using filter flags to assess downloaded reports
 
 Usage (example):
-    python3 couchDB_variant_analysis.py --input_dir script1_output/ --snv_gene TP53 --output_dir filtered_TP53/
+    python3 couchDB_variant_search.py --input_dir script1_output/ --output_dir script3_output/
 """
 
 import json

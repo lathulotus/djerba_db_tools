@@ -2,7 +2,7 @@
 Numeric-based analysis using filter flags to assess downloaded reports
 
 Usage (example):
-    python3 couchDB_numeric_analysis.py --input_dir script1_output/ --coverage ">=115" --output_dir HRD_PASSED_FILTERED --plot
+    python3 couchDB_numeric_analysis.py --input_dir script1_output/ --output_dir script2_output/ --plot
 """
 
 import json
