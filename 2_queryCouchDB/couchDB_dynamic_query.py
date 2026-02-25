@@ -22,12 +22,10 @@ def read_login_file(file_path):
                 params[key.strip()] = value.strip()
     return params
 
-
 def read_filters_yaml(file_path):
     """ Reads YAML file containing query filters """
     with open(file_path, "r") as f:
         return yaml.safe_load(f)
-
 
 def get_couchdb_database(host, port, db_name, username=None, password=None):
     """ Connects to couchDB using login info and returns specified database object """
@@ -46,7 +44,6 @@ def get_couchdb_database(host, port, db_name, username=None, password=None):
     except Exception as e:
         print(f"Error connecting to couchDB: {e}")
         raise
-
 
 def build_mango_query(filters: dict):
     """ Builds a CouchDB Mango query selector based on dictionary of filters & ignores null filters """
@@ -85,7 +82,6 @@ def build_mango_query(filters: dict):
 
     return {"selector": selector}
 
-
 def download_documents(db, query, output_dir, page_size=500):
     """ Extracts matching documents across each page in database """
 
@@ -121,7 +117,6 @@ def download_documents(db, query, output_dir, page_size=500):
         skip += len(results)
     return downloaded_count
 
-
 def main():
     parser = argparse.ArgumentParser(description="Query CouchDB JSON documents using login and filter files")
     parser.add_argument("--login_file", required=True, help="Path to login.txt with CouchDB parameters")
@@ -155,7 +150,6 @@ def main():
             print(f"Successfully downloaded {total_count} documents.")
     except Exception as e:
         print(f"An error occurred: {e}")
-
 
 if __name__ == "__main__":
     main()
