@@ -7,6 +7,7 @@ Usage:
 
 import json
 import os
+import re
 import argparse
 from datetime import datetime
 import pandas as pd
