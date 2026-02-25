@@ -1,0 +1,69 @@
+query_pipeline:
+  run_extract: true
+  run_numeric: true
+  run_variant: true
+  run_summary: true
+  run_plot: true
+
+paths:
+  extract_out: output/extract/
+  numeric_out: output/numeric/
+  variant_out: output/variants/
+  summary_out: output/summary.xlsx
+  plot_out: output/figures/
+
+login_file:
+  host: djerba-dev-db.gsi.oicr.on.ca
+  port: 5984
+  db_name: djerba_copy_20260108
+  username: USERNAME
+  password: PASSWORD
+
+filters:
+  dynamic:
+    report_id: null
+    donor: null
+    project: null
+    study: null
+    report_type: null
+    cancer_type: null
+    oncotree_code: null
+    assay: null
+    biopsy_site: null
+    sample_type: null
+    hrd_status: null
+    msi_status: null
+    tmb_status: null
+    failed: null
+
+  numeric:
+    coverage: null
+    purity: null
+    callability: null
+    ploidy: null
+    cnv_pga: null
+    cnv_clinical: null
+    snv_oncogenic: null
+    fusion_clinical: null
+    djerba_version: null
+    date_reported: null
+
+  variant:
+    cnv_gene: null
+    cnv_type: null
+    snv_gene: null
+    snv_type: null
+    fusion_gene: null
+    fusion_effect: null
+    fusion_frame: null
+
+plot:
+  x: null
+  y: null
+  plot_type: null     # cumulative | scatter | line | bar | histogram
+  group_by: null
+  x_label: null
+  y_label: null
+  legend_label: null
+  title: null
+  output_file: plot.png
