@@ -50,6 +50,11 @@ def transform_value(raw_val, value_type):
     except Exception:
         return None
 
+def strip_time(val):
+    if isinstance(val, datetime):
+        return val.date()
+    return val
+
 string_fields = {
     "report_id": "_id",
     "donor": "config/input_params_helper/donor",
@@ -66,7 +71,6 @@ string_fields = {
     "tmb_status": "plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker alteration",
     "failed": "config/report_title/failed",
 }
-
 
 numeric_fields = {
     "coverage": ("plugins/sample/results/Coverage (mean)", 'float'),
@@ -124,11 +128,18 @@ def variant_data(data):
         "fusion_effects": ", ".join([e for e in fusion_effects if e])
     }
 
+def clean_list(val):
+    """ Cleaning list objects """
+    if isinstance(val, list):
+        return ", ".join(str(v) for v in val)
+    return val
+
 def extract_record(data):
     """ Extract data from JSONs """
     row = {} 
     for col, path in string_fields.items():
-        row[col] = get_nested(data, path)
+        raw = get_nested(data,path)
+        row[col] = clean_list(raw)
     for col, (path, vtype) in numeric_fields.items():
         raw = get_nested(data, path)
         row[col] = transform_value(raw, vtype)
@@ -155,6 +166,8 @@ def main():
         rows.append(extract_record(data))
 
     df = pd.DataFrame(rows)
+    if "date_reported" in df.columns:
+        df["date_reported"] = df["date_reported"].apply(strip_time)
 
     csv_path = f"{args.output_name}.csv"
     xlsx_path = f"{args.output_name}.xlsx"
