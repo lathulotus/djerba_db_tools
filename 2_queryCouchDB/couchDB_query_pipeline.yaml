@@ -11,6 +11,7 @@ paths:
   variant_out: output/variants/
   summary_out: output/summary.xlsx
   plot_out: output/figures/
+  log_file: output/pipeline_log.json
 
 login_file:
   host: djerba-dev-db.gsi.oicr.on.ca
