@@ -36,6 +36,9 @@ filters:
     tmb_status: null
     failed: null
 
+    page_size: null
+    count: null
+
   numeric:
     coverage: null
     purity: null
@@ -47,6 +50,8 @@ filters:
     fusion_clinical: null
     djerba_version: null
     date_reported: null
+
+    plot: null
 
   variant:
     cnv_gene: null
