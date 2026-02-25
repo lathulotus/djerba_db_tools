@@ -93,7 +93,7 @@ def main():
     
     if pipeline["run_summary"]:
         cmd = ["python3", "couchDB_summary.py",
-               "--input_dir", paths["numeric_out"],
+               "--input_dir", paths["variant_out"],
                "--output", paths["summary_out"]]
         run_step("summary", cmd, log)
     
