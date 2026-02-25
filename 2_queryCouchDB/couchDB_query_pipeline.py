@@ -50,15 +50,19 @@ def main():
     os.makedirs(paths["variant_out"], exist_ok=True)
     os.makedirs(paths["plot_out"], exist_ok=True)
     
+    login_file_path = os.path.join(paths["extract_out"], "login.yaml")
+    dynamic_filters_path = os.path.join(paths["extract_out"], "dynamic_filters.yaml")
+
+    with open(login_file_path, "w") as f:
+        yaml.dump(login, f)
+    with open(dynamic_filters_path, "w") as f:
+        yaml.dump(filters["dynamic"], f)
+    
     if pipeline["run_extract"]:
         cmd = ["python3", "couchDB_dynamic_query.py",
-               "--host", login["host"],
-               "--port", str(login["port"]),
-               "--db_name", login["db_name"],
-               "--username", login["username"],
-               "--password", login["password"],
-               "--output_dir", paths["extract_out"],
-               "--filters", args.config]
+               "--login_file", login_file_path,
+               "--filters_file", dynamic_filters_path,
+               "--output_dir", paths["extract_out"]]
         if filters["dynamic"].get("page_size") is not None:
             cmd += ["--page_size", str(filters["dynamic"]["page_size"])]
         if filters["dynamic"].get("count"):
