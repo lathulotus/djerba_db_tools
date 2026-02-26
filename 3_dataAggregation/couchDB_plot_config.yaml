@@ -1,0 +1,27 @@
+plot_type: cumulative
+x: null
+y: null
+color_by: null
+
+x_min: null
+x_max: null
+y_min: null
+y_max: null
+color_min: null
+color_max: null
+
+line_groups:
+  - label: null
+    filter: null
+    marker: null
+  - label: null
+    filter: null
+    marker: null
+
+x_label: null
+y_label: null
+color_legend_label: null
+group_legend_label: null
+title: null
+
+output_file: null
