@@ -3,7 +3,6 @@ query_pipeline:
   run_numeric: true
   run_variant: true
   run_summary: true
-  run_plot: true
 
 paths:
   extract_out: output/extract/
