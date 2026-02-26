@@ -62,14 +62,3 @@ filters:
     fusion_gene: null
     fusion_effect: null
     fusion_frame: null
-
-plot:
-  x: null
-  y: null
-  plot_type: null     # cumulative | scatter | line | bar | histogram
-  group_by: null
-  x_label: null
-  y_label: null
-  legend_label: null
-  title: null
-  output_file: plot.png

@@ -82,7 +82,8 @@ def main():
             cmd += ["--plot"]
         run_step("numeric", cmd, log)
     
-    if pipeline["run_variant"]:
+    variant_true = any(v is not None for v in filters["variant"].values())
+    if pipeline["run_variant"] and variant_true:
         cmd = ["python3", "couchDB_variant_search.py",
                "--input_dir", paths["numeric_out"],
                "--output_dir", paths["variant_out"]]
@@ -94,15 +95,8 @@ def main():
     if pipeline["run_summary"]:
         cmd = ["python3", "couchDB_summary.py",
             "--input_dir", paths["numeric_out"],
-            "--output_name", paths["summary_out"]]
+            "--output_name", os.path.splitext(paths["summary_out"])[0]]
         run_step("summary", cmd, log)
-
-    if pipeline["run_plot"]:
-        cmd = ["python3", "couchDB_plot.py",
-               "--summary_table", paths["summary_out"],
-               "--plot_config", args.config,
-               "--output_dir", paths["plot_out"]]
-        run_step("plot", cmd, log)
     
     with open(paths["log_file"], "w") as f:
         json.dump(log, f, indent=2)
