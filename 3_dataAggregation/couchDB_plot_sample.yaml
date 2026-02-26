@@ -1,0 +1,27 @@
+plot_type: cumulative
+x: date_reported
+y: null
+color_by: coverage
+
+x_min: null
+x_max: null
+y_min: null
+y_max: null
+color_min: 80
+color_max: 150
+
+line_groups:
+  - label: "Coverage >= 115"
+    filter: "coverage >= 115"
+    marker: "o"
+  - label: "Coverage < 115"
+    filter: "coverage < 115"
+    marker: "s"
+
+x_label: "Date Reported"
+y_label: "Total Number of Cases (Cumulative)"
+color_legend_label: "Mean Coverage (Daily Average)"
+group_legend_label: "Coverage Group"
+title: "Cumulative Case Accrual Over Time"
+
+output_file: figures/coverage_over_time.png
