@@ -1,5 +1,5 @@
 """
-Wrapper script thhat searches through CouchDB, retrieve reports, and filters for analysis.
+Wrapper script: retrieve -> variant? -> numeric? -> summary
     1. couchDB_dynamic_query.py: Run mango query using string-based filters to retrieve reports.
     2. couchDB_variant_search.py: Run variant-based filtering to output a subset of reports.
     3. couchDB_numeric_analysis.py: Run numeric filtering on reports and output subset of reports and plot.
@@ -30,7 +30,14 @@ def run_step(name, cmd, log):
 
     if result.returncode != 0:
         raise RuntimeError(f"{name} failed: {result.stderr}")
-    
+
+def latest_output(folders):
+    """ Search for latest output folder containing JSON files """
+    for folder in folders:
+        if any(f.endswith(".json") for f in os.listdir(folder)):
+            return folder
+    return None
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", required=True, help="Query pipeline configuration as YAML file")
@@ -45,33 +52,43 @@ def main():
     login = config["login_file"]
     pipeline = config["query_pipeline"]
     
-    os.makedirs(paths["extract_out"], exist_ok=True)
+    os.makedirs(paths["retrieve_out"], exist_ok=True)
     os.makedirs(paths["numeric_out"], exist_ok=True)
     os.makedirs(paths["variant_out"], exist_ok=True)
-    os.makedirs(paths["plot_out"], exist_ok=True)
     
-    login_file_path = os.path.join(paths["extract_out"], "login.yaml")
-    dynamic_filters_path = os.path.join(paths["extract_out"], "dynamic_filters.yaml")
+    login_file_path = os.path.join(paths["retrieve_out"], "login.yaml")
+    dynamic_filters_path = os.path.join(paths["retrieve_out"], "dynamic_filters.yaml")
 
     with open(login_file_path, "w") as f:
         yaml.dump(login, f)
     with open(dynamic_filters_path, "w") as f:
         yaml.dump(filters["dynamic"], f)
     
-    if pipeline["run_extract"]:
+    if pipeline["run_retrieve"]:
         cmd = ["python3", "couchDB_dynamic_query.py",
                "--login_file", login_file_path,
                "--filters_file", dynamic_filters_path,
-               "--output_dir", paths["extract_out"]]
+               "--output_dir", paths["retrieve_out"]]
         if filters["dynamic"].get("page_size") is not None:
             cmd += ["--page_size", str(filters["dynamic"]["page_size"])]
         if filters["dynamic"].get("count"):
             cmd += ["--count"]
-        run_step("extract", cmd, log)
+        run_step("retrieve", cmd, log)
     
-    if pipeline["run_numeric"]:
+    variant_input = latest_output([paths["numeric_out"], paths["retrieve_out"]])
+    if pipeline["run_variant"] and variant_input:
+        cmd = ["python3", "couchDB_variant_search.py",
+               "--input_dir", variant_input,
+               "--output_dir", paths["variant_out"]]
+        for key, val in filters["variant"].items():
+            if val is not None:
+                cmd += [f"--{key}", str(val)]
+        run_step("variant", cmd, log)
+    
+    numeric_input = latest_output([paths["variant_out"], paths["retrieve_out"]])
+    if pipeline["run_numeric"] and numeric_input:
         cmd = ["python3", "couchDB_numeric_analysis.py",
-               "--input_dir", paths["extract_out"],
+               "--input_dir", numeric_input,
                "--output_dir", paths["numeric_out"]]
         for key, val in filters["numeric"].items():
             if key == "plot":
@@ -81,20 +98,11 @@ def main():
         if filters["numeric"].get("plot"):
             cmd += ["--plot"]
         run_step("numeric", cmd, log)
-    
-    variant_true = any(v is not None for v in filters["variant"].values())
-    if pipeline["run_variant"] and variant_true:
-        cmd = ["python3", "couchDB_variant_search.py",
-               "--input_dir", paths["numeric_out"],
-               "--output_dir", paths["variant_out"]]
-        for key, val in filters["variant"].items():
-            if val is not None:
-                cmd += [f"--{key}", str(val)]
-        run_step("variant", cmd, log)
-    
-    if pipeline["run_summary"]:
+     
+    summary_input = latest_output([paths["numeric_out"], paths["variant_out"], paths["retrieve_out"]])
+    if pipeline["run_summary"] and summary_input:
         cmd = ["python3", "couchDB_summary.py",
-            "--input_dir", paths["numeric_out"],
+            "--input_dir", summary_input,
             "--output_name", os.path.splitext(paths["summary_out"])[0]]
         run_step("summary", cmd, log)
     
@@ -103,3 +111,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
