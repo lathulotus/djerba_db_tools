@@ -81,6 +81,7 @@ numeric_fields = {
     "ploidy": (["plugins/sample/results/Estimated Ploidy", "report/sample_info_and_quality/Estimated Ploidy"], 'float'),
     "djerba_version": (["core/core_version", "report/djerba_version"], 'version'),
     "date_reported": (["plugins/supplement.body/results/extract_date", "last_updated"], 'date'),
+
     "cnv_pga": ("plugins/wgts.cnv_purple/results/percent genome altered", 'float'),
     "cnv_clinical": (["plugins/wgts.cnv_purple/results/clinically relevant variants", "report/oncogenic_somatic_CNVs/Clinically relevant variants"], 'float'),
     "snv_oncogenic": (["plugins/wgts.snv_indel/results/oncogenic mutations", "report/small_mutations_and_indels/Clinically relevant variants"], 'float'),
@@ -139,11 +140,12 @@ def extract_path(data, paths):
     """ Extract data from path associated with specific report """
     for p in paths:
         val = get_nested(data, p)
+        print(f"Path: {p} \n Value: {val}")
         if val not in (None, "", []):
             return val
     return None
 
-def extract_record(data, paths):
+def extract_record(data):
     """ Extract data from JSONs """
     row = {}
     for col, paths in string_fields.items():
