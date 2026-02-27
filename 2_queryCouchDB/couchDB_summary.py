@@ -59,39 +59,39 @@ def strip_time(val):
 
 string_fields = {
     "report_id": "_id",
-    "donor": "config/input_params_helper/donor",
-    "project": "config/input_params_helper/project",
-    "study": "plugins/case_overview/results/study",
-    "report_type": "plugins/case_overview/attributes",
-    "cancer_type": "plugins/case_overview/results/primary_cancer",
-    "oncotree_code": "plugins/sample/results/OncoTree code",
-    "assay": "config/input_params_helper/assay",
-    "biopsy_site": "plugins/case_overview/results/site_of_biopsy",
-    "sample_type": "plugins/sample/results/Sample Type",
-    "hrd_status": "plugins/genomic_landscape/results/genomic_biomarkers/HRD/Genomic biomarker alteration",
-    "msi_status": "plugins/genomic_landscape/results/genomic_biomarkers/MSI/Genomic biomarker alteration",
-    "tmb_status": "plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker alteration",
-    "failed": "config/report_title/failed",
+    "donor": (["config/input_params_helper/donor", "config/tar_input_params_helper/donor", "report/patient_info/Patient Study ID"]),
+    "project": (["config/input_params_helper/project", "config/tar_input_params_helper/project", "report/patient_info/Project"]),
+    "study": (["plugins/case_overview/results/study", "report/patient_info/Study"]),
+    "report_type": (["plugins/case_overview/attributes"]),
+    "cancer_type": (["plugins/case_overview/results/primary_cancer", "report/patient_info/Primary cancer"]),
+    "oncotree_code": (["plugins/sample/results/OncoTree code" "report/sample_info_and_quality/OncoTree code"]),
+    "assay": (["config/input_params_helper/assay", "report/assay_type"]),
+    "biopsy_site": (["plugins/case_overview/results/site_of_biopsy", "report/patient_info/Site of biopsy*"]),
+    "sample_type": (["plugins/sample/results/Sample Type", "report/sample_info_and_quality/Sample Type"]),
+    "hrd_status": (["plugins/genomic_landscape/results/genomic_biomarkers/HRD/Genomic biomarker alteration"]),
+    "msi_status": (["plugins/genomic_landscape/results/genomic_biomarkers/MSI/Genomic biomarker alteration"]),
+    "tmb_status": (["plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker alteration"]),
+    "failed": (["config/report_title/failed", "report/failed"]),
 }
 
 numeric_fields = {
-    "coverage": ("plugins/sample/results/Coverage (mean)", 'float'),
-    "purity": ("config/genomic_landscape/purity", 'float'),
-    "callability": ("plugins/sample/results/Callability (%)", 'float'),
-    "ploidy": ("plugins/sample/results/Estimated Ploidy", 'float'),
-    "djerba_version": ("core/core_version", 'version'),
-    "date_reported": ("plugins/supplement.body/results/extract_date", 'date'),
+    "coverage": (["plugins/sample/results/Coverage (mean)", "report/sample_info_and_quality/Coverage (mean)"], 'float'),
+    "purity": (["config/genomic_landscape/purity", "supplementary/config/discovered/purity"], 'float'),
+    "callability": (["plugins/sample/results/Callability (%)", "report/sample_info_and_quality/Callability (%)"], 'float'),
+    "ploidy": (["plugins/sample/results/Estimated Ploidy", "report/sample_info_and_quality/Estimated Ploidy"], 'float'),
+    "djerba_version": (["core/core_version", "report/djerba_version"], 'version'),
+    "date_reported": (["plugins/supplement.body/results/extract_date", "last_updated"], 'date'),
 
     "cnv_pga": ("plugins/wgts.cnv_purple/results/percent genome altered", 'float'),
-    "cnv_clinical": ("plugins/wgts.cnv_purple/results/clinically relevant variants", 'float'),
-    "snv_oncogenic": ("plugins/wgts.snv_indel/results/oncogenic mutations", 'float'),
-    "fusion_clinical": ("plugins/fusion/results/Clinically relevant variants", 'float'),
+    "cnv_clinical": (["plugins/wgts.cnv_purple/results/clinically relevant variants", "report/oncogenic_somatic_CNVs/Clinically relevant variants"], 'float'),
+    "snv_oncogenic": (["plugins/wgts.snv_indel/results/oncogenic mutations", "report/small_mutations_and_indels/Clinically relevant variants"], 'float'),
+    "fusion_clinical": (["plugins/fusion/results/Clinically relevant variants", "report/structural_variants_and_fusions/Clinically relevant variants"], 'float'),
 }
 
 variant_fields = {
-    "cnv": "plugins/wgts.cnv_purple/results/body",
-    "snv": "plugins/wgts.snv_indel/results/Body",
-    "fusion": "plugins/fusion/results/body"
+    "cnv": (["plugins/wgts.cnv_purple/results/body", "report/oncogenic_somatic_CNVs/Body"]),
+    "snv": (["plugins/wgts.snv_indel/results/Body", "report/small_mutations_and_indels/Body"]),
+    "fusion": (["plugins/fusion/results/body", "report/structural_variants_and_fusions/Body"])
 }
 
 def variant_data(data):
@@ -136,15 +136,27 @@ def clean_list(val):
         return ", ".join(str(v) for v in val)
     return val
 
-def extract_record(data):
+def extract_path(data, paths):
+    """ Extract data from path associated with report version """
+    for p in paths:
+        val = get_nested(data, p)
+        if val not in (None, "", []):
+            return val
+    return None
+
+def extract_record(data, paths):
     """ Extract data from JSONs """
-    row = {} 
-    for col, path in string_fields.items():
-        raw = get_nested(data,path)
+    row = {}
+    for col, paths in string_fields.items():
+        if isinstance(paths, str):
+            paths = [paths]
+        raw = extract_path(data, paths)
         row[col] = clean_list(raw)
-    for col, (path, vtype) in numeric_fields.items():
-        raw = get_nested(data, path)
-        row[col] = transform_value(raw, vtype)
+    for col, (paths, vtype) in numeric_fields.items():
+        if isinstance(paths, str):
+            paths = [paths]
+        raw = extract_path(data, paths)
+        row[col] = clean_list(raw, vtype)
     row.update(variant_data(data))
     return row
 
