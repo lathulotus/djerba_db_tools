@@ -21,14 +21,17 @@ def parse_version(version_str):
     except:
         return (0,)
     
-def get_nested(data, path):
+def get_nested(data, paths):
     """ Get nested values from dict """
-    keys = path.split('/')
-    for key in keys:
-        if isinstance(data, dict):
-            data = data.get(key)
-        else:
-            return None
+    if isinstance(paths, str):
+        paths = [paths]
+    for path in paths:
+        keys = path.split('/')
+        for key in keys:
+            if isinstance(data, dict):
+                data = data.get(key)
+            else:
+                return None
     return data
 
 def transform_value(raw_val, value_type):
@@ -142,7 +145,6 @@ def extract_path(data, paths):
     """ Extract data from path associated with specific report """
     for p in paths:
         val = get_nested(data, p)
-        print(f"Path: {p} \n Value: {val}")
         if val not in (None, "", []):
             return val
     return None
@@ -154,7 +156,7 @@ def extract_record(data):
         if isinstance(paths, str):
             paths = [paths]
         raw = extract_path(data, paths)
-        row[col] = clean_list(raw, val_type)
+        row[col] = clean_list(raw)
     for col, (paths, val_type) in numeric_fields.items():
         if isinstance(paths, str):
             paths = [paths]
