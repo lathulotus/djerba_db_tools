@@ -130,10 +130,12 @@ def variant_data(data):
         "fusion_effects": ", ".join([e for e in fusion_effects if e])
     }
 
-def clean_list(val):
+def clean_list(val, val_type=None):
     """ Cleaning list objects """
     if isinstance(val, list):
         return ", ".join(str(v) for v in val)
+    if val_type:
+        return transform_value(val, val_type)
     return val
 
 def extract_path(data, paths):
@@ -152,12 +154,12 @@ def extract_record(data):
         if isinstance(paths, str):
             paths = [paths]
         raw = extract_path(data, paths)
-        row[col] = clean_list(raw)
-    for col, (paths, vtype) in numeric_fields.items():
+        row[col] = clean_list(raw, val_type)
+    for col, (paths, val_type) in numeric_fields.items():
         if isinstance(paths, str):
             paths = [paths]
         raw = extract_path(data, paths)
-        row[col] = clean_list(raw, vtype)
+        row[col] = clean_list(raw, val_type)
     row.update(variant_data(data))
     return row
 
