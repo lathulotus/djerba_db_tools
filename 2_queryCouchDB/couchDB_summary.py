@@ -27,14 +27,6 @@ def get_nested(data, path):
     for key in keys:
         if isinstance(data, dict):
             data = data.get(key)
-        elif isinstance(data, list):
-            # If it's a list, check if any element contains the key
-            data = [item.get(key) if isinstance(item, dict) else None for item in data]
-            data = [item for item in data if item is not None]
-            if data:
-                data = data[0]  # Choose the first valid item
-            else:
-                return None
         else:
             return None
     return data
@@ -56,7 +48,7 @@ def transform_value(raw_val, value_type):
         if value_type == "version":
             return parse_version(raw_val)
         return raw_val
-    
+
     except Exception:
         return None
 
@@ -72,7 +64,7 @@ string_fields = {
     "study": (["plugins/case_overview/results/study", "report/patient_info/Study"]),
     "report_type": (["plugins/case_overview/attributes"]),
     "cancer_type": (["plugins/case_overview/results/primary_cancer", "report/patient_info/Primary cancer"]),
-    "oncotree_code": (["plugins/sample/results/OncoTree code", "report/sample_info_and_quality/OncoTree code"]),
+    "oncotree_code": (["plugins/sample/results/OncoTree code" "report/sample_info_and_quality/OncoTree code"]),
     "assay": (["config/input_params_helper/assay", "report/assay_type"]),
     "biopsy_site": (["plugins/case_overview/results/site_of_biopsy", "report/patient_info/Site of biopsy*"]),
     "sample_type": (["plugins/sample/results/Sample Type", "report/sample_info_and_quality/Sample Type"]),
@@ -89,8 +81,7 @@ numeric_fields = {
     "ploidy": (["plugins/sample/results/Estimated Ploidy", "report/sample_info_and_quality/Estimated Ploidy"], 'float'),
     "djerba_version": (["core/core_version", "report/djerba_version"], 'version'),
     "date_reported": (["plugins/supplement.body/results/extract_date", "last_updated"], 'date'),
-    
-    "cnv_pga": (["plugins/wgts.cnv_purple/results/percent genome altered"], 'float'),
+    "cnv_pga": ("plugins/wgts.cnv_purple/results/percent genome altered", 'float'),
     "cnv_clinical": (["plugins/wgts.cnv_purple/results/clinically relevant variants", "report/oncogenic_somatic_CNVs/Clinically relevant variants"], 'float'),
     "snv_oncogenic": (["plugins/wgts.snv_indel/results/oncogenic mutations", "report/small_mutations_and_indels/Clinically relevant variants"], 'float'),
     "fusion_clinical": (["plugins/fusion/results/Clinically relevant variants", "report/structural_variants_and_fusions/Clinically relevant variants"], 'float'),
@@ -138,12 +129,10 @@ def variant_data(data):
         "fusion_effects": ", ".join([e for e in fusion_effects if e])
     }
 
-def clean_list(val, value_type=None):
+def clean_list(val):
     """ Cleaning list objects """
     if isinstance(val, list):
         return ", ".join(str(v) for v in val)
-    if value_type:
-        return transform_value(val, value_type)
     return val
 
 def extract_path(data, paths):
@@ -154,7 +143,7 @@ def extract_path(data, paths):
             return val
     return None
 
-def extract_record(data):
+def extract_record(data, paths):
     """ Extract data from JSONs """
     row = {}
     for col, paths in string_fields.items():
