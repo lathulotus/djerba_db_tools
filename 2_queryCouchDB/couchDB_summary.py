@@ -137,9 +137,10 @@ def clean_list(val):
     return val
 
 def extract_path(data, paths):
-    """ Extract data from path associated with report version """
+    """ Extract data from path associated with specific report """
     for p in paths:
         val = get_nested(data, p)
+        print(f"Path: {p} \n Value: {val}")
         if val not in (None, "", []):
             return val
     return None
