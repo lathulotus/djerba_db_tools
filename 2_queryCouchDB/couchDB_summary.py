@@ -91,10 +91,9 @@ numeric_fields = {
     "djerba_version": (["core/core_version", "report/djerba_version"], 'version'),
     "date_reported": (["plugins/supplement.body/results/extract_date", "last_updated"], 'date'),
 
-    "cnv_pga": ("plugins/wgts.cnv_purple/results/percent genome altered", 'float'),
     "cnv_clinical": (["plugins/wgts.cnv_purple/results/clinically relevant variants", "report/oncogenic_somatic_CNVs/Clinically relevant variants"], 'float'),
     "snv_oncogenic": (["plugins/wgts.snv_indel/results/oncogenic mutations", "report/small_mutations_and_indels/Clinically relevant variants"], 'float'),
-    "fusion_clinical": (["plugins/fusion/results/Clinically relevant variants", "report/structural_variants_and_fusions/Clinically relevant variants"], 'float'),
+    "fusion_clinical": (["plugins/fusion/results/Clinically relevant variants", "report/structural_variants_and_fusions/Clinically relevant variants"], 'float')
 }
 
 variant_fields = {
@@ -194,6 +193,30 @@ def extract_path(data, paths):
             return val
     return None
 
+def extract_biomarker(data):
+    """ Extract biomarker data from JSON """
+    body = get_nested(data, "report/genomic_biomarkers/Body")
+    if not isinstance(body, list):
+        return{}
+    results = {"hrd_status": None, "msi_status": None, "tmb_status": None}
+
+    for entry in body:
+        if not isinstance(entry, dict):
+            continue
+        name = entry.get("Alteration")
+        status = entry.get("Genomic biomarker alteration")
+
+        if not name or not status:
+            continue
+        key = name.strip().upper()
+        if key == "HRD":
+            results["hrd_status"] = status
+        elif key == "MSI":
+            results["msi_status"] = status
+        elif key == "TMB":
+            results["tmb_status"] = status
+    return results
+
 def extract_record(data):
     """ Extract data from JSONs """
     row = {}
@@ -216,6 +239,12 @@ def extract_record(data):
         row[col] = clean_list(raw, val_type)
 
     row.update(variant_data(data))
+
+    biomarker = extract_biomarker(data)
+    for key in ["hrd_status", "msi_status", "tmb_status"]:
+        if not row.get(key):
+            if biomarker.get(key):
+                row[key] = biomarker[key]
     return row
 
 def main():

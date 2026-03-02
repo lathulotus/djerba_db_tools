@@ -44,7 +44,6 @@ filters:
     purity: null
     callability: null
     ploidy: null
-    cnv_pga: null
     cnv_clinical: null
     snv_oncogenic: null
     fusion_clinical: null
