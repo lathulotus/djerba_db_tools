@@ -147,6 +147,21 @@ def variant_data(data):
         "fusion_effects": ", ".join([e for e in fusion_effects if e])
     }
 
+def normalize_vals(val, mapping=None, casefold=True):
+    """ Normalize capitalization and minor differences in values """
+    if val is None:
+        return None
+    if isinstance(val, str):
+        v = val.strip()
+        v_key = v.casefold() if casefold else v
+
+        if mapping and v_key in mapping:
+            return mapping[v_key]
+        return v
+    return val
+failed_map = {"false": False, "true": True,}
+hrd_map = {"hr proficient": "HRP", "hr-p": "HRP", "hr deficient": "HRD", "hr-d": "HRD"}
+
 def clean_list(val, val_type=None):
     """ Cleaning list objects """
     if isinstance(val, list):
@@ -162,7 +177,7 @@ def extract_path(data, paths):
             val = (
                 data.get("report", {})
                 .get("patient_info", {})
-                .get("Site of biopsy/surgery", {}))
+                .get("Site of biopsy/surgery"))
         else:
             val = get_nested(data, p)
         if val not in (None, "", []):
@@ -176,12 +191,20 @@ def extract_record(data):
         if isinstance(paths, str):
             paths = [paths]
         raw = extract_path(data, paths)
-        row[col] = clean_list(raw)
+
+        if col == "failed":
+            row[col] = normalize_vals(raw, failed_map)
+        elif col == "hrd_status":
+            row[col] = normalize_vals(raw, hrd_map)
+        else:
+            row[col] = clean_list(raw)
+
     for col, (paths, val_type) in numeric_fields.items():
         if isinstance(paths, str):
             paths = [paths]
         raw = extract_path(data, paths)
         row[col] = clean_list(raw, val_type)
+
     row.update(variant_data(data))
     return row
 
