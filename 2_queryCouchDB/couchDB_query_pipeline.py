@@ -56,17 +56,17 @@ def main():
     os.makedirs(paths["numeric_out"], exist_ok=True)
     os.makedirs(paths["variant_out"], exist_ok=True)
     
-    login_file_path = os.path.join(paths["retrieve_out"], "login.yaml")
+    #login_file_path = os.path.join(paths["retrieve_out"], "login.yaml")
     dynamic_filters_path = os.path.join(paths["retrieve_out"], "dynamic_filters.yaml")
 
-    with open(login_file_path, "w") as f:
-        yaml.dump(login, f)
+    #with open(login_file_path, "w") as f:
+        #yaml.dump(login, f)
     with open(dynamic_filters_path, "w") as f:
         yaml.dump(filters["dynamic"], f)
     
     if pipeline["run_retrieve"]:
         cmd = ["python3", "couchDB_dynamic_query.py",
-               "--login_file", login_file_path,
+               "--login_file", args.config,
                "--filters_file", dynamic_filters_path,
                "--output_dir", paths["retrieve_out"]]
         if filters["dynamic"].get("page_size") is not None:

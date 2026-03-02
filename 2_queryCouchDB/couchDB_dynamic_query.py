@@ -16,11 +16,15 @@ def read_login_file(file_path):
     """ Reads input file and returns dict with couchDB login info """
     params = {}
     with open(file_path, "r") as f:
-        for line in f:
-            if ':' in line:
-                key, value = line.strip().split(':', 1)
-                params[key.strip()] = value.strip()
-    return params
+        data = yaml.safe_load(f)
+        #for line in f:
+            #if ':' in line:
+                #key, value = line.strip().split(':', 1)
+                #params[key.strip()] = value.strip()
+    # full pipeline
+    if "login_file" in data:
+        return data["login_file"]
+    return data
 
 def read_filters_yaml(file_path):
     """ Reads YAML file containing query filters """
