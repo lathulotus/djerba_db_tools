@@ -73,7 +73,7 @@ string_fields = {
     "study": (["plugins/case_overview/results/study", "report/patient_info/Study"]),
     "report_type": (["plugins/case_overview/attributes"]),
     "cancer_type": (["plugins/case_overview/results/primary_cancer", "report/patient_info/Primary cancer"]),
-    "oncotree_code": (["plugins/sample/results/OncoTree code" "report/sample_info_and_quality/OncoTree code"]),
+    "oncotree_code": (["plugins/sample/results/OncoTree code", "report/sample_info_and_quality/OncoTree code"]),
     "assay": (["config/input_params_helper/assay", "report/assay_type"]),
     "biopsy_site": (["plugins/case_overview/results/site_of_biopsy", "report/patient_info/Site of biopsy/surgery"]),        # NEED TO FIX: Pathways with "Site of biopsy/surgery" (REPORT 100_*)
     "sample_type": (["plugins/sample/results/Sample Type", "report/sample_info_and_quality/Sample Type"]),
@@ -98,16 +98,16 @@ numeric_fields = {
 }
 
 variant_fields = {
-    "cnv": (["plugins/wgts.cnv_purple/results/body", "report/oncogenic_somatic_CNVs/Body"]),
-    "snv": (["plugins/wgts.snv_indel/results/Body", "report/small_mutations_and_indels/Body"]),
-    "fusion": (["plugins/fusion/results/body", "report/structural_variants_and_fusions/Body"])
+    "cnv": ["plugins/wgts.cnv_purple/results/body", "report/oncogenic_somatic_CNVs/Body"],
+    "snv": ["plugins/wgts.snv_indel/results/Body", "report/small_mutations_and_indels/Body"],
+    "fusion": ["plugins/fusion/results/body", "report/structural_variants_and_fusions/Body"]
 }
 
 def variant_data(data):
     """Extract SNV, CNV, and fusion values """
-    snvs = get_nested(data, variant_fields["snv"])
-    cnvs = get_nested(data, variant_fields["cnv"])
-    fusions = get_nested(data, variant_fields["fusion"])
+    snvs = extract_path(data, variant_fields["snv"])
+    cnvs = extract_path(data, variant_fields["cnv"])
+    fusions = extract_path(data, variant_fields["fusion"])
     
     snv_genes, snv_types = [], []
     if isinstance(snvs, list):
