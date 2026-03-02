@@ -137,6 +137,14 @@ def variant_data(data):
             if isinstance(entry, dict):
                 fusion_pairs.append(normalize_keys(entry, ["Fusion", "fusion"]))
                 fusion_effects.append(normalize_keys(entry, ["Mutation effect", "mutation effect"]))
+    fusion_events = []
+    fusion_exists = set()
+    for pair, effect in zip(fusion_pairs, fusion_effects):
+        if (pair, effect) not in fusion_exists:
+            fusion_exists.add((pair, effect))
+            fusion_events.append((pair, effect))
+    fusion_pairs = [pair for pair, _ in fusion_events]
+    fusion_effects = [effect for _, effect in fusion_events]
     
     return {
         "cnv_genes": ", ".join([g for g in cnv_genes if g]),
