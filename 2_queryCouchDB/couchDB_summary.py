@@ -75,9 +75,9 @@ string_fields = {
     "cancer_type": (["plugins/case_overview/results/primary_cancer", "report/patient_info/Primary cancer"]),
     "oncotree_code": (["plugins/sample/results/OncoTree code", "report/sample_info_and_quality/OncoTree code"]),
     "assay": (["config/input_params_helper/assay", "report/assay_type"]),
-    "biopsy_site": (["plugins/case_overview/results/site_of_biopsy", "report/patient_info/Site of biopsy/surgery"]),        # NEED TO FIX: Pathways with "Site of biopsy/surgery" (REPORT 100_*)
+    "biopsy_site": (["plugins/case_overview/results/site_of_biopsy", "report/patient_info/Site of biopsy/surgery"]),
     "sample_type": (["plugins/sample/results/Sample Type", "report/sample_info_and_quality/Sample Type"]),
-    "hrd_status": (["plugins/genomic_landscape/results/genomic_biomarkers/HRD/Genomic biomarker alteration"]),              # NEED TO FIX: Some reports store biomarkers within array (REPORT C2P*)
+    "hrd_status": (["plugins/genomic_landscape/results/genomic_biomarkers/HRD/Genomic biomarker alteration"]),
     "msi_status": (["plugins/genomic_landscape/results/genomic_biomarkers/MSI/Genomic biomarker alteration"]),
     "tmb_status": (["plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker alteration"]),
     "failed": (["config/report_title/failed", "report/failed"]),
@@ -124,13 +124,14 @@ def variant_data(data):
                 cnv_genes.append(normalize_keys(entry, ["Gene", "gene"]))
                 cnv_types.append(normalize_keys(entry, ["Alteration", "alteration"]))
     
-    snv_genes, snv_types = [], []
+    snv_genes, snv_protein, snv_types = [], [], []
     if isinstance(snvs, list):
         for entry in snvs:
             if isinstance(entry, dict):
                 snv_genes.append(normalize_keys(entry, ["Gene", "gene"]))
                 snv_types.append(normalize_keys(entry, ["Type", "type"]))
-    
+                snv_protein.append(normalize_keys(entry, ["Protein", "protein"]))
+
     fusion_pairs, fusion_effects = [], []
     if isinstance(fusions, list):
         for entry in fusions:
@@ -151,6 +152,7 @@ def variant_data(data):
         "cnv_types": ", ".join([t for t in cnv_types if t]),
         "snv_genes": ", ".join([g for g in snv_genes if g]),
         "snv_types": ", ".join([t for t in snv_types if t]),
+        "snv_protein": ", ".join([p for p in snv_protein if p]),
         "fusion_pairs": ", ".join([f for f in fusion_pairs if f]),
         "fusion_effects": ", ".join([e for e in fusion_effects if e])
     }
