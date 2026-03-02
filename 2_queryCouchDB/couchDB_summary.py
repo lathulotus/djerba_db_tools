@@ -68,27 +68,28 @@ def strip_time(val):
 
 string_fields = {
     "report_id": "_id",
-    "donor": (["config/input_params_helper/donor", "config/tar_input_params_helper/donor", "report/patient_info/Patient Study ID"]),
-    "project": (["config/input_params_helper/project", "config/tar_input_params_helper/project", "supplementary/config/inputs/projectid", "report/patient_info/Project"]),
-    "study": (["plugins/case_overview/results/study", "report/patient_info/Study"]),
-    "report_type": (["plugins/case_overview/attributes"]),
-    "cancer_type": (["plugins/case_overview/results/primary_cancer", "report/patient_info/Primary cancer"]),
+    "donor": (["config/input_params_helper/donor", "config/tar_input_params_helper/donor", "report/patient_info/Patient Study ID", "plugins/pwgs.case_overview/results/donor"]),
+    "project": (["config/input_params_helper/project", "config/tar_input_params_helper/project", "supplementary/config/inputs/projectid", "report/patient_info/Project", "config/pwgs_provenance_helper/project"]),
+    "study": (["plugins/case_overview/results/study", "report/patient_info/Study", "config/input_params_helper/study", "plugins/pwgs.case_overview/results/study_title", "plugins/pwgs.case_overview/results/study"]),
+    "report_type": (["plugins/case_overview/attributes", "config/pwgs.case_overview/attributes"]),
+    "cancer_type": (["plugins/case_overview/results/primary_cancer", "report/patient_info/Primary cancer", "config/pwgs.case_overview/primary_cancer"]),
     "oncotree_code": (["plugins/sample/results/OncoTree code", "report/sample_info_and_quality/OncoTree code"]),
-    "assay": (["config/input_params_helper/assay", "report/assay_type"]),
+    "assay": (["config/input_params_helper/assay", "report/assay_type", "config/supplement.body/assay", "plugins/pwgs.case_overview/results/assay"]),
     "biopsy_site": (["plugins/case_overview/results/site_of_biopsy", "report/patient_info/Site of biopsy/surgery"]),
     "sample_type": (["plugins/sample/results/Sample Type", "report/sample_info_and_quality/Sample Type"]),
     "hrd_status": (["plugins/genomic_landscape/results/genomic_biomarkers/HRD/Genomic biomarker alteration"]),
     "msi_status": (["plugins/genomic_landscape/results/genomic_biomarkers/MSI/Genomic biomarker alteration"]),
     "tmb_status": (["plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker alteration"]),
     "failed": (["config/report_title/failed", "report/failed"]),
+    "ctdna_status": (["plugins/pwgs.summary/results/ctdna_detection"])
 }
 
 numeric_fields = {
-    "coverage": (["plugins/sample/results/Coverage (mean)", "report/sample_info_and_quality/Coverage (mean)"], 'float'),
+    "coverage": (["plugins/sample/results/Coverage (mean)", "report/sample_info_and_quality/Coverage (mean)", "plugins/pwgs.sample/results/coverage"], 'float'),
     "purity": (["config/genomic_landscape/purity", "supplementary/config/discovered/purity"], 'float'),
     "callability": (["plugins/sample/results/Callability (%)", "report/sample_info_and_quality/Callability (%)"], 'float'),
     "ploidy": (["plugins/sample/results/Estimated Ploidy", "report/sample_info_and_quality/Estimated Ploidy"], 'float'),
-    "djerba_version": (["core/core_version", "report/djerba_version"], 'version'),
+    "djerba_version": (["core/core_version", "report/djerba_version", "plugins/case_overview/version"], 'version'),
     "date_reported": (["plugins/supplement.body/results/extract_date", "last_updated"], 'date'),
 
     "cnv_clinical": (["plugins/wgts.cnv_purple/results/clinically relevant variants", "report/oncogenic_somatic_CNVs/Clinically relevant variants"], 'float'),
