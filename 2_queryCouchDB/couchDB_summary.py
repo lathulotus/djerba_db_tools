@@ -47,7 +47,13 @@ def transform_value(raw_val, value_type):
         if value_type == "int":
             return int(raw_val)
         if value_type == "date":
-            return datetime.strptime(raw_val, "%Y-%m-%d")
+            date_fmts = ["%Y-%m-%d", "%d/%m/%Y %H:%M", "%d/%m/%Y_%H:%M:%S", "%d/%m/%Y_%H:%M:%SZ"]
+            for fmt in date_fmts:
+                try:
+                    return datetime.strptime(raw_val, fmt)
+                except:
+                    pass
+            #return datetime.strptime(raw_val, "%Y-%m-%d")
         if value_type == "version":
             return parse_version(raw_val)
         return raw_val
@@ -186,7 +192,7 @@ def main():
 
     df = pd.DataFrame(rows)
     if "date_reported" in df.columns:
-        df["date_reported"] = df["date_reported"].apply(strip_time)
+        df["date_reported"] = pd.to_datetime(df["date_reported"], errors="coerce", dayfirst=True).dt.strftime("%Y-%m-%d")
 
     csv_path = f"{args.output_name}.csv"
     xlsx_path = f"{args.output_name}.xlsx"
