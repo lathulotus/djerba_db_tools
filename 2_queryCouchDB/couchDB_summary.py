@@ -69,9 +69,9 @@ string_fields = {
     "cancer_type": (["plugins/case_overview/results/primary_cancer", "report/patient_info/Primary cancer"]),
     "oncotree_code": (["plugins/sample/results/OncoTree code" "report/sample_info_and_quality/OncoTree code"]),
     "assay": (["config/input_params_helper/assay", "report/assay_type"]),
-    "biopsy_site": (["plugins/case_overview/results/site_of_biopsy", "report/patient_info/Site of biopsy*"]),
+    "biopsy_site": (["plugins/case_overview/results/site_of_biopsy", "report/patient_info/Site of biopsy/surgery"]),        # NEED TO FIX: Pathways with "Site of biopsy/surgery" (REPORT 100_*)
     "sample_type": (["plugins/sample/results/Sample Type", "report/sample_info_and_quality/Sample Type"]),
-    "hrd_status": (["plugins/genomic_landscape/results/genomic_biomarkers/HRD/Genomic biomarker alteration"]),
+    "hrd_status": (["plugins/genomic_landscape/results/genomic_biomarkers/HRD/Genomic biomarker alteration"]),              # NEED TO FIX: Some reports store biomarkers within array (REPORT C2P*)
     "msi_status": (["plugins/genomic_landscape/results/genomic_biomarkers/MSI/Genomic biomarker alteration"]),
     "tmb_status": (["plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker alteration"]),
     "failed": (["config/report_title/failed", "report/failed"]),
