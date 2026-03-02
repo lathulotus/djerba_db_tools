@@ -69,7 +69,7 @@ def strip_time(val):
 string_fields = {
     "report_id": "_id",
     "donor": (["config/input_params_helper/donor", "config/tar_input_params_helper/donor", "report/patient_info/Patient Study ID"]),
-    "project": (["config/input_params_helper/project", "config/tar_input_params_helper/project", "report/patient_info/Project"]),
+    "project": (["config/input_params_helper/project", "config/tar_input_params_helper/project", "supplementary/config/inputs/projectid", "report/patient_info/Project"]),
     "study": (["plugins/case_overview/results/study", "report/patient_info/Study"]),
     "report_type": (["plugins/case_overview/attributes"]),
     "cancer_type": (["plugins/case_overview/results/primary_cancer", "report/patient_info/Primary cancer"]),
