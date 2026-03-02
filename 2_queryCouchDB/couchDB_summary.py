@@ -108,33 +108,41 @@ def variant_data(data):
     snvs = extract_path(data, variant_fields["snv"])
     cnvs = extract_path(data, variant_fields["cnv"])
     fusions = extract_path(data, variant_fields["fusion"])
-    
-    snv_genes, snv_types = [], []
-    if isinstance(snvs, list):
-        for entry in snvs:
-            if isinstance(entry, dict):
-                snv_genes.append(entry.get("Gene"))
-                snv_types.append(entry.get("type"))
+
+    def normalize_keys(d, keys):
+        if not isinstance(d, dict):
+            return None
+        for k in keys:
+            if k in d and d[k] not in (None, ""):
+                return d[k]
+        return None
     
     cnv_genes, cnv_types = [], []
     if isinstance(cnvs, list):
         for entry in cnvs:
             if isinstance(entry, dict):
-                cnv_genes.append(entry.get("Gene"))
-                cnv_types.append(entry.get("Alteration"))
+                cnv_genes.append(normalize_keys(entry, ["Gene", "gene"]))
+                cnv_types.append(normalize_keys(entry, ["Alteration", "alteration"]))
+    
+    snv_genes, snv_types = [], []
+    if isinstance(snvs, list):
+        for entry in snvs:
+            if isinstance(entry, dict):
+                snv_genes.append(normalize_keys(entry, ["Gene", "gene"]))
+                snv_types.append(normalize_keys(entry, ["Type", "type"]))
     
     fusion_pairs, fusion_effects = [], []
     if isinstance(fusions, list):
         for entry in fusions:
             if isinstance(entry, dict):
-                fusion_pairs.append(entry.get("fusion"))
-                fusion_effects.append(entry.get("mutation effect"))
+                fusion_pairs.append(normalize_keys(entry, ["Fusion", "fusion"]))
+                fusion_effects.append(normalize_keys(entry, ["Mutation effect", "mutation effect"]))
     
     return {
-        "snv_genes": ", ".join([g for g in snv_genes if g]),
-        "snv_types": ", ".join([t for t in snv_types if t]),
         "cnv_genes": ", ".join([g for g in cnv_genes if g]),
         "cnv_types": ", ".join([t for t in cnv_types if t]),
+        "snv_genes": ", ".join([g for g in snv_genes if g]),
+        "snv_types": ", ".join([t for t in snv_types if t]),
         "fusion_pairs": ", ".join([f for f in fusion_pairs if f]),
         "fusion_effects": ", ".join([e for e in fusion_effects if e])
     }
