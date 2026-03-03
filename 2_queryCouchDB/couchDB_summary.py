@@ -71,6 +71,7 @@ string_fields = {
     "donor": (["config/input_params_helper/donor", "config/tar_input_params_helper/donor", "report/patient_info/Patient Study ID", "plugins/pwgs.case_overview/results/donor"]),
     "project": (["config/input_params_helper/project", "config/tar_input_params_helper/project", "supplementary/config/inputs/projectid", "report/patient_info/Project", "config/pwgs_provenance_helper/project", "config/wgts.snv_indel/project"]),
     "study": (["plugins/case_overview/results/study", "report/patient_info/Study", "config/input_params_helper/study", "plugins/pwgs.case_overview/results/study_title", "plugins/pwgs.case_overview/results/study"]),
+    "failed": (["config/report_title/failed", "report/failed"]),
     "report_type": (["plugins/case_overview/attributes", "config/pwgs.case_overview/attributes", "config/wgts.snv_indel/attributes"]),
     "cancer_type": (["plugins/case_overview/results/primary_cancer", "report/patient_info/Primary cancer", "config/pwgs.case_overview/primary_cancer"]),
     "oncotree_code": (["plugins/sample/results/OncoTree code", "report/sample_info_and_quality/OncoTree code", "config/wgts.snv_indel/oncotree_code"]),
@@ -80,7 +81,6 @@ string_fields = {
     "hrd_status": (["plugins/genomic_landscape/results/genomic_biomarkers/HRD/Genomic biomarker alteration"]),
     "msi_status": (["plugins/genomic_landscape/results/genomic_biomarkers/MSI/Genomic biomarker alteration"]),
     "tmb_status": (["plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker alteration"]),
-    "failed": (["config/report_title/failed", "report/failed"]),
     "ctdna_status": (["plugins/pwgs.summary/results/ctdna_detection"]),
     "purple_zip": (["config/wgts.cnv_purple/purple_zip"]),
     "sequenza_solution": (["config/cnv/sequenza_solution"])
@@ -284,7 +284,7 @@ def main():
     csv_path = f"{args.output_name}.csv"
     xlsx_path = f"{args.output_name}.xlsx"
     
-    column_order = ["report_id", "donor", "project", "study", "date_reported", "djerba_version", "report_type", "purple_zip", "sequenza_solution"]
+    column_order = ["report_id", "donor", "project", "study", "date_reported", "djerba_version", "failed", "report_type", "purple_zip", "sequenza_solution"]
     df = df[column_order + [c for c in df.columns if c not in column_order]]
 
     df.to_csv(csv_path, index=False)
