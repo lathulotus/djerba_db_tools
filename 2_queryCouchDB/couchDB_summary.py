@@ -89,6 +89,7 @@ numeric_fields = {
     "purity": (["config/genomic_landscape/purity", "supplementary/config/discovered/purity"], 'float'),
     "callability": (["plugins/sample/results/Callability (%)", "report/sample_info_and_quality/Callability (%)"], 'float'),
     "ploidy": (["plugins/sample/results/Estimated Ploidy", "report/sample_info_and_quality/Estimated Ploidy"], 'float'),
+    "cnv_pga": ("plugins/wgts.cnv_purple/results/percent genome altered", 'float'),
     "djerba_version": (["core/core_version", "report/djerba_version", "plugins/case_overview/version"], 'version'),
     "date_reported": (["plugins/supplement.body/results/extract_date", "last_updated"], 'date'),
 

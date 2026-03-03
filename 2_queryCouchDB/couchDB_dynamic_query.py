@@ -74,7 +74,15 @@ def build_mango_query(filters: dict):
     for key, path in filter_map.items():
         value = filters.get(key)
         if value is not None:
-            selector[path] = value
+            #selector[path] = value
+            continue
+
+        if isinstance(value, str):
+            value = value.lower()
+        if isinstance(value, list):
+            value = [v.lower() for v in value]
+            selector[path] = {"$in": value}
+
         if key == "report_type":
             if value is None:
                 continue
