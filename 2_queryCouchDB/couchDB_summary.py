@@ -88,7 +88,7 @@ string_fields = {
 
 numeric_fields = {
     "coverage": (["plugins/sample/results/Coverage (mean)", "report/sample_info_and_quality/Coverage (mean)", "plugins/pwgs.sample/results/coverage"], 'float'),
-    "purity": (["config/genomic_landscape/purity", "supplementary/config/discovered/purity"], 'float'),
+    "purity": (["config/genomic_landscape/purity", "supplementary/config/discovered/purity", "config/sample/purity"], 'float'),
     "callability": (["plugins/sample/results/Callability (%)", "report/sample_info_and_quality/Callability (%)"], 'float'),
     "ploidy": (["plugins/sample/results/Estimated Ploidy", "report/sample_info_and_quality/Estimated Ploidy"], 'float'),
     "djerba_version": (["core/core_version", "report/djerba_version", "plugins/case_overview/version"], 'version'),
