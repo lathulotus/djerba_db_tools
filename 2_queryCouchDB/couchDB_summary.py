@@ -81,7 +81,9 @@ string_fields = {
     "msi_status": (["plugins/genomic_landscape/results/genomic_biomarkers/MSI/Genomic biomarker alteration"]),
     "tmb_status": (["plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker alteration"]),
     "failed": (["config/report_title/failed", "report/failed"]),
-    "ctdna_status": (["plugins/pwgs.summary/results/ctdna_detection"])
+    "ctdna_status": (["plugins/pwgs.summary/results/ctdna_detection"]),
+    "purple_zip": (["config/wgts.cnv_purple/purple_zip"]),
+    "sequenza_solution": (["config/cnv/sequenza_solution"])
 }
 
 numeric_fields = {
@@ -230,6 +232,8 @@ def extract_record(data):
             row[col] = normalize_vals(raw, failed_map)
         elif col == "hrd_status":
             row[col] = normalize_vals(raw, hrd_map)
+        elif col == "purple_zip":
+            row[col] = os.path.basename(raw) if isinstance(raw, str) else raw
         else:
             row[col] = clean_list(raw)
 
@@ -274,7 +278,7 @@ def main():
     csv_path = f"{args.output_name}.csv"
     xlsx_path = f"{args.output_name}.xlsx"
     
-    column_order = ["report_id", "donor", "project", "study", "date_reported", "djerba_version", "report_type"]
+    column_order = ["report_id", "donor", "project", "study", "date_reported", "djerba_version", "report_type", "purple_zip", "sequenza_solution"]
     df = df[column_order + [c for c in df.columns if c not in column_order]]
 
     df.to_csv(csv_path, index=False)
