@@ -74,7 +74,10 @@ def build_mango_query(filters: dict):
     for key, path in filter_map.items():
         value = filters.get(key)
         if value is not None:
-            selector[path] = value
+            if key == "report_id":
+                selector[path] = {"$regex": f"^{value}"}
+            else:
+                selector[path] = value
         if key == "report_type":
             if value is None:
                 continue
