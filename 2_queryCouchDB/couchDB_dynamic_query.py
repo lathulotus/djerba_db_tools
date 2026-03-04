@@ -91,6 +91,11 @@ def build_mango_query(filters: dict):
             else:
                 selector[path] = {"$in": [value]}
             continue
+            
+        if isinstance(value, list):
+            selector[path] = {"$in": value}
+        else:
+            selector[path] = value
 
     return {"selector": selector}
 
