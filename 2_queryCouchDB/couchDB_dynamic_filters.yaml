@@ -3,6 +3,7 @@ donor: null
 project: null
 study: null
 report_type: null
+failed: null
 
 cancer_type: null
 oncotree_code: null
@@ -13,4 +14,4 @@ sample_type: null
 hrd_status: null
 msi_status: null
 tmb_status: null
-failed: null
+ctdna_status: null

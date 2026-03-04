@@ -51,52 +51,51 @@ def get_couchdb_database(host, port, db_name, username=None, password=None):
 
 def build_mango_query(filters: dict):
     """ Builds a CouchDB Mango query selector based on dictionary of filters & ignores null filters """
-    selector = {}
-
-    # Map filter keys to document paths
     filter_map = {
         "report_id": "_id",
-        "donor": "config.input_params_helper.donor",                #plugins.case_overview.results.donor
-        "project": "config.input_params_helper.project",
-        "study": "plugins.case_overview.results.study",
-        "report_type": "plugins.case_overview.attributes",     #plugins.genomic_landscape.attributes
-        "cancer_type": "plugins.case_overview.results.primary_cancer",
-        "oncotree_code": "plugins.sample.results.OncoTree code",
-        "assay": "config.input_params_helper.assay",                #plugins.case_overview.results.assay
-        "biopsy_site": "plugins.case_overview.results.site_of_biopsy",
-        "sample_type": "plugins.sample.results.Sample Type",
-        "hrd_status": "plugins.genomic_landscape.results.genomic_biomarkers.HRD.Genomic biomarker alteration",
-        "msi_status": "plugins.genomic_landscape.results.genomic_biomarkers.MSI.Genomic biomarker alteration",
-        "tmb_status": "plugins.genomic_landscape.results.genomic_biomarkers.TMB.Genomic biomarker alteration",
-        "failed": "config.report_title.failed",
+        "donor": (["config/input_params_helper/donor", "config/tar_input_params_helper/donor", "report/patient_info/Patient Study ID", "plugins/pwgs.case_overview/results/donor", "config/tar.snv_indel/donor"]),
+        "project": (["config/input_params_helper/project", "config/tar_input_params_helper/project", "supplementary/config/inputs/projectid", "report/patient_info/Project", "config/pwgs_provenance_helper/project", "config/wgts.snv_indel/project", "config/provenance_helper/project", "config/fusion/project"]),
+        "study": (["plugins/case_overview/results/study", "report/patient_info/Study", "config/input_params_helper/study", "plugins/pwgs.case_overview/results/study_title", "plugins/pwgs.case_overview/results/study"]),
+        "failed": (["config/report_title/failed", "report/failed", "config/supplement.body/failed"]),
+        "report_type": (["plugins/case_overview/attributes", "config/pwgs.case_overview/attributes", "config/wgts.snv_indel/attributes", "config/tar.snv_indel/attributes", "plugins/genomic_landscape/attributes", "plugins/wgts.cnv_purple/attributes", "config/hrd/attributes"]),
+        "cancer_type": (["plugins/case_overview/results/primary_cancer", "report/patient_info/Primary cancer", "config/pwgs.case_overview/primary_cancer", "plugins/pwgs.case_overview/results/primary_cancer"]),
+        "oncotree_code": (["plugins/sample/results/OncoTree code", "report/sample_info_and_quality/OncoTree code", "config/wgts.snv_indel/oncotree_code", "config/tar.snv_indel/oncotree_code", "config/wgts.cnv_purple/oncotree_code", "config/fusion/oncotree_code"]),
+        "assay": (["config/input_params_helper/assay", "report/assay_type", "config/supplement.body/assay", "plugins/pwgs.case_overview/results/assay", "config/tar.snv_indel/assay"]),
+        "biopsy_site": (["plugins/case_overview/results/site_of_biopsy", "report/patient_info/Site of biopsy/surgery"]),
+        "sample_type": (["plugins/sample/results/Sample Type", "report/sample_info_and_quality/Sample Type"]),
+        "hrd_status": (["plugins/genomic_landscape/results/genomic_biomarkers/HRD/Genomic biomarker alteration", "plugins/hrd/results/HRD_short"]),
+        "msi_status": (["plugins/genomic_landscape/results/genomic_biomarkers/MSI/Genomic biomarker alteration"]),
+        "tmb_status": (["plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker alteration"]),
+        "ctdna_status": (["plugins/pwgs.summary/results/ctdna_detection"])
     }
-    # Assigning fields
-    for key, path in filter_map.items():
+    
+    selector = {"$and": []}
+    for key, paths in filter_map.items():
         value = filters.get(key)
         if value is None:
             continue
+
+        if isinstance(paths, str):
+            paths = [paths]
         
         if key == "report_id":
             if isinstance(value, list):
-                selector["$or"] = [{path: {"$regex": f"^{v}"}} for v in value]
+                selector["$and"].append({"$or": [{paths[0].replace('/', '.'): {"$regex": f"^{v}"}} for v in value]})
             else:
-                selector[path] = {"$regex": f"^{value}"}
+                selector["$and"].append({paths[0].replace('/', '.'): {"$regex": f"^{value}"}})
             continue
-
         if key == "report_type":
-            if value is None:
-                continue
+            path = paths[0].replace('/', '.')
             if isinstance(value, list):
-                selector[path] = {"$all": value}
+                selector["$and"].append({path: {"$all": value}})
             else:
-                selector[path] = {"$in": [value]}
+                selector["$and"].append({path: {"$in": [value]}})
             continue
             
         if isinstance(value, list):
-            selector[path] = {"$in": value}
+            selector["$and"].append({"$or": [{p.replace('/', '.'): {"$in": value}} for p in paths]})
         else:
-            selector[path] = value
-
+            selector["$and"].append({"$or": [{p.replace('/', '.'): value} for p in paths]})
     return {"selector": selector}
 
 def download_documents(db, query, output_dir, page_size=500):
