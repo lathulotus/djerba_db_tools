@@ -9,10 +9,8 @@ import json
 import os
 import re
 import argparse
-import yaml
 from datetime import datetime
 import pandas as pd
-import matplotlib.pyplot as plt
 
 def parse_version(version_str):
     """ Convert version string to a tuple of integers for comparison """
@@ -53,7 +51,6 @@ def transform_value(raw_val, value_type):
                     return datetime.strptime(raw_val, fmt)
                 except:
                     pass
-            #return datetime.strptime(raw_val, "%Y-%m-%d")
         if value_type == "version":
             return parse_version(raw_val)
         return raw_val
@@ -61,24 +58,19 @@ def transform_value(raw_val, value_type):
     except Exception:
         return None
 
-def strip_time(val):
-    if isinstance(val, datetime):
-        return val.date()
-    return val
-
 string_fields = {
     "report_id": "_id",
     "donor": (["config/input_params_helper/donor", "config/tar_input_params_helper/donor", "report/patient_info/Patient Study ID", "plugins/pwgs.case_overview/results/donor", "config/tar.snv_indel/donor"]),
-    "project": (["config/input_params_helper/project", "config/tar_input_params_helper/project", "supplementary/config/inputs/projectid", "report/patient_info/Project", "config/pwgs_provenance_helper/project", "config/wgts.snv_indel/project"]),
+    "project": (["config/input_params_helper/project", "config/tar_input_params_helper/project", "supplementary/config/inputs/projectid", "report/patient_info/Project", "config/pwgs_provenance_helper/project", "config/wgts.snv_indel/project", "config/provenance_helper/project"]),
     "study": (["plugins/case_overview/results/study", "report/patient_info/Study", "config/input_params_helper/study", "plugins/pwgs.case_overview/results/study_title", "plugins/pwgs.case_overview/results/study"]),
     "failed": (["config/report_title/failed", "report/failed"]),
-    "report_type": (["plugins/case_overview/attributes", "config/pwgs.case_overview/attributes", "config/wgts.snv_indel/attributes", "config/tar.snv_indel/attributes"]),
-    "cancer_type": (["plugins/case_overview/results/primary_cancer", "report/patient_info/Primary cancer", "config/pwgs.case_overview/primary_cancer"]),
-    "oncotree_code": (["plugins/sample/results/OncoTree code", "report/sample_info_and_quality/OncoTree code", "config/wgts.snv_indel/oncotree_code", "config/tar.snv_indel/oncotree_code"]),
+    "report_type": (["plugins/case_overview/attributes", "config/pwgs.case_overview/attributes", "config/wgts.snv_indel/attributes", "config/tar.snv_indel/attributes", "plugins/genomic_landscape/attributes", "plugins/wgts.cnv_purple/attributes", "config/hrd/attributes"]),
+    "cancer_type": (["plugins/case_overview/results/primary_cancer", "report/patient_info/Primary cancer", "config/pwgs.case_overview/primary_cancer", "plugins/pwgs.case_overview/results/primary_cancer"]),
+    "oncotree_code": (["plugins/sample/results/OncoTree code", "report/sample_info_and_quality/OncoTree code", "config/wgts.snv_indel/oncotree_code", "config/tar.snv_indel/oncotree_code", "config/wgts.cnv_purple/oncotree_code"]),
     "assay": (["config/input_params_helper/assay", "report/assay_type", "config/supplement.body/assay", "plugins/pwgs.case_overview/results/assay", "config/tar.snv_indel/assay"]),
     "biopsy_site": (["plugins/case_overview/results/site_of_biopsy", "report/patient_info/Site of biopsy/surgery"]),
     "sample_type": (["plugins/sample/results/Sample Type", "report/sample_info_and_quality/Sample Type"]),
-    "hrd_status": (["plugins/genomic_landscape/results/genomic_biomarkers/HRD/Genomic biomarker alteration"]),
+    "hrd_status": (["plugins/genomic_landscape/results/genomic_biomarkers/HRD/Genomic biomarker alteration", "plugins/hrd/results/HRD_short"]),
     "msi_status": (["plugins/genomic_landscape/results/genomic_biomarkers/MSI/Genomic biomarker alteration"]),
     "tmb_status": (["plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker alteration"]),
     "ctdna_status": (["plugins/pwgs.summary/results/ctdna_detection"]),
@@ -88,9 +80,9 @@ string_fields = {
 
 numeric_fields = {
     "coverage": (["plugins/sample/results/Coverage (mean)", "report/sample_info_and_quality/Coverage (mean)", "plugins/pwgs.sample/results/coverage"], 'float'),
-    "purity": (["config/genomic_landscape/purity", "supplementary/config/discovered/purity", "config/sample/purity"], 'float'),
+    "purity": (["config/genomic_landscape/purity", "supplementary/config/discovered/purity", "config/sample/purity", "config/wgts.cnv_purple/purity"], 'float'),
     "callability": (["plugins/sample/results/Callability (%)", "report/sample_info_and_quality/Callability (%)"], 'float'),
-    "ploidy": (["plugins/sample/results/Estimated Ploidy", "report/sample_info_and_quality/Estimated Ploidy"], 'float'),
+    "ploidy": (["plugins/sample/results/Estimated Ploidy", "report/sample_info_and_quality/Estimated Ploidy", "config/wgts.cnv_purple/ploidy"], 'float'),
     "djerba_version": (["core/core_version", "report/djerba_version", "plugins/case_overview/version"], 'version'),
     "date_reported": (["plugins/supplement.body/results/extract_date", "last_updated"], 'date'),
 
@@ -100,14 +92,14 @@ numeric_fields = {
     "tmb_value": (["plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker value"], 'float'),
 
     "pga": ("plugins/wgts.cnv_purple/results/percent genome altered", 'float'),
-    "cnv_clinical": (["plugins/wgts.cnv_purple/results/clinically relevant variants", "report/oncogenic_somatic_CNVs/Clinically relevant variants"], 'float'),
-    "snv_oncogenic": (["plugins/wgts.snv_indel/results/oncogenic mutations", "report/small_mutations_and_indels/Clinically relevant variants", "plugins/tar.snv_indel/results/Clinically relevant variants"], 'float'),
+    "cnv_clinical": (["plugins/wgts.cnv_purple/results/clinically relevant variants", "plugins/wgts.cnv_purple/results/Clinically relevant variants", "report/oncogenic_somatic_CNVs/Clinically relevant variants"], 'float'),
+    "snv_oncogenic": (["plugins/wgts.snv_indel/results/oncogenic mutations", "plugins/wgts.snv_indel/results/Oncogenic mutations", "report/small_mutations_and_indels/Clinically relevant variants", "plugins/tar.snv_indel/results/Clinically relevant variants"], 'float'),
     "fusion_clinical": (["plugins/fusion/results/Clinically relevant variants", "report/structural_variants_and_fusions/Clinically relevant variants"], 'float')
 }
 
 variant_fields = {
-    "cnv": ["plugins/wgts.cnv_purple/results/body", "report/oncogenic_somatic_CNVs/Body", "plugins/tar.cnv_purple/results/Body"],
-    "snv": ["plugins/wgts.snv_indel/results/Body", "report/small_mutations_and_indels/Body", "plugins/tar.snv_indel/results/Body"],
+    "cnv": ["plugins/wgts.cnv_purple/results/body", "plugins/wgts.cnv_purple/results/Body", "report/oncogenic_somatic_CNVs/Body", "plugins/tar.cnv_purple/results/Body"],
+    "snv": ["plugins/wgts.snv_indel/results/body", "plugins/wgts.snv_indel/results/Body", "report/small_mutations_and_indels/Body", "plugins/tar.snv_indel/results/Body"],
     "fusion": ["plugins/fusion/results/body", "report/structural_variants_and_fusions/Body"]
 }
 
@@ -177,8 +169,10 @@ def normalize_vals(val, mapping=None, casefold=True):
             return mapping[v_key]
         return v
     return val
-failed_map = {"false": False, "true": True,}
-hrd_map = {"hr proficient": "HRP", "hr-p": "HRP", "hr deficient": "HRD", "hr-d": "HRD"}
+failed_values = {"false": False,
+                 "true": True,}
+hrd_values = {"hr proficient": "HRP", "hr-p": "HRP", "HR-P": "HRP",
+              "hr deficient": "HRD", "hr-d": "HRD", "HR-D": "HRD"}
 
 def clean_list(val, val_type=None):
     """ Cleaning list objects """
@@ -204,35 +198,59 @@ def extract_path(data, paths):
 
 def extract_biomarker(data):
     """ Extract biomarker data from JSON, older reports store data within arrays """
-    body = get_nested(data, "report/genomic_biomarkers/Body")
-    if not isinstance(body, list):
-        return{}
+    results = {"hrd_status": None, "hrd_value": None,
+               "msi_status": None, "msi_value": None,
+               "tmb_status": None, "tmb_value": None}
     
-    results = {"hrd_status": None, "hrd_value": None, "msi_status": None, "msi_value": None, "tmb_status": None, "tmb_value": None}
-
-    for entry in body:
-        if not isinstance(entry, dict):
-            continue
-        name = entry.get("Alteration")
-        if not name:
-            continue
-
-        key = name.strip().upper()
-        value = entry.get("Genomic biomarker value")
-        status_new = entry.get("Genomic biomarker alteration")
-        status_old = entry.get("Genomic biomarker call")
-        status = status_new or status_old
-
-        if key == "HRD":
-            results["hrd_status"] = status
-            results["hrd_value"] = value
-        elif key == "MSI":
-            results["msi_status"] = status
-            results["msi_value"] = value
-        elif key == "TMB":
-            results["tmb_status"] = status
-            results["tmb_value"] = value
+    body = get_nested(data, "report/genomic_biomarkers/Body")
+    if isinstance(body, list):
+        for entry in body:
+            if not isinstance(entry, dict):
+                continue
+            name = entry.get("Alteration")
+            if not name:
+                continue
+            key = name.strip().upper()
+            value = entry.get("Genomic biomarker value")
+            status = (entry.get("Genomic biomarker alteration") or entry.get("Genomic biomarker call"))
+            if key == "HRD":
+                results["hrd_status"] = status
+                results["hrd_value"] = value
+            elif key == "MSI":
+                results["msi_status"] = status
+                results["msi_value"] = value
+            elif key == "TMB":
+                results["tmb_status"] = status
+                results["tmb_value"] = value
+    
+    hrd_short = get_nested(data, "plugins/hrd/results/HRD_short")
+    if isinstance(hrd_short, str) and hrd_short.strip():
+        results["hrd_status"] = results["hrd_status"] or hrd_short.strip()
+    
     return results
+
+def extract_report_type(data, paths):
+    """ Extract information from attributes, older reports store data within arrays """
+    types_all = []
+    for p in paths:
+        val = get_nested(data, p)
+        if isinstance(val, list):
+            for item in val:
+                if isinstance(item, str) and item.strip():
+                    types_all.append(item.strip())
+        elif isinstance(val, dict):
+            for k, v in val.items():
+                if isinstance(v, str) and v.strip():
+                    types_all.append(v.strip())
+        elif isinstance(val, str) and val.strip():
+            types_all.append(val.strip())
+    types_temp = set()
+    types_final = []
+    for item in types_all:
+        if item not in types_temp:
+            types_temp.add(item)
+            types_final.append(item)
+    return ",".join(types_final) if types_final else None
 
 def extract_record(data):
     """ Extract data from JSONs """
@@ -243,11 +261,13 @@ def extract_record(data):
         raw = extract_path(data, paths)
 
         if col == "failed":
-            row[col] = normalize_vals(raw, failed_map)
+            row[col] = normalize_vals(raw, failed_values)
         elif col == "hrd_status":
-            row[col] = normalize_vals(raw, hrd_map)
+            row[col] = normalize_vals(raw, hrd_values)
         elif col == "purple_zip":
             row[col] = os.path.basename(raw) if isinstance(raw, str) else raw
+        elif col == "report_type":
+            row[col] = extract_report_type(data, paths)
         else:
             row[col] = clean_list(raw)
 
@@ -262,7 +282,10 @@ def extract_record(data):
     biomarker = extract_biomarker(data)
     for key in ["hrd_status", "hrd_value", "msi_status", "msi_value", "tmb_status", "tmb_value"]:
         if biomarker.get(key) is not None:
-            row[key] = biomarker[key]
+            if key == "hrd_status":
+                row[key] = normalize_vals(biomarker[key], hrd_values)
+            else:
+                row[key] = biomarker[key]
     return row
 
 def main():
