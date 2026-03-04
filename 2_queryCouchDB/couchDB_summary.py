@@ -101,13 +101,13 @@ numeric_fields = {
 
     "pga": ("plugins/wgts.cnv_purple/results/percent genome altered", 'float'),
     "cnv_clinical": (["plugins/wgts.cnv_purple/results/clinically relevant variants", "report/oncogenic_somatic_CNVs/Clinically relevant variants"], 'float'),
-    "snv_oncogenic": (["plugins/wgts.snv_indel/results/oncogenic mutations", "report/small_mutations_and_indels/Clinically relevant variants"], 'float'),
+    "snv_oncogenic": (["plugins/wgts.snv_indel/results/oncogenic mutations", "report/small_mutations_and_indels/Clinically relevant variants", "plugins/tar.snv_indel/results/Clinically relevant variants"], 'float'),
     "fusion_clinical": (["plugins/fusion/results/Clinically relevant variants", "report/structural_variants_and_fusions/Clinically relevant variants"], 'float')
 }
 
 variant_fields = {
-    "cnv": ["plugins/wgts.cnv_purple/results/body", "report/oncogenic_somatic_CNVs/Body"],
-    "snv": ["plugins/wgts.snv_indel/results/Body", "report/small_mutations_and_indels/Body"],
+    "cnv": ["plugins/wgts.cnv_purple/results/body", "report/oncogenic_somatic_CNVs/Body", "plugins/tar.cnv_purple/results/Body"],
+    "snv": ["plugins/wgts.snv_indel/results/Body", "report/small_mutations_and_indels/Body", "plugins/tar.snv_indel/results/Body"],
     "fusion": ["plugins/fusion/results/body", "report/structural_variants_and_fusions/Body"]
 }
 
