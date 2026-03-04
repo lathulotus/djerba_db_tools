@@ -35,7 +35,7 @@ def get_nested(data, paths):
     return data
 
 def transform_value(raw_val, value_type):
-    """Convert raw JSON values into typed Python values."""
+    """Convert raw JSON values into typed Python values """
     if raw_val is None:
         return None
     if isinstance(raw_val, str):
@@ -68,14 +68,14 @@ def strip_time(val):
 
 string_fields = {
     "report_id": "_id",
-    "donor": (["config/input_params_helper/donor", "config/tar_input_params_helper/donor", "report/patient_info/Patient Study ID", "plugins/pwgs.case_overview/results/donor"]),
+    "donor": (["config/input_params_helper/donor", "config/tar_input_params_helper/donor", "report/patient_info/Patient Study ID", "plugins/pwgs.case_overview/results/donor", "config/tar.snv_indel/donor"]),
     "project": (["config/input_params_helper/project", "config/tar_input_params_helper/project", "supplementary/config/inputs/projectid", "report/patient_info/Project", "config/pwgs_provenance_helper/project", "config/wgts.snv_indel/project"]),
     "study": (["plugins/case_overview/results/study", "report/patient_info/Study", "config/input_params_helper/study", "plugins/pwgs.case_overview/results/study_title", "plugins/pwgs.case_overview/results/study"]),
     "failed": (["config/report_title/failed", "report/failed"]),
-    "report_type": (["plugins/case_overview/attributes", "config/pwgs.case_overview/attributes", "config/wgts.snv_indel/attributes"]),
+    "report_type": (["plugins/case_overview/attributes", "config/pwgs.case_overview/attributes", "config/wgts.snv_indel/attributes", "config/tar.snv_indel/attributes"]),
     "cancer_type": (["plugins/case_overview/results/primary_cancer", "report/patient_info/Primary cancer", "config/pwgs.case_overview/primary_cancer"]),
-    "oncotree_code": (["plugins/sample/results/OncoTree code", "report/sample_info_and_quality/OncoTree code", "config/wgts.snv_indel/oncotree_code"]),
-    "assay": (["config/input_params_helper/assay", "report/assay_type", "config/supplement.body/assay", "plugins/pwgs.case_overview/results/assay"]),
+    "oncotree_code": (["plugins/sample/results/OncoTree code", "report/sample_info_and_quality/OncoTree code", "config/wgts.snv_indel/oncotree_code", "config/tar.snv_indel/oncotree_code"]),
+    "assay": (["config/input_params_helper/assay", "report/assay_type", "config/supplement.body/assay", "plugins/pwgs.case_overview/results/assay", "config/tar.snv_indel/assay"]),
     "biopsy_site": (["plugins/case_overview/results/site_of_biopsy", "report/patient_info/Site of biopsy/surgery"]),
     "sample_type": (["plugins/sample/results/Sample Type", "report/sample_info_and_quality/Sample Type"]),
     "hrd_status": (["plugins/genomic_landscape/results/genomic_biomarkers/HRD/Genomic biomarker alteration"]),
@@ -94,7 +94,7 @@ numeric_fields = {
     "djerba_version": (["core/core_version", "report/djerba_version", "plugins/case_overview/version"], 'version'),
     "date_reported": (["plugins/supplement.body/results/extract_date", "last_updated"], 'date'),
 
-    "TMB": (["plugins/genomic_landscape/results/genomic_landscape_info/Tumour Mutation Burden"], 'float'),
+    "TMB": (["plugins/genomic_landscape/results/genomic_landscape_info/Tumour Mutation Burden", "report/genomic_landscape_info/Tumour Mutation Burden"], 'float'),
     "hrd_value": (["plugins/genomic_landscape/results/genomic_biomarkers/HRD/Genomic biomarker value"], 'float'),
     "msi_value": (["plugins/genomic_landscape/results/genomic_biomarkers/MSI/Genomic biomarker value"], 'float'),
     "tmb_value": (["plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker value"], 'float'),
@@ -189,7 +189,7 @@ def clean_list(val, val_type=None):
     return val
 
 def extract_path(data, paths):
-    """ Extract data from path associated with specific report """
+    """ Extract data from paths containing slashes """
     for p in paths:
         if p == "report/patient_info/Site of biopsy/surgery":
             val = (
@@ -203,27 +203,35 @@ def extract_path(data, paths):
     return None
 
 def extract_biomarker(data):
-    """ Extract biomarker data from JSON """
+    """ Extract biomarker data from JSON, older reports store data within arrays """
     body = get_nested(data, "report/genomic_biomarkers/Body")
     if not isinstance(body, list):
         return{}
-    results = {"hrd_status": None, "msi_status": None, "tmb_status": None}
+    
+    results = {"hrd_status": None, "hrd_value": None, "msi_status": None, "msi_value": None, "tmb_status": None, "tmb_value": None}
 
     for entry in body:
         if not isinstance(entry, dict):
             continue
         name = entry.get("Alteration")
-        status = entry.get("Genomic biomarker alteration")
-
-        if not name or not status:
+        if not name:
             continue
+
         key = name.strip().upper()
+        value = entry.get("Genomic biomarker value")
+        status_new = entry.get("Genomic biomarker alteration")
+        status_old = entry.get("Genomic biomarker call")
+        status = status_new or status_old
+
         if key == "HRD":
             results["hrd_status"] = status
+            results["hrd_value"] = value
         elif key == "MSI":
             results["msi_status"] = status
+            results["msi_value"] = value
         elif key == "TMB":
             results["tmb_status"] = status
+            results["tmb_value"] = value
     return results
 
 def extract_record(data):
@@ -252,10 +260,9 @@ def extract_record(data):
     row.update(variant_data(data))
 
     biomarker = extract_biomarker(data)
-    for key in ["hrd_status", "msi_status", "tmb_status"]:
-        if not row.get(key):
-            if biomarker.get(key):
-                row[key] = biomarker[key]
+    for key in ["hrd_status", "hrd_value", "msi_status", "msi_value", "tmb_status", "tmb_value"]:
+        if biomarker.get(key) is not None:
+            row[key] = biomarker[key]
     return row
 
 def main():
