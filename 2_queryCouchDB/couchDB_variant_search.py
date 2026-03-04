@@ -15,15 +15,22 @@ import yaml
 import pandas as pd
 import matplotlib.pyplot as plt
 
-def get_nested(data, path):
-   """ Get nested values from dict """
-   keys = path.split('/')
-   for key in keys:
-       if isinstance(data, dict):
-           data = data.get(key)
-       else:
-           return None
-   return data
+def get_nested(data, paths):
+    """ Get nested values from dict """
+    if isinstance(paths, str):
+        paths = [paths]
+    for path in paths:
+        keys = path.split('/')
+        current = data
+        for key in keys:
+            if isinstance(current, dict):
+                current = current.get(key)
+            else:
+                current = None
+                break
+        if current not in (None, "", []):
+            return current
+    return None
 
 def evaluate_criterion(value, criterion, value_type='string', mode="exact"):
    """ Case-insensitive match """
@@ -51,9 +58,9 @@ def filter_files(input_dir, criteria):
        return []
   
    paths = {
-       "cnv": ("plugins/wgts.cnv_purple/results/body", 'array'),
-       "snv": ("plugins/wgts.snv_indel/results/Body", 'array'),
-       "fusion": ("plugins/fusion/results/body", 'array')
+       "cnv": (["plugins/wgts.cnv_purple/results/body", "plugins/wgts.cnv_purple/results/Body", "report/oncogenic_somatic_CNVs/Body", "plugins/tar.cnv_purple/results/Body"], 'array'),
+       "snv": (["plugins/wgts.snv_indel/results/body", "plugins/wgts.snv_indel/results/Body", "report/small_mutations_and_indels/Body", "plugins/tar.snv_indel/results/Body"], 'array'),
+       "fusion": (["plugins/fusion/results/body", "report/structural_variants_and_fusions/Body"], 'array')
    }
 
    for filename in os.listdir(input_dir):
@@ -109,7 +116,9 @@ def filter_files(input_dir, criteria):
            fusion_genes = []
            if criteria["fusion_gene"]:
                try:
-                   fusion_genes = eval(criteria["fusion_gene"])
+                   fusion_genes = yaml.safe_load(criteria["fusion_gene"])
+                   if not isinstance(fusion_genes, list):
+                       fusion_genes = [fusion_genes]
                except:
                    fusion_genes = []
 
