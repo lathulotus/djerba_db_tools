@@ -22,15 +22,22 @@ def parse_version(version_str):
     except:
         return (0,)
 
-def get_nested(data, path):
+def get_nested(data, paths):
     """ Get nested values from dict """
-    keys = path.split('/')
-    for key in keys:
-        if isinstance(data, dict):
-            data = data.get(key)
-        else:
-            return None
-    return data
+    if isinstance(paths, str):
+        paths = [paths]
+    for path in paths:
+        keys = path.split('/')
+        current = data
+        for key in keys:
+            if isinstance(current, dict):
+                current = current.get(key)
+            else:
+                current = None
+                break
+        if current not in (None, "", []):
+            return current
+    return None
 
 def evaluate_criterion(value, criterion_str, value_type='float'):
     """
@@ -89,17 +96,22 @@ def filter_files(input_dir, criteria):
 
     # Mapping of argument name to (JSON path, type)
     paths = {
-        "coverage": ("plugins/sample/results/Coverage (mean)", 'float'),
-        "purity": ("config/genomic_landscape/purity", 'float'),
-        "callability": ("plugins/sample/results/Callability (%)", 'float'),
-        "ploidy": ("plugins/sample/results/Estimated Ploidy", 'float'),
-        "djerba_version": ("core/core_version", 'version'),
-        "date_reported": ("plugins/supplement.body/results/extract_date", 'date'),
+        "coverage": (["plugins/sample/results/Coverage (mean)", "report/sample_info_and_quality/Coverage (mean)", "plugins/pwgs.sample/results/coverage"], 'float'),
+        "purity": (["config/genomic_landscape/purity", "supplementary/config/discovered/purity", "config/sample/purity", "config/wgts.cnv_purple/purity"], 'float'),
+        "callability": (["plugins/sample/results/Callability (%)", "report/sample_info_and_quality/Callability (%)"], 'float'),
+        "ploidy": (["plugins/sample/results/Estimated Ploidy", "report/sample_info_and_quality/Estimated Ploidy", "config/wgts.cnv_purple/ploidy"], 'float'),
+        "djerba_version": (["core/core_version", "report/djerba_version", "plugins/case_overview/version"], 'version'),
+        "date_reported": (["plugins/supplement.body/results/extract_date", "last_updated"], 'date'),
 
-        "cnv_pga": ("plugins/wgts.cnv_purple/results/percent genome altered", 'float'),
-        "cnv_clinical": ("plugins/wgts.cnv_purple/results/clinically relevant variants", 'float'),
-        "snv_oncogenic": ("plugins/wgts.snv_indel/results/oncogenic mutations", 'float'),
-        "fusion_clinical": ("plugins/fusion/results/Clinically relevant variants", 'float'),
+        "TMB": (["plugins/genomic_landscape/results/genomic_landscape_info/Tumour Mutation Burden", "report/genomic_landscape_info/Tumour Mutation Burden"], 'float'),
+        "tmb_value": (["plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker value", "report/genomic_landscape_info/TMB per megabase"], 'float'),
+        "hrd_value": (["plugins/genomic_landscape/results/genomic_biomarkers/HRD/Genomic biomarker value"], 'float'),
+        "msi_value": (["plugins/genomic_landscape/results/genomic_biomarkers/MSI/Genomic biomarker value"], 'float'),
+
+        "pga": (["plugins/wgts.cnv_purple/results/percent genome altered", "report/genomic_landscape_info/Percent Genome Altered"], 'float'),
+        "cnv_clinical": (["plugins/wgts.cnv_purple/results/clinically relevant variants", "plugins/wgts.cnv_purple/results/Clinically relevant variants", "report/oncogenic_somatic_CNVs/Clinically relevant variants"], 'float'),
+        "snv_oncogenic": (["plugins/wgts.snv_indel/results/oncogenic mutations", "plugins/wgts.snv_indel/results/Oncogenic mutations", "report/small_mutations_and_indels/Clinically relevant variants", "plugins/tar.snv_indel/results/Clinically relevant variants"], 'float'),
+        "fusion_clinical": (["plugins/fusion/results/Clinically relevant variants", "report/structural_variants_and_fusions/Clinically relevant variants"], 'float')
     }
 
     for filename in os.listdir(input_dir):

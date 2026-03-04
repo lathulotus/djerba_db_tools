@@ -70,9 +70,9 @@ string_fields = {
     "assay": (["config/input_params_helper/assay", "report/assay_type", "config/supplement.body/assay", "plugins/pwgs.case_overview/results/assay", "config/tar.snv_indel/assay"]),
     "biopsy_site": (["plugins/case_overview/results/site_of_biopsy", "report/patient_info/Site of biopsy/surgery"]),
     "sample_type": (["plugins/sample/results/Sample Type", "report/sample_info_and_quality/Sample Type"]),
+    "tmb_status": (["plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker alteration"]),
     "hrd_status": (["plugins/genomic_landscape/results/genomic_biomarkers/HRD/Genomic biomarker alteration", "plugins/hrd/results/HRD_short"]),
     "msi_status": (["plugins/genomic_landscape/results/genomic_biomarkers/MSI/Genomic biomarker alteration"]),
-    "tmb_status": (["plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker alteration"]),
     "ctdna_status": (["plugins/pwgs.summary/results/ctdna_detection"]),
     "purple_zip": (["config/wgts.cnv_purple/purple_zip"]),
     "sequenza_solution": (["config/cnv/sequenza_solution"])
@@ -87,9 +87,9 @@ numeric_fields = {
     "date_reported": (["plugins/supplement.body/results/extract_date", "last_updated"], 'date'),
 
     "TMB": (["plugins/genomic_landscape/results/genomic_landscape_info/Tumour Mutation Burden", "report/genomic_landscape_info/Tumour Mutation Burden"], 'float'),
+    "tmb_value": (["plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker value", "report/genomic_landscape_info/TMB per megabase"], 'float'),
     "hrd_value": (["plugins/genomic_landscape/results/genomic_biomarkers/HRD/Genomic biomarker value"], 'float'),
     "msi_value": (["plugins/genomic_landscape/results/genomic_biomarkers/MSI/Genomic biomarker value"], 'float'),
-    "tmb_value": (["plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker value", "report/genomic_landscape_info/TMB per megabase"], 'float'),
 
     "pga": (["plugins/wgts.cnv_purple/results/percent genome altered", "report/genomic_landscape_info/Percent Genome Altered"], 'float'),
     "cnv_clinical": (["plugins/wgts.cnv_purple/results/clinically relevant variants", "plugins/wgts.cnv_purple/results/Clinically relevant variants", "report/oncogenic_somatic_CNVs/Clinically relevant variants"], 'float'),

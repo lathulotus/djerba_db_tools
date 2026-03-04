@@ -26,30 +26,35 @@ filters:
     project: null
     study: null
     report_type: null
+    failed: null
     cancer_type: null
     oncotree_code: null
     assay: null
     biopsy_site: null
     sample_type: null
+    tmb_status: null
     hrd_status: null
     msi_status: null
-    tmb_status: null
     ctdna_status: null
-    failed: null
 
     page_size: null
     count: null
 
   numeric:
+    djerba_version: null
+    date_reported: null
     coverage: null
     purity: null
     callability: null
     ploidy: null
+    TMB: null
+    TMB_value: null
+    HRD_value: null
+    MSI_value: null
+    pga: null
     cnv_clinical: null
     snv_oncogenic: null
     fusion_clinical: null
-    djerba_version: null
-    date_reported: null
 
     plot: null
 
