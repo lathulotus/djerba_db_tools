@@ -67,7 +67,8 @@ def generate_plot(df, cfg):
             alpha=0.9,
             edgecolors="w",
             vmin=color_min,
-            vmax=color_max
+            vmax=color_max,
+            marker=marker
         )
 
         sc.set_label(label)
