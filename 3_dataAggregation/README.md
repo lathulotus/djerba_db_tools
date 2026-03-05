@@ -13,6 +13,8 @@ Deliverables
 - Aggregation scripts
 - Summary figures/tables suitable for presentation
 
+<br>
+
 ## Accrual by Coverage
 Plotting number of cases accumulated by quarter, with mean coverage (per case) being mapped.
 ![Accumutated Total](accrual_by_coverage/coverage_over_time_combine.png)
