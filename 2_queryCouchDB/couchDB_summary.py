@@ -69,11 +69,13 @@ string_fields = {
     "oncotree_code": (["plugins/sample/results/OncoTree code", "report/sample_info_and_quality/OncoTree code", "config/wgts.snv_indel/oncotree_code", "config/tar.snv_indel/oncotree_code", "config/wgts.cnv_purple/oncotree_code", "config/fusion/oncotree_code"]),
     "assay": (["config/input_params_helper/assay", "report/assay_type", "config/supplement.body/assay", "plugins/pwgs.case_overview/results/assay", "config/tar.snv_indel/assay"]),
     "biopsy_site": (["plugins/case_overview/results/site_of_biopsy", "report/patient_info/Site of biopsy/surgery"]),
-    "sample_type": (["plugins/sample/results/Sample Type", "report/sample_info_and_quality/Sample Type"]),
+    "sample_type": (["plugins/sample/results/Sample Type", "report/sample_info_and_quality/Sample Type", "plugins/tar.sample/results/sample_type", "config/tar_input_params_helper/sample_type"]),
     "tmb_status": (["plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker alteration"]),
     "hrd_status": (["plugins/genomic_landscape/results/genomic_biomarkers/HRD/Genomic biomarker alteration", "plugins/hrd/results/HRD_short"]),
     "msi_status": (["plugins/genomic_landscape/results/genomic_biomarkers/MSI/Genomic biomarker alteration"]),
     "ctdna_status": (["plugins/pwgs.summary/results/ctdna_detection"]),
+    "ctdna_cnv": (["config/tar.status/copy_number_ctdna_detected"]),
+    "ctdna_snv": (["config/tar.status/small_mutations_ctdna_detected"]),
     "purple_zip": (["config/wgts.cnv_purple/purple_zip"]),
     "sequenza_solution": (["config/cnv/sequenza_solution"])
 }
