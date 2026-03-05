@@ -1,7 +1,7 @@
 query_pipeline:
   run_retrieve: true
-  run_numeric: true
   run_variant: true
+  run_numeric: true
   run_summary: true
 
 paths:
@@ -13,9 +13,9 @@ paths:
   log_file: output/pipeline_log.json
 
 login_file:
-  host: djerba-dev-db.gsi.oicr.on.ca
-  port: 5984
-  db_name: djerba_copy_20260108
+  host: URL
+  port: 0000
+  db_name: DB_NAME
   username: USERNAME
   password: PASSWORD
 
