@@ -32,7 +32,7 @@ def generate_plot(df, cfg):
         return
 
     x = cfg["x"]
-    df[x] = pd.to_datetime(df[x], errors="ignore")
+    df[x] = pd.to_datetime(df[x].astype(str), errors="coerce")
     df = df.sort_values(x)
 
     color_by = cfg.get("color_by", "coverage")
@@ -53,10 +53,8 @@ def generate_plot(df, cfg):
         if sub.empty:
             continue
 
-        grp = sub.groupby(x).agg(
-            Case_Count=(sub.columns[0], "count"),
-            Avg_Value=(color_by, "mean")
-        ).reset_index().sort_values(x)
+        grp = sub.groupby(x).size().reset_index(name="Case_Count")
+        grp["Avg_Value"] = sub.groupby(x)[color_by].mean().values
         grp["Cumulative_Count"] = grp["Case_Count"].cumsum()
 
         plt.plot(grp[x], grp["Cumulative_Count"], color="steelblue", linewidth=2, alpha=0.5)
