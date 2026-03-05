@@ -68,7 +68,7 @@ def build_mango_query(filters: dict):
         "tmb_status": (["plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker alteration"]),
         "ctdna_status": (["plugins/pwgs.summary/results/ctdna_detection"]),
         "ctdna_cnv": (["config/tar.status/copy_number_ctdna_detected"]),
-        "ctdna_snv": (["config/tar.status/small_mutations_ctdna_detected"])
+        "ctdna_snv": (["config/tar.status/small_mutation_ctdna_detected"])
     }
     
     selector = {"$and": []}
