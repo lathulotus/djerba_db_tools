@@ -35,6 +35,27 @@ def generate_plot(df, cfg):
     df[x] = pd.to_datetime(df[x].astype(str), errors="coerce")
     df = df.sort_values(x)
 
+    plot_percent = cfg.get("plot_percentage", False)
+    date_range = cfg.get("date_range")
+    if date_range:
+        start = pd.to_datetime(date_range.get("start"))
+        end = pd.to_datetime(date_range.get("end"))
+        df = df[(df[x] >=start) & (df[x] <=end)]
+
+    threshold = cfg.get("ratio_threshold", 115)
+
+    interval = cfg.get("interval", "monthly")
+    if interval == "monthly":
+        df["month"] = df[x].dt.to_period("M").dt.to_timestamp()
+        total = df.groupby("month").size().rename("Total")
+        over = df[df["coverage"] >= threshold].groupby("month").size().rename("Over")
+    elif interval == "daily":
+        total = df.groupby(x).size().rename("Total")
+        over = df[df["coverage"] >= threshold].groupby(x).size().rename("Over")
+    over = over.reindex(total.index, fill_value=0)
+    percent_df = pd.concat([total, over], axis=1)
+    percent_df["Percent_Over"] = (percent_df["Over"] / percent_df["Total"]) * 100
+
     color_by = cfg.get("color_by", "coverage")
     data_min = df[color_by].min()
     data_max = df[color_by].max()
@@ -91,6 +112,23 @@ def generate_plot(df, cfg):
     plt.grid(True, linestyle=":", alpha=0.6)
     plt.xticks(rotation=45)
     plt.tight_layout()
+
+    if plot_percent:
+        ax1 = plt.gca()
+        ax2 = ax1.twinx()
+        ax2.plot(
+            percent_df.index,
+            percent_df["Percent_Over"],
+            color="darkred",
+            linewidth = 1,
+            linestyle = "-",
+            label = "% Over-sequenced"
+        )
+        ax2.set_ylabel("Percent Over-sequenced (%)")
+        ax2.set_ylim(0, 100)
+        lines1, labels1 = ax1.get_legend_handles_labels()
+        lines2, labels2 = ax2.get_legend_handles_labels()
+        ax1.legend(lines1 + lines2, labels1 + labels2, title=cfg.get("group_legend_label", "Groups"))
 
     plt.savefig(cfg["output_file"])
     print(f"Plot saved to: {cfg['output_file']}")

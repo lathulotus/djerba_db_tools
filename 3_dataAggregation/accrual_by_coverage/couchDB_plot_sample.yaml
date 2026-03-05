@@ -24,4 +24,11 @@ color_legend_label: "Mean Coverage (Daily Average)"
 group_legend_label: "Coverage Group"
 title: "Cumulative Case Accrual Over Time"
 
+plot_percentage: true
+threshold: 115
+percent_interval: "monthly"
+date_range:
+  start: "2020-01-01"
+  end: "2026-03-31"
+
 output_file: figures/coverage_over_time.png
