@@ -177,10 +177,15 @@ def main():
 
    matches = filter_files(args.input_dir, criteria)
 
+   if args.output_dir:
+       final_output_path = os.path.join(args.output_dir, "filtered_jsons")
+   else:
+       final_output_path = "filtered_jsons"
+
    if args.output_dir and matches:
-       if not os.path.exists(args.output_dir):
-           os.makedirs(args.output_dir)
-           print(f"Created output directory: {args.output_dir}")
+       if not os.path.exists(final_output_path):
+           os.makedirs(final_output_path)
+           print(f"Created output directory: {final_output_path}")
 
    print(f"\nFound {len(matches)} reports with matching variants:\n")
    for m in matches:
@@ -209,11 +214,11 @@ def main():
        print(f"ID: {m['id']} | {filtered} | File: {m['file']}")
 
        if args.output_dir:
-           shutil.copy(m["full_path"], os.path.join(args.output_dir, m["file"]))
+           shutil.copy(m["full_path"], os.path.join(final_output_path, m["file"]))
 
    print()
    if args.output_dir:
-       print(f"Copied {len(matches)} files to {args.output_dir}")
+       print(f"Copied {len(matches)} files to {final_output_path}")
 
    print("-" * 100)
 

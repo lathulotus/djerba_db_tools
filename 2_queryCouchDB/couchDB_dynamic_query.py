@@ -67,9 +67,16 @@ def build_mango_query(filters: dict):
 
 def download_documents(db, query, output_dir, page_size=500):
     """ Extracts matching documents across each page in database """
+    
+    # Ensure output_dir points to a 'filtered_jsons' subdirectory
+    if output_dir:
+        final_output_path = os.path.join(output_dir, "filtered_jsons")
+    else:
+        final_output_path = "filtered_jsons"
 
-    if output_dir and not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    if not os.path.exists(final_output_path):
+        os.makedirs(final_output_path)
+        print(f"Created output directory: {final_output_path}")
 
     downloaded_count = 0
     skip = 0
@@ -87,15 +94,14 @@ def download_documents(db, query, output_dir, page_size=500):
         for doc in results:
             downloaded_count += 1
 
-            if output_dir:
-                doc_id = doc["_id"]
-                file_path = os.path.join(output_dir, f"{doc_id}.json")
-                try:
-                    with open(file_path, "w") as f:
-                        json.dump(doc, f, indent=2)
-                    print(f"Downloaded document '{doc_id}' to '{file_path}'")
-                except Exception as e:
-                    print(f"Error saving document '{doc_id}': {e}")
+            doc_id = doc["_id"]
+            file_path = os.path.join(final_output_path, f"{doc_id}.json")
+            try:
+                with open(file_path, "w") as f:
+                    json.dump(doc, f, indent=2)
+                print(f"Downloaded document '{doc_id}' to '{file_path}'")
+            except Exception as e:
+                print(f"Error saving document '{doc_id}': {e}")
 
         skip += len(results)
     return downloaded_count
@@ -104,7 +110,7 @@ def main():
     parser = argparse.ArgumentParser(description="Query CouchDB JSON documents using login and filter files")
     parser.add_argument("--login_file", required=True, help="Path to login.txt with CouchDB parameters")
     parser.add_argument("--filters_file", required=True, help="Path to YAML file with query filters")
-    parser.add_argument("--output_dir", default="downloaded_jsons", help="Directory to save downloaded JSON files")
+    parser.add_argument("--output_dir", help="Base directory to save downloaded JSON files (will create 'filtered_jsons' subfolder)")
     parser.add_argument("--page_size", type=int, default=500, help="Number of documents to fetch per page")
     parser.add_argument("--count", action="store_true", help="Returns number of reports satisfying the filters without downloading files")
     args = parser.parse_args()
@@ -126,13 +132,29 @@ def main():
 
         # Export downloaded documents or document count
         if args.count:
-            total_count = download_documents(db, query, output_dir=None, page_size=args.page_size)
+            # For counting, we don't need output_dir logic, but we pass None to satisfy the function
+            total_count = download_documents_count_only(db, query, page_size=args.page_size)
             print(f"Number of reports satisfying the filters: {total_count}")
         else:
             total_count = download_documents(db, query, args.output_dir, page_size=args.page_size)
             print(f"Successfully downloaded {total_count} documents.")
     except Exception as e:
         print(f"An error occurred: {e}")
+
+def download_documents_count_only(db, query, page_size=500):
+    """ Helper to only count documents without saving """
+    count = 0
+    skip = 0
+    while True:
+        paged_query = query.copy()
+        paged_query["limit"] = page_size
+        paged_query["skip"] = skip
+        results = list(db.find(paged_query))
+        if not results:
+            break
+        count += len(results)
+        skip += len(results)
+    return count
 
 if __name__ == "__main__":
     main()

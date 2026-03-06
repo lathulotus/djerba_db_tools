@@ -268,16 +268,14 @@ def main():
         df["date_reported"] = pd.to_datetime(df["date_reported"], errors="coerce", dayfirst=True).dt.strftime("%Y-%m-%d")
 
     csv_path = f"{args.output_name}.csv"
-    xlsx_path = f"{args.output_name}.xlsx"
     
     column_order = ["report_id", "donor", "project", "study", "date_reported", "djerba_version", "failed", "report_type", "purple_zip", "sequenza_solution"]
     df = df[column_order + [c for c in df.columns if c not in column_order]]
 
     df.to_csv(csv_path, index=False)
-    df.to_excel(xlsx_path, index=False)
 
     print(f"Extracted {len(df)} records.")
-    print(f"Saved summary table to {csv_path} & {xlsx_path}")
+    print(f"Saved summary table to {csv_path}")
 
 if __name__ == "__main__":
     main()
