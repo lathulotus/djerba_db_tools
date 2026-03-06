@@ -8,29 +8,9 @@ Usage (example):
 import json
 import os
 import argparse
-from datetime import datetime
-import re
 import shutil
 import yaml
-import pandas as pd
-import matplotlib.pyplot as plt
-
-def get_nested(data, paths):
-    """ Get nested values from dict """
-    if isinstance(paths, str):
-        paths = [paths]
-    for path in paths:
-        keys = path.split('/')
-        current = data
-        for key in keys:
-            if isinstance(current, dict):
-                current = current.get(key)
-            else:
-                current = None
-                break
-        if current not in (None, "", []):
-            return current
-    return None
+from couchDB_utils import get_nested
 
 def evaluate_criterion(value, criterion, value_type='string', mode="exact"):
    """ Case-insensitive match. Supports comma-separated strings or lists (OR condition) """

@@ -8,36 +8,11 @@ Usage (example):
 import json
 import os
 import argparse
-from datetime import datetime
 import re
 import shutil
-import yaml
 import pandas as pd
 import matplotlib.pyplot as plt
-
-def parse_version(version_str):
-    """ Convert version string to a tuple of integers for comparison """
-    try:
-        return tuple(map(int, re.sub(r'[^\d.]', '', version_str).split('.')))
-    except:
-        return (0,)
-
-def get_nested(data, paths):
-    """ Get nested values from dict """
-    if isinstance(paths, str):
-        paths = [paths]
-    for path in paths:
-        keys = path.split('/')
-        current = data
-        for key in keys:
-            if isinstance(current, dict):
-                current = current.get(key)
-            else:
-                current = None
-                break
-        if current not in (None, "", []):
-            return current
-    return None
+from couchDB_utils import get_nested, transform_value
 
 def evaluate_criterion(value, criterion_str, value_type='float'):
     """
@@ -81,17 +56,6 @@ def evaluate_criterion(value, criterion_str, value_type='float'):
         return value >= target
 
     return False
-
-def transform_value(raw_val, value_type):
-    """ Convert raw string to the appropriate type for comparison """
-    raw_val = raw_val.strip()
-    if value_type == 'float':
-        return float(raw_val)
-    if value_type == 'version':
-        return parse_version(raw_val)
-    if value_type == 'date':
-        return datetime.strptime(raw_val, "%Y-%m-%d")
-    return raw_val
 
 def filter_files(input_dir, criteria):
     """ Apply numeric filters to input JSON files """
@@ -278,9 +242,9 @@ def main():
         for key, criterion in criteria.items():
             if criterion:
                 val = v.get(key, "N/A")
-                filtered += f"{key}: {val}"
+                filtered += f"{key}: {val} "
         
-        print(f"ID: {m['id']} \t| Date: {date_str} | {filtered} | Purity: {purity_val} | File: {m['file']}")
+        print(f"ID: {m['id']} \t| Date: {date_str} | {filtered}| Purity: {purity_val} | File: {m['file']}")
                 
         if args.output_dir:
             shutil.copy(m['full_path'], os.path.join(args.output_dir, m['file']))

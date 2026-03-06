@@ -5,49 +5,10 @@ Usage:
     python3 couchDB_dynamic_query.py --login_file login.txt --filters_file filters.yaml --output_dir script1_output/
 """
 
-import couchdb
 import json
 import os
 import argparse
-import yaml
-from datetime import datetime, timedelta
-
-def read_login_file(file_path):
-    """ Reads input file and returns dict with couchDB login info """
-    params = {}
-    with open(file_path, "r") as f:
-        data = yaml.safe_load(f)
-        #for line in f:
-            #if ':' in line:
-                #key, value = line.strip().split(':', 1)
-                #params[key.strip()] = value.strip()
-    # full pipeline
-    if "login_file" in data:
-        return data["login_file"]
-    return data
-
-def read_filters_yaml(file_path):
-    """ Reads YAML file containing query filters """
-    with open(file_path, "r") as f:
-        return yaml.safe_load(f)
-
-def get_couchdb_database(host, port, db_name, username=None, password=None):
-    """ Connects to couchDB using login info and returns specified database object """
-    try:
-        url = f"http://{host}:{port}/"
-        if username and password:
-            from urllib.parse import urlparse, urlunparse
-            scheme, netloc, path, params, query, fragment = urlparse(url)
-            netloc = f"{username}:{password}@{host}:{port}"
-            url = urlunparse((scheme, netloc, path, params, query, fragment))
-        couch = couchdb.Server(url)
-
-        if db_name not in couch:
-            raise ValueError(f"Database '{db_name}' does not exist on the server.")
-        return couch[db_name]
-    except Exception as e:
-        print(f"Error connecting to couchDB: {e}")
-        raise
+from couchDB_utils import read_login_file, read_filters_yaml, get_couchdb_database
 
 def build_mango_query(filters: dict):
     """ Builds a CouchDB Mango query selector based on dictionary of filters & ignores null filters """

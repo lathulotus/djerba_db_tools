@@ -7,56 +7,10 @@ Usage:
 
 import json
 import os
-import re
 import argparse
 from datetime import datetime
 import pandas as pd
-
-def parse_version(version_str):
-    """ Convert version string to a tuple of integers for comparison """
-    try:
-        return tuple(map(int, re.sub(r'[^\d.]', '', version_str).split('.')))
-    except:
-        return (0,)
-    
-def get_nested(data, paths):
-    """ Get nested values from dict """
-    if isinstance(paths, str):
-        paths = [paths]
-    for path in paths:
-        keys = path.split('/')
-        for key in keys:
-            if isinstance(data, dict):
-                data = data.get(key)
-            else:
-                return None
-    return data
-
-def transform_value(raw_val, value_type):
-    """Convert raw JSON values into typed Python values """
-    if raw_val is None:
-        return None
-    if isinstance(raw_val, str):
-        raw_val = raw_val.strip()
-
-    try:
-        if value_type == "float":
-            return float(raw_val)
-        if value_type == "int":
-            return int(raw_val)
-        if value_type == "date":
-            date_fmts = ["%Y-%m-%d", "%d/%m/%Y %H:%M", "%d/%m/%Y_%H:%M:%S", "%d/%m/%Y_%H:%M:%SZ"]
-            for fmt in date_fmts:
-                try:
-                    return datetime.strptime(raw_val, fmt)
-                except:
-                    pass
-        if value_type == "version":
-            return parse_version(raw_val)
-        return raw_val
-
-    except Exception:
-        return None
+from couchDB_utils import get_nested, transform_value
 
 string_fields = {
     "report_id": "_id",
