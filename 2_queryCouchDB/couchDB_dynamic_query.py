@@ -75,6 +75,10 @@ def build_mango_query(filters: dict):
         if value is None:
             continue
 
+        # Support comma-separated strings by converting them to a list
+        if isinstance(value, str) and "," in value:
+            value = [v.strip() for v in value.split(",")]
+
         if isinstance(paths, str):
             paths = [paths]
         

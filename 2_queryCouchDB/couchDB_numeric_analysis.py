@@ -41,7 +41,8 @@ def get_nested(data, paths):
 
 def evaluate_criterion(value, criterion_str, value_type='float'):
     """
-    Supports:
+    Supports multiple criteria separated by commas (treated as OR condition).
+    Also supports:
     - Ranges: [min, max] (inclusive)
     - Operators: >, <, >=, <=, ==
     - Bare values: defaults to >=
@@ -49,7 +50,13 @@ def evaluate_criterion(value, criterion_str, value_type='float'):
     if not criterion_str:
         return True
     
-    criterion_str = criterion_str.strip()
+    # Handle multiple criteria separated by commas (OR condition)
+    # Check that it's not a single range [x, y]
+    if "," in str(criterion_str) and not (str(criterion_str).strip().startswith("[") and str(criterion_str).strip().endswith("]")):
+        criteria = [c.strip() for c in str(criterion_str).split(",")]
+        return any(evaluate_criterion(value, c, value_type) for c in criteria)
+    
+    criterion_str = str(criterion_str).strip()
 
     # Handle Ranges: [80, 100]
     range_match = re.match(r'\[\s*(.*)\s*,\s*(.*)\s*\]', criterion_str)

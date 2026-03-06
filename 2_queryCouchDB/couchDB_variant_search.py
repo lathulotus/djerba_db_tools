@@ -33,12 +33,19 @@ def get_nested(data, paths):
     return None
 
 def evaluate_criterion(value, criterion, value_type='string', mode="exact"):
-   """ Case-insensitive match """
+   """ Case-insensitive match. Supports comma-separated strings or lists (OR condition) """
    if not criterion:
        return True
    if value is None:
        return False
   
+   # Support comma-separated strings or lists
+   if isinstance(criterion, str) and "," in criterion:
+       criterion = [c.strip() for c in criterion.split(",")]
+   
+   if isinstance(criterion, list):
+       return any(evaluate_criterion(value, c, value_type, mode) for c in criterion)
+
    value_norm = str(value).lower()
    criterion_norm = str(criterion).lower()
 
