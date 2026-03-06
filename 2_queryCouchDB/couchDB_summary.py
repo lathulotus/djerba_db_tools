@@ -263,7 +263,15 @@ def main():
                 continue
         rows.append(extract_record(data))
 
+    if not rows:
+        print(f"No valid records found in {args.input_dir}. Summary table not created.")
+        return
+
     df = pd.DataFrame(rows)
+    if df.empty:
+        print(f"Summary dataframe is empty for {args.input_dir}. Summary table not created.")
+        return
+
     if "date_reported" in df.columns:
         df["date_reported"] = pd.to_datetime(df["date_reported"], errors="coerce", dayfirst=True).dt.strftime("%Y-%m-%d")
 
