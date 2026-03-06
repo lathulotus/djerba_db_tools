@@ -24,4 +24,11 @@ color_legend_label: null
 group_legend_label: null
 title: null
 
+plot_percentage: false
+ratio_threshold: null
+interval: null    #monthly, daily
+date_range:
+  start: null
+  end: null
+
 output_file: null
