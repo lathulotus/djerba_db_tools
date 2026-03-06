@@ -8,6 +8,7 @@ Usage:
 import json
 import os
 import argparse
+import shutil
 from couchDB_utils import read_login_file, read_filters_yaml, get_couchdb_database
 
 def build_mango_query(filters: dict):
@@ -74,7 +75,19 @@ def download_documents(db, query, output_dir, page_size=500):
     else:
         final_output_path = "filtered_jsons"
 
-    if not os.path.exists(final_output_path):
+    if os.path.exists(final_output_path):
+        # Clear existing files to start fresh
+        for f in os.listdir(final_output_path):
+            file_p = os.path.join(final_output_path, f)
+            try:
+                if os.path.isfile(file_p) or os.path.islink(file_p):
+                    os.unlink(file_p)
+                elif os.path.isdir(file_p):
+                    shutil.rmtree(file_p)
+            except Exception as e:
+                print(f"Failed to delete {file_p}. Reason: {e}")
+        print(f"Cleared existing files in: {final_output_path}")
+    else:
         os.makedirs(final_output_path)
         print(f"Created output directory: {final_output_path}")
 
