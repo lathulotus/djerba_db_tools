@@ -1,96 +1,61 @@
 # Query Types
-Supported query types when searching through reports stored by Djerba on the CouchDB database.
-
-<br>
-
-## 1. Single Report ID
-This results in a JSON file with one single report.
-
-| Flag | Query Type | Definition | JSON Path |
-|------|------------|------------|-----------|
-| `--report-id` | Report ID | Query by a single report identifier | _id |
+Querying couchDB supports string-based search via Mango and numeric-based search via Python. Filters may be set through YAML files and/or search flags, depending on the search focus.
 
 
-## 2. Bulk Report IDs
-This results in multiple JSON files for each report.
+## String-Based Querying
+Query types are laid out in the **[filters YAML file](./filters.yaml)**. Fields that do not require querying should remain `null`. Individual JSON file(s) will be output for reports satisfying specific query requirements.
 
-| Flag | Query Type | Definition | JSON Path |
-|------|------------|------------|-----------|
-| `--bulk-ids` | Bulk Report IDs | Query by multiple report identifiers provided in a text file | _id |
-
-
-## 3. Filter by Metadata
-This results JSON files for report(s) that satisfy query requirements.
-
-### 3a. Case Overview
-| Flag | Query Type | Definition | JSON Path |
-|------|------------|------------|-----------|
-| `--assay` | Assay | Assay used for sequencing | plugins.case_overview.results.assay |
-| `--primary-cancer` | Primary Cancer | Cancer diagnosis | plugins.case_overview.results.primary_cancer |
-| `--biopsy-site` | Biopsy Site | Location of biopsy or surgery | plugins.case_overview.results.site_of_biopsy |
-| `--study` | Study | Research study or program identifier | plugins.case_overview.results.study |
-| `--project` | Project |Project name | config.input_params_helper.project |
-| `--donor` | Donor | Donor ID | config.input_params_helper.donor |
-
-### 3b. Sample Information
-| Flag | Query Type | Definition | JSON Path |
-|------|------------|------------|-----------|
-| `--oncotree-code` | OncoTree Code | OncoTree-standardized cancer classification | plugins.sample.results.OncoTree Code |
-| `--sample-type` | Sample Type | Type of sample collected | plugins.sample.results.Sample Type |
-| `--purity` | Estimated Purity | Estimated tumour purity | plugins.sample.results.Estimated Cancer Cell Content (%) |
-| `--ploidy` | Estimated Ploidy | Estimated chromosomal copy number | plugins.sample.results.Estimated Ploidy |
-| `--callability` | Callability | Percentage of genome considered callable | plugins.sample.results.Callability (%) |
-| `--coverage` | Coverage | Average sequencing coverage | plugins.sample.results.Coverage (mean) |
-
-### 3c. Genomic Landscape: Biomarkers
-| Flag | Query Type | Definition | JSON Path |
-|------|------------|------------|-----------|
-| `--tmb-value` | TMB Value | Tumor mutation burden per Mb | plugins.genomic_landscape.results.genomic_biomarker.TMB.Genomic biomarker value |
-| `--msi-value` | MSI Value | Microsatellite instability per Mb | plugins.genomic_landscape.results.genomic_biomarker.MSI.Genomic biomarker value |
-| `--hrd-value` | HRD Value | Homologous recombination deficiency per Mb | plugins.genomic_landscape.results.genomic_biomarker.HRD.Genomic biomarker value |
-| `--tmb-alteration` | TMB Status | TMB status | plugins.genomic_landscape.results.genomic_biomarkers.TMB.Genomic biomarker alteration |
-| `--msi-alteration` | MSI Status | MSI status | plugins.genomic_landscape.results.genomic_biomarkers.MSI.Genomic biomarker alteration |
-| `--hrd-alteration` | HRD Status | HRD status | plugins.genomic_landscape.results.genomic_biomarkers.HRD.Genomic biomarker alteration |
-
-### 3d. CNV Data
-| Flag | Query Type | Definition | JSON Path |
-|------|------------|------------|-----------|
-| `--pga` | Percent Genome Altered | Percentage genome altered by CNVs | plugins.wgts.cnv_purple.results.percent genome altered |
-| `--cnv-total` | CNV Total | Total number of CNVs | plugins.wgts.cnv_purple.results.total variants |
-| `--cnv-gene` | CNV Gene | Genes affected by copy number change | plugins.wgts.cnv_purple.results.body.Gene |
-| `--cnv-alteration` | CNV Alteration | Type of CNV event | plugins.wgts.cnv_purple.results.body.Alteration |
-| `--cnv-chromosome` | CNV Chromosome | Genomic locus of CNV | plugins.wgts.cnv_purple.results.body.Chromosome |
-| `--cnv-oncokb` | CNV OncoKB | OncoKB level of evidence for CNV | plugins.wgts.cnv_purple.results.body.OncoKB |
-
-### 3e. SNV/Indel Data
-| Flag | Query Type | Definition | JSON Path |
-|------|------------|------------|-----------|
-| `--snv-somatic` | Somatic SNV Count | Total number of somatic SNVs/indels | plugins.wgts.snv_indel.results.somatic mutations |
-| `--snv-coding` | Coding SNV Count | Number of mutations affecting coding regions | plugins.wgts.snv_indel.results.coding sequence mutations |
-| `--snv-oncogenic` | Oncogenic SNV Count | Number of mutations classified as oncogenic | plugins.wgts.snv_indel.results.oncogenic mutations |
-| `--snv-gene` | SNV Gene | Gene containing SNV/indel | plugins.wgts.snv_indel.results.body.Gene |
-| `--snv-protein` | SNV Protein | Protein-level consequence | plugins.wgts.snv_indel.results.body.protein |
-| `--snv-type` | SNV Type | Functional mutation classification | plugins.wgts.snv_indel.results.body.type |
-| `--snv-vaf` | SNV VAF | Variant allele frequency | plugins.wgts.snv_indel.results.body.vaf |
-| `--snv-depth` | SNV Depth | Read depth supporting variant | plugins.wgts.snv_indel.results.body.depth |
-| `--snv-loh` | SNV LOH | Loss of heterozygosity status | plugins.wgts.snv_indel.results.body.LOH |
-| `--snv-chromosome` | SNV Chromosome | Genomic locus of variant | plugins.wgts.snv_indel.results.body.Chromosome |
-| `--snv-oncokb` | SNV OncoKB | OncoKB level of evidence | plugins.wgts.snv_indel.results.body.OncoKB |
-
-### 3f. Fusion
-| Flag | Query Type | Definition | JSON Path |
-|------|------------|------------|-----------|
-| `--fusion-total` | Fusion Total | Total number of fusion events | plugins.fusion.results.Total variants |
-| `--fusion-clinical` | Clinical Fusions | Fusions with clinical relevance | plugins.fusion.results.Clinically relevant variants |
-| `--fusion-nccn` | NCCN Fusions | Fusions relevant per NCCN guidelines | plugins.fusion.results.nccn_relevant_variants |
+| Filter | Definition | Example |
+|--------|------------|---------|
+| `report_id` | Report ID | `REPORT_123-v1` |
+| `donor` | Donor ID | `DONOR_123` |
+| `project` | Project name | `PROJECT` |
+| `study` | Study name | `STUDY` |
+| `report_type` | Report | `clinical`, `research` |
+| `cancer_type` | Primary cancer diagnosis | `pancreatic adenocarcinoma` |
+| `oncotree_code` | Oncotree code | `PAAD` |
+| `assay` | Assay | `WGTS` |
+| `biopsy_site` | Biopsy/surgery | `left crest` |
+| `sample_type` | Type of sample | `FFPE  tissue block` |
+| `hrd_status` | HRD status | `HR Proficient` |
+| `msi_status` | MSI status | `MSS` |
+| `tmb_status` | TMB status | `TMB-L` |
+| `ctdna_status` | ctDNA status, all fields | `Detected` or `Undetected` |
+| `ctdna_cnv` | ctDNA status in CNV | `True` |
+| `ctdna_snv` | ctDNA status in SNV | `False` |
+| `failed` | Report failure status | `false` |
 
 
-## 4. Combined Metadata Filters
-This results JSON files for report(s) that satisfy query requirements.
+## Variant-Based Querying
+Query filters can be input using the flag specified below. Individual JSON file(s) will be output for reports satisfying specific query requirements. For specific gene searches, input a singular string containing the gene code. For pairs of genes or multiple genes in one case, input a list formatted as `[gene1,gene2]` (i.e., `[SDC1,BCL2L11]`). Filters are stacked, thus applying a specific gene and type filter searches for that gene + effect (i.e., TP53 amplification, KRAS missense).
+| Filter | Definition | Example |
+|--------|------------|---------|
+| `--cnv_gene` | CNV-containing gene | `TP53` |
+| `--cnv_type` | CNV type associated with search | `amplification` |
+| `--snv_gene` | SNV-containing gene | `KRAS` |
+| `--snv_type` | SNV type asssociated with search | `Missense Mutation` |
+| `--snv_protein` | Protein change resulting from SNV | `p.S110R` |
+| `--fusion_gene` | Fusion-containing gene(s) | `SDC1` or `SDC1, BCL2L11` |
+| `--fusion_effect` | Fusion effect | `Likely Loss-of-function` |
+| `--fusion_frame` | Fusion associated frame | `out of frame` |
 
-| Flag | Query Type | Definition | JSON Path |
-|------|------------|------------|-----------|
-| `--report-type` | Report Type | Type of report | plugins.genomic_landscape.attributes |
-| `--last-update` | Last Update | Date the report was last modified | plugins.case_overview.last_updated |
 
-
+## Numeric-Based Querying
+Query filters can be input using the flag specified below. Individual JSON file(s) will be output for reports satisfying specific query requirements. For specific (rounded) searching, input a single integer formatted as `num` (i.e., `2`). For range searching, input a list formatted as `[min,max]` (i.e., `[0,4]`).
+| Filter | Definition | Example |
+|--------|------------|---------|
+| `--date_reported` | Date report created | `2026/12/01` |
+| `--djerba_version` | Report version | `1.10.0` |
+| `--coverage` | Average read coverage | `75.0` or `70,80` |
+| `--purity` | Estimated tumour purity % | `75` or `70,80` |
+| `--callability` | Percent of callable genome | `75.0` or `70,80` |
+| `--ploidy` | Estimated chromosomal copy number | `2.75` or `2,3` |
+| `TMB` | TMB value | `79` |
+| `--tmb_value` | TMB score per Mb | `0.7` |
+| `--hrd_value` | HRD score per Mb | `2.1` |
+| `--msi_value` | MSI score per Mb | `0.9` |
+| `--pga` | Percent genome altered | `2.75` or `2,3` |
+| `--cnv_clinical` | Clinically relevant CNVs | `2.75` or `2,3` |
+| `--snv_oncologival` | Oncologically relevant SNVs | `2.75` or `2,3` |
+| `--fusion_clinical` | Clinically relevant fusions | `2.75` or `2,3` |
+| `--plot` | Plotting cumulative report count | `true` |

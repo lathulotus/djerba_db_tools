@@ -1,0 +1,71 @@
+query_pipeline:
+  run_retrieve: true
+  run_variant: true
+  run_numeric: true
+  run_summary: true
+
+paths:
+  retrieve_out: output/retrieve/
+  numeric_out: output/numeric/
+  variant_out: output/variants/
+  summary_out: output/summary.xlsx
+  plot_out: output/figures/
+  log_file: output/pipeline_log.json
+
+login_file:
+  host: URL
+  port: 0000
+  db_name: DB_NAME
+  username: USERNAME
+  password: PASSWORD
+
+filters:
+  dynamic:
+    report_id: null
+    donor: null
+    project: null
+    study: null
+    report_type: null
+    failed: null
+    cancer_type: null
+    oncotree_code: null
+    assay: null
+    biopsy_site: null
+    sample_type: null
+    tmb_status: null
+    hrd_status: null
+    msi_status: null
+    ctdna_status: null
+    ctdna_cnv: null
+    ctdna_snv: null
+
+    page_size: null
+    count: null
+
+  variant:
+    cnv_gene: null
+    cnv_type: null
+    snv_gene: null
+    snv_type: null
+    snv_protein: null
+    fusion_gene: null
+    fusion_effect: null
+    fusion_frame: null
+
+  numeric:
+    djerba_version: null
+    date_reported: null
+    coverage: null
+    purity: null
+    callability: null
+    ploidy: null
+    TMB: null
+    TMB_value: null
+    HRD_value: null
+    MSI_value: null
+    pga: null
+    cnv_clinical: null
+    snv_oncogenic: null
+    fusion_clinical: null
+
+    plot: null
