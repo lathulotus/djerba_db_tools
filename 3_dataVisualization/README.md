@@ -24,10 +24,16 @@ Allows for plotting the percentage for better visual of ratios. Intervals can be
 
 <br>
 
-## Distribution by Parametes
+## Distribution by Parameters
 Plotting number of cases by parameter as histograms.
 ![PGA Passed](distribution_by_field/histogram_purity_passed.png)
 
 Distribution plots can allow for view of non-numerical bins.
 ![MSI Status Passed](distribution_by_field/histogram_msi.png)
+
+<br>
+
+## Distribution by Combined Parameters
+Plotting the number of occurrences of variants (SNV, CNV) in the HR gene by HR status (HRD, HRP).
+![HR Genes](hr_genes/combined_plot.png)
 
