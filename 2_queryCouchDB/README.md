@@ -1,62 +1,76 @@
 # Querying CouchDB: Usage Guide
-Querying CouchDB database to assess reports stored by Djerba.
+Querying is done using the pipeline script, found under **[couchDB_query_pipeline.py](./couchDB_query_pipeline.py)**.
 
+|             Supports                   |                          Script                                   |
+|----------------------------------------|-------------------------------------------------------------------|
+| Local report retrieval                 |  **[couchDB_dynamic_query.py](./couchDB_dynamic_query.py)**       |
+| Filtering by general string parameters |  **[couchDB_dynamic_query.py](./couchDB_dynamic_query.py)**       |
+| Filtering by variant-associated fields |  **[couchDB_variant_search.py](./couchDB_variant_search.py)**     |
+| Filtering by numeric fields            |  **[couchDB_numeric_analysis.py](./couchDB_numeric_analysis.py)** |
+| Plotting report accumulation           |  **[couchDB_numeric_analysis.py](./couchDB_numeric_analysis.py)** |
 
-## Dynamic Querying
-Dynamic querying to download reports based on Mango search logic works best for string-based querying. As such, this script supports querying through fields containing string values. Complete script can be found under **[couchDB_dynamic_query.py](./couchDB_dynamic_query.py)**.
+## Query Pipeline: Filters & Usage
+Querying requires a config YAML, found under **[couchDB_query_pipeline.yaml](./couchDB_query_pipeline.yaml)**. To run the pipeline in commandline, python (v8+):
 
+```
+python3 couchDB_query_pipeline.py --config couchDB_query_pipeline.yaml
+```
 
-Usage to download filtered reports:
-> `python3 couchDB_dynamic_query.py --login_file login.txt --filters_file filters.yaml --output_dir script1_output/`
+Filters **must** be set by running a `couchDB_query_pipeline.yaml` file after the `config` flag. Filters should be defined within the [pre-existing YAML file](./couchDB_query_pipeline.yaml), in which fields that are not being searched should be set to `null` or `false` or `true`, as per the template. Filters file is **required** and login **must** be authenticated for connection to the database.
 
+Visit **[query_types](./query_types.md)** to view supported filter types, definitions, and example.
 
-Usage to count reports without download:
-> `python3 couchDB_dynamic_query.py --login_file login.txt --filters_file filters.yaml --count`
+<br>
 
-
-### Login_File
-Connection **must** be authenticated by setting host, port, database name, and login credentials. Such values can be saved as a text file and be run alongside the `login_file` flag. Login file is required. Text file to be organized as follows:
+### Login Authentification
+Connection **must** be authenticated by setting host, port, database name, and login credentials. If pipeline script is being run, login is directly added to pre-existing YAML. If dynamic querying is run alone, such values can be saved as a text file and be run alongside the `login_file` flag. Login file is required. Text file to be organized as follows:
 
 
 ```
-host: djerba-dev-db.gsi.oicr.on.ca
-port: 5984
+host: url
+port: 0000
 db_name: database_name
 username: username
 password: password
 ```
 
+<br>
 
-### Filters_File
-Filters **must** be set by running a `filters.yaml` file after the `filters_file` flag. Filters should be defined within the [pre-existing YAML file](./filters.yaml), in which fields that are not being searched should be set to `null`. Filters file is required.
+### Retrieve
+Retrieval [script](./couchDB_dynamic_query.py) allows for local download of reports from CouchDB. Dynamic querying to download reports based on Mango search logic works best for string-based querying. As such, this script supports querying through fields containing string values.
 
+`run_retrieve` must be set to `true` for CouchDB query and filtering.
 
-Visit **[query_types](./query_types.md)** to view supported filter types, definitions, and example.
+To run dynamic querying without running pipeline script using simplified [filter.txt](./couchDB_dynamic_filters.yaml):
+- Downloading reports: `python3 couchDB_dynamic_query.py --login_file login.txt --filters_file filters.yaml --output_dir script1_output/`
+- Counting filtered reports: `python3 couchDB_dynamic_query.py --login_file login.txt --filters_file filters.yaml --count`
 
+ <br>
 
-### Downloading Files
-To download all reports that satisfy the set filters, `--output_dir` can be set to specify a path to a directory that holds all reports. Otherwise, this defaults to the folder in which the command is run.
+### Variant
+Variant searching [script](./couchDB_variant_search.py) allows for gene or alteration-based searching. To bypass naming conventions, python-based search logic is applied to already downloaded reports to perform variant-based querying.
 
+`run_variant` can be set to `true` if being filtered. Else, must be set to `false`.
 
-### Count Only
-To assess report counts without downloading reports that satisfy the set filters, `--count` can be run at the end. This exports an integer representing reports that satisfy the filters.
+To run variant filtering without running pipeline, using in-line flags:
+- `python3 couchDB_variant_search.py --input_dir script1_output/ --snv_gene TP53 --output_dir filtered_TP53/`
 
+<br>
 
-### Page Size
-Current script is run across all reports found in the specified database. The page size across which reports are assessed can be set using the `--page_size` flag, which takes integers. Otherwise, this defaults to `500`.
+### Numeric
+Numeric querying [script](./couchDB_numeric_analysis.py) allows for analysis and plotting of quantitative data. To bypass lexicographic logic applied to integers saved as strings, python-based search logic is applied to downloaded reports to perform integer querying and visual analysis. 
 
+`run_numeric` can be set to `true` if being filtered or plotted. Else, must be set to `false`.
 
-## Numeric Analysis
-Mango query allows for numeric querying of integers; however, issues arise when searching lexicographically through numbers saved as string. As such, this script converts values into integers for python-based search and visual analysis. Complete script can be found under **[couchDB_numeric_analysis.py](./couchDB_numeric_analysis.py)**.
+To run numeric filtering without running pipeline, using in-line flags:
+- `python3 couchDB_numeric_analysis.py --input_dir script1_output/ --output_dir script2_output/ --plot`
 
+<br>
 
-Usage:
-> `python3 couchDB_numeric_analysis.py --input_dir script1_output/ --output_dir numeric_output/ --plot`
+### Summary
+Summary table generation [script](./couchDB_summary.py) results in the generation of a summary table (XLSX, CSV) of data extracted from reports. Files can be used for ease of data analysis or downstream plotting.
 
+`run_variant` can be set to `true` to generate table. Else, can be set to `false`.
 
-## Variant Search
-Mango query is stringent in its querying logic. To bypass naming conventions, python-based search is applied to perform variant-based querying. Complete script can be found under **[couchDB_variant_search.py](./couchDB_variant_search.py)**.
-
-
-Usage to download filtered reports:
-> `python3 couchDB_vaiant_search.py --input_dir script1_output/ --output_dir variant_output/`
+To run summary table generation without running pipeline:
+- `python3 couchDB_summary.py --input_dir reports_input/ --output_name output_summary`
