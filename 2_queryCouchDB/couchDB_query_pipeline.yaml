@@ -9,7 +9,7 @@ paths:
   numeric_out: output/numeric/
   variant_out: output/variants/
   summary_out: output/summary.xlsx
-  plot_out: output/figures/
+  plot_out: output/coverage_over_time.png
   log_file: output/pipeline_log.json
 
 login_file:
