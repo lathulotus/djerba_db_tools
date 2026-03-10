@@ -49,8 +49,7 @@ def main():
     filters = config["filters"]
     login = config["login_file"]
     pipeline = config["query_pipeline"]
-
-    base_out = os.path.dirname(paths["retrieve_out"].rstrip('/'))
+    base_out = paths["output_dir"]
     if not base_out: base_out = "."
 
     filtered_jsons_dir = os.path.join(base_out, "filtered_jsons")
@@ -90,7 +89,7 @@ def main():
                "--input_dir", filtered_jsons_dir,
                "--output_dir", temp_numeric_out]
         if filters["numeric"].get("plot"):
-             cmd += ["--plot_out", paths.get("plot_out", os.path.join(base_out, "coverage_over_time.png"))]
+             cmd += ["--plot_out", paths["plot_out"]]
 
         for key, val in filters["numeric"].items():
             if key == "plot":
