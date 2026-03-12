@@ -1,10 +1,9 @@
 # README
 
 ## Top-level Schemas
-* [Query Report Structure Schema](schema_master.json)
-* [Clinical Report Structure Schema (Biological Variables)](bioSchemas/schema_clinical.json)
-* [Research Report Structure Schema (Biological Variables)](bioSchemas/schema_research.json)
-* [Testing Report Structure Schema (Biological Variables)](bioSchemas/schema_testing.json)
+* [Query Report Structure Schema](./schema_query.json)
+* [Clinical Report Structure Schema (Biological Variables)](./schemas/clinical_schema.json)
+* [Research Report Structure Schema (Biological Variables)](./schemas/research_schema.json)
 
 ## Top-level Fields
 * Case Overview: assay, primary cancer, site of biopsy, study
@@ -67,5 +66,4 @@ SNV/Indel, CNV, Fusion
 ![Report Structure Diagram](images/ReportStructure.png)
 
 ## Version Note
-
 The schemas linked above follow the JSON Schema Spec version: `http://json-schema.org/draft-07/schema#`

@@ -1,0 +1,306 @@
+{
+    "$id": "https://github.com/lathulotus/cgi_djerba/blob/main/1_djerbaSchemas/simpleSchemas/simpleSchema_research.json",
+    "title": "Research - Report Structure Schema",
+    "description": "Schema documentation of RUO report structures, highlighting key variables. Latest sample report from 13/01/2026.",
+    "type": "object",
+
+    "properties":{
+        "case_overview":{
+            "description": "Case details: cancer type, study name.",
+            "type": "object",
+            "properties":{
+                
+                "results":{
+                    "description": "Results covering case overview",
+                    "type": "object",
+                    "properties":{
+
+                        "assay": {
+                            "description": "Type of assay used for sequencing (WGTS, WGS, TAR)",
+                            "type": "string",
+                            "enum": ["WGTS", "WGS", "WES", "WTS", "pWGS", "sWGS", "TAR"]
+                        },
+                        "study":{
+                            "description": "Research study name",
+                            "type": "string"
+                        },
+                        "requisition_approved":{
+                            "description": "Date of requisition approval",
+                            "type": "string"
+                        },
+                        "last_updated":{
+                            "description": "Date of report",
+                            "type": "string"
+                        },
+                        "report_id":{
+                            "description": "Report identifier; can be used for single report fetching",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+
+
+        "sample":{
+            "description": "Sample details: cancer content, coverage.",
+            "type": "object",
+            "properties":{
+
+                "results":{
+                    "description": "Results covering sample details",
+                    "type": "object",
+                    "properties":{
+
+                        "Estimated Cancer Cell Content (%)":{
+                            "description": "Estimated percentage of cancer cell content",
+                            "type": "integer"
+                        },
+                        "Estimated Ploidy":{
+                            "description": "Estimated ploidy value",
+                            "type": "string"
+                        },
+                        "Callability (%)":{
+                            "description": "Call quality",
+                            "type": "string"
+                        },
+                        "Coverage (mean)":{
+                            "description": "Average coverage",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+
+
+        "wgts.cnv_purple":{
+            "description": "Findings associated with copy number variants",
+            "type": "object",
+            "properties":{
+                
+                "results":{
+                    "description": "Results pertaining to CNV data",
+                    "type": "object",
+                    "properties":{
+
+                        "percent genome altered":{
+                            "description": "Percent of genome altered by CNV",
+                            "type": "integer"
+                        },
+                        "total variants":{
+                            "description": "Number of total copy number variants",
+                            "type": "integer"
+                        },
+
+                        "body":{
+                            "description": "Details on each CNV",
+                            "type": "object",
+                            "properties":{
+                                "Gene":{
+                                    "description": "Names of CNV-containing genes",
+                                    "type": "string"
+                                },
+                                "Alteration":{
+                                    "description": "Type of CNV event",
+                                    "type": "string",
+                                    "enum": ["Amplification", "Deletion"]
+                                },
+                                "Chromosome":{
+                                    "description": "Position of CNV",
+                                    "type": "string"
+                                },
+                                "OncoKB":{
+                                    "description": "OncoKB level of evidence",
+                                    "type": "string",
+                                    "enum": ["1", "2", "3A", "3B", "4", "N1", "N2", "N3", "N4"]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+
+        "wgts.snv_indel":{
+            "description": "Findings associated with short nucleotide variants and indels",
+            "type": "object",
+            "properties":{
+                
+                "results":{
+                    "description": "Results pertaining to SNV/indel data",
+                    "type": "object",
+                    "properties":{
+
+                        "somatic mutations":{
+                            "description": "Number of somatic mutations identified",
+                            "type": "integer"
+                        },
+                        "coding sequence mutations":{
+                            "description": "Number of mutations in coding sequence",
+                            "type": "integer"
+                        },
+                        "oncogenic mutations":{
+                            "description": "Number of oncogenic mutations identified",
+                            "type": "integer"
+                        },
+
+                        "body":{
+                            "description": "Details on each SNV",
+                            "type": "object",
+                            "properties":{
+                                "Gene":{
+                                    "description": "Names of SNV-containing genes",
+                                    "type": "string"
+                                },
+                                "protein":{
+                                    "description": "Protein alteration",
+                                    "type": "string"
+                                },
+                                "type":{
+                                    "description": "Type of SNV event",
+                                    "type": "string",
+                                    "enum": ["Missense Mutation", "Nonsense Mutation", "Frame Shift Del", "Frame Shift Ins", "Splice Site", "Splice Region"]
+                                },
+                                "vaf":{
+                                    "description": "Variant allele frequency (percentage)",
+                                    "type": "integer"
+                                },
+                                "Chromosome":{
+                                    "description": "Position of SNV/indel (chromosome and cytoband)",
+                                    "type": "string"
+                                },
+                                "OncoKB":{
+                                    "description": "OncoKB level of evidence",
+                                    "type": "string",
+                                    "enum": ["1", "2", "3", "4", "N1", "N2"]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+
+        "fusion":{
+            "description": "Findings associated with gene fusions",
+            "type": "object",
+            "properties":{
+                
+                "results":{
+                    "description": "Results pertaining to fusion data",
+                    "type": "object",
+                    "properties":{
+
+                        "Total variants":{
+                            "description": "Number of fusions identified",
+                            "type": "integer"
+                        },
+                        "Clinically relevant variants":{
+                            "description": "Number of relevant variants as per OncoKB",
+                            "type": "integer"
+                        },
+                        "nccn_relevant_variants":{
+                            "description": "Number of relevant variants as per NCCN",
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+
+
+        "genomic_landscape":{
+            "description": "Genomic Landscape and Biomarkers (TMB, MSI, HRD)",
+            "type": "object",
+            "properties":{
+                
+                "results":{
+                    "description": "Results pertaining to landscape and biomarkers",
+                    "type": "object",
+                    "properties":{
+
+                        "genomic_landscape_info":{
+                            "description": "Genomic landscape",
+                            "type": "object",
+                            "properties":{
+                                
+                                "Tumour Mutation Burden":{
+                                    "description": "TMB value; total number of coding mutations",
+                                    "type": "integer"
+                                },
+                                "TMB per megabase":{
+                                    "description": "TMB; coding mutations per megabase",
+                                    "type": "integer"
+                                },
+                                "Cancer-specific Percentile":{
+                                    "description": "Percentile within specific cohort",
+                                    "type": "string"
+                                },
+                                "purity":{
+                                    "description": "Fraction of cancer cells in tumour",
+                                    "type": "integer"
+                                }
+                            }
+                        },
+
+                        "genomic_biomarkers":{
+                            "description": "Genomic biomarkers (TMB, MSI, HRD)",
+                            "type": "object",
+                            "properties":{
+
+                                "TMB":{
+                                    "description": "Tumour Mutation Burden",
+                                    "type": "object",
+                                    "properties":{
+                                        "Genomic biomarker value":{
+                                            "description": "TMB per megabase",
+                                            "type": "integer"
+                                        },
+                                        "Genomic biomarker alteration":{
+                                            "description": "Biomarker title",
+                                            "type": "string",
+                                            "enum": ["TMB-L", "TMB-H"]
+                                        }
+                                    }
+                                },
+                                "MSI":{
+                                    "description": "Microsatellite Instability",
+                                    "type": "object",
+                                    "properties":{
+                                        "Genomic biomarker value":{
+                                            "description": "MSI per megabase",
+                                            "type": "integer"
+                                        },
+                                        "Genomic biomarker alteration":{
+                                            "description": "Biomarker title",
+                                            "type": "string",
+                                            "enum": ["MSS", "MSI"]
+                                        }
+                                    }
+                                },
+                                "HRD":{
+                                    "description": "Homologous Recombination Deficiency",
+                                    "type": "object",
+                                    "properties":{
+                                        "Genomic biomarker value":{
+                                            "description": "HRD per megabase",
+                                            "type": "integer"
+                                        },
+                                        "Genomic biomarker alteration":{
+                                            "description": "Biomarker title",
+                                            "type": "string",
+                                            "enum": ["HR Proficient", "HR Deficient", "HRP", "HRD"]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

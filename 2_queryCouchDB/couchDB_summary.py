@@ -20,7 +20,7 @@ string_fields = {
     "failed": (["config/report_title/failed", "report/failed", "config/supplement.body/failed"]),
     "report_type": (["plugins/case_overview/attributes", "config/pwgs.case_overview/attributes", "config/wgts.snv_indel/attributes", "config/tar.snv_indel/attributes", "plugins/genomic_landscape/attributes", "plugins/wgts.cnv_purple/attributes", "config/hrd/attributes"]),
     "cancer_type": (["plugins/case_overview/results/primary_cancer", "report/patient_info/Primary cancer", "config/pwgs.case_overview/primary_cancer", "plugins/pwgs.case_overview/results/primary_cancer"]),
-    "oncotree_code": (["plugins/sample/results/OncoTree code", "report/sample_info_and_quality/OncoTree code", "config/wgts.snv_indel/oncotree_code", "config/tar.snv_indel/oncotree_code", "config/wgts.cnv_purple/oncotree_code", "config/fusion/oncotree_code"]),
+    "oncotree_code": (["plugins/sample/results/OncoTree code", "report/sample_info_and_quality/OncoTree code", "config/wgts.snv_indel/oncotree_code", "config/tar.snv_indel/oncotree_code", "config/wgts.cnv_purple/oncotree_code", "config/fusion/oncotree_code", "config/input_params_helper/oncotree_code"]),
     "assay": (["config/input_params_helper/assay", "report/assay_type", "config/supplement.body/assay", "plugins/pwgs.case_overview/results/assay", "config/tar.snv_indel/assay"]),
     "biopsy_site": (["plugins/case_overview/results/site_of_biopsy", "report/patient_info/Site of biopsy/surgery"]),
     "sample_type": (["plugins/sample/results/Sample Type", "report/sample_info_and_quality/Sample Type", "plugins/tar.sample/results/sample_type", "config/tar_input_params_helper/sample_type"]),
@@ -42,12 +42,12 @@ numeric_fields = {
     "djerba_version": (["core/core_version", "report/djerba_version", "plugins/case_overview/version"], 'version'),
     "date_reported": (["plugins/supplement.body/results/extract_date", "last_updated"], 'date'),
 
-    "TMB": (["plugins/genomic_landscape/results/genomic_landscape_info/Tumour Mutation Burden", "report/genomic_landscape_info/Tumour Mutation Burden"], 'float'),
+    "TMB": (["report/genomic_landscape_info/Tumour Mutation Burden", "plugins/genomic_landscape/results/genomic_landscape_info/Tumour Mutation Burden"], 'float'),
     "tmb_value": (["plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker value", "report/genomic_landscape_info/TMB per megabase"], 'float'),
     "hrd_value": (["plugins/genomic_landscape/results/genomic_biomarkers/HRD/Genomic biomarker value"], 'float'),
     "msi_value": (["plugins/genomic_landscape/results/genomic_biomarkers/MSI/Genomic biomarker value"], 'float'),
 
-    "pga": (["plugins/wgts.cnv_purple/results/percent genome altered", "report/genomic_landscape_info/Percent Genome Altered"], 'float'),
+    "pga": (["plugins/wgts.cnv_purple/results/percent genome altered", "report/genomic_landscape_info/Percent Genome Altered", "plugins/cnv/results/percent genome altered", "plugins/hmf.wgts.cnv_purple/results/percent genome altered"], 'float'),
     "cnv_clinical": (["plugins/wgts.cnv_purple/results/clinically relevant variants", "plugins/wgts.cnv_purple/results/Clinically relevant variants", "report/oncogenic_somatic_CNVs/Clinically relevant variants"], 'float'),
     "snv_oncogenic": (["plugins/wgts.snv_indel/results/oncogenic mutations", "plugins/wgts.snv_indel/results/Oncogenic mutations", "report/small_mutations_and_indels/Clinically relevant variants", "plugins/tar.snv_indel/results/Clinically relevant variants"], 'float'),
     "fusion_clinical": (["plugins/fusion/results/Clinically relevant variants", "report/structural_variants_and_fusions/Clinically relevant variants"], 'float')
