@@ -10,15 +10,17 @@ def main():
     args = parser.parse_args()
 
     df = pd.read_csv(args.input_csv)
+    df_purity = df[(df["purity"].notna()) & (df["purity"].astype(str).str.strip() != "")]
+    df_purity["purity"] = df_purity["purity"].astype(float)
 
-    failed_purity = df[(df["purity"] < args.threshold) & (df["failed"] == True)]
+    failed_purity = df_purity[(df_purity["purity"] < args.threshold) & (df_purity["failed"] == True)]
     total_failed_purity = len(failed_purity)
-    total_all = len(df)
+    total_all = len(df_purity)
     failure_rate = (total_failed_purity / total_all) * 100
 
     print(f"Input CSV: {args.input_csv}")
     print(f"Purity threshold: {args.threshold}")
-    print(f"Total low-purit fails:", {total_failed_purity})
+    print(f"Total low-purity fails: {total_failed_purity}")
     print(f"Total reports (all): {total_all}")
     print(f"Percentage: {round(failure_rate, 2)}%")
 
