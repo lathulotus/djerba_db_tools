@@ -43,6 +43,7 @@ def main():
     plt.ylabel("Report Count")
     plt.title("Low-Purity Failures by Project (purity < 0.3")
     plt.xticks(rotation=45, ha="right")
+    plt.grid(True, linestyle=":", alpha=0.6)
     plt.legend()
     for index, row in merged.iterrows():
         plt.text(index, row["total_reports"] + 0.5, f"{round(row['percent_low_purity'], 2)}%", ha="center", va="bottom", fontsize=9)
