@@ -47,8 +47,8 @@ def plot_nonhr(csv_hrd, hr_genes, top_n=25):
    x = np.arange(len(table))
    plt.figure(figsize=(12, 7))
 
-   plt.bar(x, table["SNV"], 0.6, color="palevioletred", edgecolor="white", alpha=0.9, label="SNV")
-   plt.bar(x, table["CNV"], 0.6, bottom=table["SNV"], color="steelblue", edgecolor="white", alpha=0.9, hatch="////", label="CNV")
+   plt.bar(x, table["SNV"], 0.6, color="thistle", edgecolor="white", alpha=0.9, label="SNV")
+   plt.bar(x, table["CNV"], 0.6, bottom=table["SNV"], color="indigo", edgecolor="white", alpha=0.9, hatch="////", label="CNV")
    
    plt.xticks(x, table["Gene"], rotation=90)
    plt.xlabel("Non-HR Gene")

@@ -33,11 +33,11 @@ def plot_combine(csv1, csv2, genes):
     x = np.arange(len(genes)) * 1.5
     plt.figure(figsize=(12,7))
 
-    plt.bar(x - 0.3, plot_df["SNV_HRD"], 0.6, color="palevioletred", edgecolor="white", alpha=0.9, label="HRD SNV")
-    plt.bar(x - 0.3, plot_df["CNV_HRD"], 0.6, bottom=plot_df["SNV_HRD"], color="palevioletred", edgecolor="white", alpha=0.9, hatch="////", label="HRD CNV")
+    plt.bar(x - 0.3, plot_df["SNV_HRD"], 0.6, color="thistle", edgecolor="white", alpha=0.9, label="HRD SNV")
+    plt.bar(x - 0.3, plot_df["CNV_HRD"], 0.6, bottom=plot_df["SNV_HRD"], color="thistle", edgecolor="white", alpha=0.9, hatch="////", label="HRD CNV")
 
-    plt.bar(x + 0.3, plot_df["SNV_HRP"], 0.6, color="steelblue", edgecolor="white", alpha=0.9, label="HRP SNV")
-    plt.bar(x + 0.3, plot_df["CNV_HRP"], 0.6, bottom=plot_df["SNV_HRP"], color="steelblue", edgecolor="white", alpha=0.9, hatch="////", label="HRP CNV")
+    plt.bar(x + 0.3, plot_df["SNV_HRP"], 0.6, color="indigo", edgecolor="white", alpha=0.9, label="HRP SNV")
+    plt.bar(x + 0.3, plot_df["CNV_HRP"], 0.6, bottom=plot_df["SNV_HRP"], color="indigo", edgecolor="white", alpha=0.9, hatch="////", label="HRP CNV")
 
     plt.xticks(x, genes, rotation=90)
     plt.ylabel("Number of Cases")
@@ -51,5 +51,4 @@ def plot_combine(csv1, csv2, genes):
 
 # Test run: HRD cases against HR genes
 genes = ["BRCA1","BRCA2","BRIP1","PALB2","RAD51","RAD51C","RAD51D","RAD50","MRE11","NBN","ATM","ATR","CHEK1","CHEK2","BARD1","FANCA","FANCB","FANCC","FANCD1","FANCD2","FANCE","FANCF","FANCG","FANCI","FANCJ","FANCL","FANCM","BLM","WRN","ERCC1","ERCC4","XPF","PTEN"]
-
 plot_combine("summary_hrd.csv", "summary_hrp.csv", genes)
