@@ -1,5 +1,5 @@
 """ Occurrences of top four pancreatic cancer genes (KRAS, TP53, CDKN2A, SMAD4) 
-    - Input: .csv of summary tables (HRD cases, HRP cases) """
+    - Input: .csv of summary table (all PRSPR) """
 
 import pandas as pd
 import numpy as np
