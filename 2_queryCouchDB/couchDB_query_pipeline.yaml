@@ -39,6 +39,7 @@ filters:
 
     page_size: null
     count: null
+    download_all: null
 
   variant:
     cnv_gene: null
