@@ -33,11 +33,11 @@ def plot_combine(csv1, csv2, genes):
     x = np.arange(len(genes)) * 1.5
     plt.figure(figsize=(12,7))
 
-    plt.bar(x - 0.3, plot_df["SNV_HRD"], w, color="palevioletred", edgecolor="white", alpha=0.9, label="HRD SNV")
-    plt.bar(x - 0.3, plot_df["CNV_HRD"], w, bottom=plot_df["SNV_HRD"], color="palevioletred", edgecolor="white", alpha=0.9, hatch="////", label="HRD CNV")
+    plt.bar(x - 0.3, plot_df["SNV_HRD"], 0.6, color="palevioletred", edgecolor="white", alpha=0.9, label="HRD SNV")
+    plt.bar(x - 0.3, plot_df["CNV_HRD"], 0.6, bottom=plot_df["SNV_HRD"], color="palevioletred", edgecolor="white", alpha=0.9, hatch="////", label="HRD CNV")
 
-    plt.bar(x + 0.3, plot_df["SNV_HRP"], w, color="steelblue", edgecolor="white", alpha=0.9, label="HRP SNV")
-    plt.bar(x + 0.3, plot_df["CNV_HRP"], w, bottom=plot_df["SNV_HRP"], color="steelblue", edgecolor="white", alpha=0.9, hatch="////", label="HRP CNV")
+    plt.bar(x + 0.3, plot_df["SNV_HRP"], 0.6, color="steelblue", edgecolor="white", alpha=0.9, label="HRP SNV")
+    plt.bar(x + 0.3, plot_df["CNV_HRP"], 0.6, bottom=plot_df["SNV_HRP"], color="steelblue", edgecolor="white", alpha=0.9, hatch="////", label="HRP CNV")
 
     plt.xticks(x, genes, rotation=90)
     plt.ylabel("Number of Cases")
