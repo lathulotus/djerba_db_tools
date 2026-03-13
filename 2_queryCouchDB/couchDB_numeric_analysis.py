@@ -8,40 +8,16 @@ Usage (example):
 import json
 import os
 import argparse
-from datetime import datetime
 import re
 import shutil
-import yaml
 import pandas as pd
 import matplotlib.pyplot as plt
-
-def parse_version(version_str):
-    """ Convert version string to a tuple of integers for comparison """
-    try:
-        return tuple(map(int, re.sub(r'[^\d.]', '', version_str).split('.')))
-    except:
-        return (0,)
-
-def get_nested(data, paths):
-    """ Get nested values from dict """
-    if isinstance(paths, str):
-        paths = [paths]
-    for path in paths:
-        keys = path.split('/')
-        current = data
-        for key in keys:
-            if isinstance(current, dict):
-                current = current.get(key)
-            else:
-                current = None
-                break
-        if current not in (None, "", []):
-            return current
-    return None
+from couchDB_utils import get_nested, transform_value
 
 def evaluate_criterion(value, criterion_str, value_type='float'):
     """
-    Supports:
+    Supports multiple criteria separated by commas (treated as OR condition).
+    Also supports:
     - Ranges: [min, max] (inclusive)
     - Operators: >, <, >=, <=, ==
     - Bare values: defaults to >=
@@ -49,7 +25,13 @@ def evaluate_criterion(value, criterion_str, value_type='float'):
     if not criterion_str:
         return True
     
-    criterion_str = criterion_str.strip()
+    # Handle multiple criteria separated by commas (OR condition)
+    # Check that it's not a single range [x, y]
+    if "," in str(criterion_str) and not (str(criterion_str).strip().startswith("[") and str(criterion_str).strip().endswith("]")):
+        criteria = [c.strip() for c in str(criterion_str).split(",")]
+        return any(evaluate_criterion(value, c, value_type) for c in criteria)
+    
+    criterion_str = str(criterion_str).strip()
 
     # Handle Ranges: [80, 100]
     range_match = re.match(r'\[\s*(.*)\s*,\s*(.*)\s*\]', criterion_str)
@@ -74,17 +56,6 @@ def evaluate_criterion(value, criterion_str, value_type='float'):
         return value >= target
 
     return False
-
-def transform_value(raw_val, value_type):
-    """ Convert raw string to the appropriate type for comparison """
-    raw_val = raw_val.strip()
-    if value_type == 'float':
-        return float(raw_val)
-    if value_type == 'version':
-        return parse_version(raw_val)
-    if value_type == 'date':
-        return datetime.strptime(raw_val, "%Y-%m-%d")
-    return raw_val
 
 def filter_files(input_dir, criteria):
     """ Apply numeric filters to input JSON files """
@@ -256,10 +227,27 @@ def main():
 
     matches = filter_files(args.input_dir, criteria)
 
+    if args.output_dir:
+        final_output_path = os.path.join(args.output_dir, "filtered_jsons")
+    else:
+        final_output_path = "filtered_jsons"
+
     if args.output_dir and matches:
-        if not os.path.exists(args.output_dir):
-            os.makedirs(args.output_dir)
-            print(f"Created output directory: {args.output_dir}")
+        if os.path.exists(final_output_path):
+            # Clear existing files to start fresh
+            for f in os.listdir(final_output_path):
+                file_p = os.path.join(final_output_path, f)
+                try:
+                    if os.path.isfile(file_p) or os.path.islink(file_p):
+                        os.unlink(file_p)
+                    elif os.path.isdir(file_p):
+                        shutil.rmtree(file_p)
+                except Exception as e:
+                    print(f"Failed to delete {file_p}. Reason: {e}")
+            print(f"Cleared existing files in: {final_output_path}")
+        else:
+            os.makedirs(final_output_path)
+            print(f"Created output directory: {final_output_path}")
 
     print(f"\nFound {len(matches)} files matching filters:")
     for m in matches:
@@ -271,15 +259,15 @@ def main():
         for key, criterion in criteria.items():
             if criterion:
                 val = v.get(key, "N/A")
-                filtered += f"{key}: {val}"
+                filtered += f"{key}: {val} "
         
-        print(f"ID: {m['id']} \t| Date: {date_str} | {filtered} | Purity: {purity_val} | File: {m['file']}")
+        print(f"ID: {m['id']} \t| Date: {date_str} | {filtered}| Purity: {purity_val} | File: {m['file']}")
                 
         if args.output_dir:
-            shutil.copy(m['full_path'], os.path.join(args.output_dir, m['file']))
+            shutil.copy(m['full_path'], os.path.join(final_output_path, m['file']))
             
     if args.output_dir:
-        print(f"\nCopied {len(matches)} files to {args.output_dir}")
+        print(f"\nCopied {len(matches)} files to {final_output_path}")
     
     if args.plot:
         plot_path = args.plot_out

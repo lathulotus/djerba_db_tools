@@ -15,5 +15,7 @@ hrd_status: null
 msi_status: null
 tmb_status: null
 ctdna_status: null
+ctdna_cnv: null
+ctdna_snv: null
 
 download_all: null

@@ -20,7 +20,24 @@ Query types are laid out in the **[filters YAML file](./filters.yaml)**. Fields 
 | `hrd_status` | HRD status | `HR Proficient` |
 | `msi_status` | MSI status | `MSS` |
 | `tmb_status` | TMB status | `TMB-L` |
+| `ctdna_status` | ctDNA status, all fields | `Detected` or `Undetected` |
+| `ctdna_cnv` | ctDNA status in CNV | `True` |
+| `ctdna_snv` | ctDNA status in SNV | `False` |
 | `failed` | Report failure status | `false` |
+
+
+## Variant-Based Querying
+Query filters can be input using the flag specified below. Individual JSON file(s) will be output for reports satisfying specific query requirements. For specific gene searches, input a singular string containing the gene code. For pairs of genes or multiple genes in one case, input a list formatted as `[gene1,gene2]` (i.e., `[SDC1,BCL2L11]`). Filters are stacked, thus applying a specific gene and type filter searches for that gene + effect (i.e., TP53 amplification, KRAS missense).
+| Filter | Definition | Example |
+|--------|------------|---------|
+| `--cnv_gene` | CNV-containing gene | `TP53` |
+| `--cnv_type` | CNV type associated with search | `amplification` |
+| `--snv_gene` | SNV-containing gene | `KRAS` |
+| `--snv_type` | SNV type asssociated with search | `Missense Mutation` |
+| `--snv_protein` | Protein change resulting from SNV | `p.S110R` |
+| `--fusion_gene` | Fusion-containing gene(s) | `SDC1` or `SDC1, BCL2L11` |
+| `--fusion_effect` | Fusion effect | `Likely Loss-of-function` |
+| `--fusion_frame` | Fusion associated frame | `out of frame` |
 
 
 ## Numeric-Based Querying
@@ -33,28 +50,12 @@ Query filters can be input using the flag specified below. Individual JSON file(
 | `--purity` | Estimated tumour purity % | `75` or `70,80` |
 | `--callability` | Percent of callable genome | `75.0` or `70,80` |
 | `--ploidy` | Estimated chromosomal copy number | `2.75` or `2,3` |
-| `--cnv_pga` | Percent genome altered | `2.75` or `2,3` |
+| `TMB` | TMB value | `79` |
+| `--tmb_value` | TMB score per Mb | `0.7` |
+| `--hrd_value` | HRD score per Mb | `2.1` |
+| `--msi_value` | MSI score per Mb | `0.9` |
+| `--pga` | Percent genome altered | `2.75` or `2,3` |
 | `--cnv_clinical` | Clinically relevant CNVs | `2.75` or `2,3` |
 | `--snv_oncologival` | Oncologically relevant SNVs | `2.75` or `2,3` |
 | `--fusion_clinical` | Clinically relevant fusions | `2.75` or `2,3` |
-
-
-## Variant-Based Querying
-Query filters can be input using the flag specified below. Individual JSON file(s) will be output for reports satisfying specific query requirements. For specific gene searches, input a singular string containing the gene code. For pairs of genes or multiple genes in one case, input a list formatted as `[gene1,gene2]` (i.e., `[SDC1,BCL2L11]`). Filters are stacked, thus applying a specific gene and type filter searches for that gene + effect (i.e., TP53 amplification, KRAS missense).
-| Filter | Definition | Example |
-|--------|------------|---------|
-| `--cnv_gene` | CNV-containing gene | `TP53` |
-| `--cnv_type` | CNV type associated with search | `amplification` |
-| `--snv_gene` | SNV-containing gene | `KRAS` |
-| `--snv_type` | SNV type asssociated with search | `Missense Mutation` |
-| `--fusion_gene` | Fusion-containing gene(s) | `SDC1` or `SDC1, BCL2L11` |
-| `--fusion_effect` | Fusion effect | `Likely Loss-of-function` |
-| `--fusion_frame` | Fusion associated frame | `out of frame` |
-
-
-## Archive of Past Filters
-| Filter | Definition | Example |
-|--------|------------|---------|
-| `hrd_value` | HRD value per Mb | `0.0751` or `0.06,0.08` |
-| `msi_value` | HRD value per Mb | `2.075` or `1.5,2.5` |
-| `tmb_value` | HRD value per Mb | `1.75` or `1,2` |
+| `--plot` | Plotting cumulative report count | `true` |

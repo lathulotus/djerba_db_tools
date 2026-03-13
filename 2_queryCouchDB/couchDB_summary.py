@@ -7,56 +7,10 @@ Usage:
 
 import json
 import os
-import re
 import argparse
 from datetime import datetime
 import pandas as pd
-
-def parse_version(version_str):
-    """ Convert version string to a tuple of integers for comparison """
-    try:
-        return tuple(map(int, re.sub(r'[^\d.]', '', version_str).split('.')))
-    except:
-        return (0,)
-    
-def get_nested(data, paths):
-    """ Get nested values from dict """
-    if isinstance(paths, str):
-        paths = [paths]
-    for path in paths:
-        keys = path.split('/')
-        for key in keys:
-            if isinstance(data, dict):
-                data = data.get(key)
-            else:
-                return None
-    return data
-
-def transform_value(raw_val, value_type):
-    """Convert raw JSON values into typed Python values """
-    if raw_val is None:
-        return None
-    if isinstance(raw_val, str):
-        raw_val = raw_val.strip()
-
-    try:
-        if value_type == "float":
-            return float(raw_val)
-        if value_type == "int":
-            return int(raw_val)
-        if value_type == "date":
-            date_fmts = ["%Y-%m-%d", "%d/%m/%Y %H:%M", "%d/%m/%Y_%H:%M:%S", "%d/%m/%Y_%H:%M:%SZ"]
-            for fmt in date_fmts:
-                try:
-                    return datetime.strptime(raw_val, fmt)
-                except:
-                    pass
-        if value_type == "version":
-            return parse_version(raw_val)
-        return raw_val
-
-    except Exception:
-        return None
+from couchDB_utils import get_nested, transform_value
 
 string_fields = {
     "report_id": "_id",
@@ -69,11 +23,13 @@ string_fields = {
     "oncotree_code": (["plugins/sample/results/OncoTree code", "report/sample_info_and_quality/OncoTree code", "config/wgts.snv_indel/oncotree_code", "config/tar.snv_indel/oncotree_code", "config/wgts.cnv_purple/oncotree_code", "config/fusion/oncotree_code"]),
     "assay": (["config/input_params_helper/assay", "report/assay_type", "config/supplement.body/assay", "plugins/pwgs.case_overview/results/assay", "config/tar.snv_indel/assay"]),
     "biopsy_site": (["plugins/case_overview/results/site_of_biopsy", "report/patient_info/Site of biopsy/surgery"]),
-    "sample_type": (["plugins/sample/results/Sample Type", "report/sample_info_and_quality/Sample Type"]),
+    "sample_type": (["plugins/sample/results/Sample Type", "report/sample_info_and_quality/Sample Type", "plugins/tar.sample/results/sample_type", "config/tar_input_params_helper/sample_type"]),
     "tmb_status": (["plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker alteration"]),
     "hrd_status": (["plugins/genomic_landscape/results/genomic_biomarkers/HRD/Genomic biomarker alteration", "plugins/hrd/results/HRD_short"]),
     "msi_status": (["plugins/genomic_landscape/results/genomic_biomarkers/MSI/Genomic biomarker alteration"]),
     "ctdna_status": (["plugins/pwgs.summary/results/ctdna_detection"]),
+    "ctdna_cnv": (["config/tar.status/copy_number_ctdna_detected"]),
+    "ctdna_snv": (["config/tar.status/small_mutation_ctdna_detected"]),
     "purple_zip": (["config/wgts.cnv_purple/purple_zip"]),
     "sequenza_solution": (["config/cnv/sequenza_solution"])
 }
@@ -307,21 +263,27 @@ def main():
                 continue
         rows.append(extract_record(data))
 
+    if not rows:
+        print(f"No valid records found in {args.input_dir}. Summary table not created.")
+        return
+
     df = pd.DataFrame(rows)
+    if df.empty:
+        print(f"Summary dataframe is empty for {args.input_dir}. Summary table not created.")
+        return
+
     if "date_reported" in df.columns:
         df["date_reported"] = pd.to_datetime(df["date_reported"], errors="coerce", dayfirst=True).dt.strftime("%Y-%m-%d")
 
     csv_path = f"{args.output_name}.csv"
-    xlsx_path = f"{args.output_name}.xlsx"
     
     column_order = ["report_id", "donor", "project", "study", "date_reported", "djerba_version", "failed", "report_type", "purple_zip", "sequenza_solution"]
     df = df[column_order + [c for c in df.columns if c not in column_order]]
 
     df.to_csv(csv_path, index=False)
-    df.to_excel(xlsx_path, index=False)
 
     print(f"Extracted {len(df)} records.")
-    print(f"Saved summary table to {csv_path} & {xlsx_path}")
+    print(f"Saved summary table to {csv_path}")
 
 if __name__ == "__main__":
     main()

@@ -8,37 +8,24 @@ Usage (example):
 import json
 import os
 import argparse
-from datetime import datetime
-import re
 import shutil
 import yaml
-import pandas as pd
-import matplotlib.pyplot as plt
-
-def get_nested(data, paths):
-    """ Get nested values from dict """
-    if isinstance(paths, str):
-        paths = [paths]
-    for path in paths:
-        keys = path.split('/')
-        current = data
-        for key in keys:
-            if isinstance(current, dict):
-                current = current.get(key)
-            else:
-                current = None
-                break
-        if current not in (None, "", []):
-            return current
-    return None
+from couchDB_utils import get_nested
 
 def evaluate_criterion(value, criterion, value_type='string', mode="exact"):
-   """ Case-insensitive match """
+   """ Case-insensitive match. Supports comma-separated strings or lists (OR condition) """
    if not criterion:
        return True
    if value is None:
        return False
   
+   # Support comma-separated strings or lists
+   if isinstance(criterion, str) and "," in criterion:
+       criterion = [c.strip() for c in criterion.split(",")]
+   
+   if isinstance(criterion, list):
+       return any(evaluate_criterion(value, c, value_type, mode) for c in criterion)
+
    value_norm = str(value).lower()
    criterion_norm = str(criterion).lower()
 
@@ -190,10 +177,27 @@ def main():
 
    matches = filter_files(args.input_dir, criteria)
 
+   if args.output_dir:
+       final_output_path = os.path.join(args.output_dir, "filtered_jsons")
+   else:
+       final_output_path = "filtered_jsons"
+
    if args.output_dir and matches:
-       if not os.path.exists(args.output_dir):
-           os.makedirs(args.output_dir)
-           print(f"Created output directory: {args.output_dir}")
+       if os.path.exists(final_output_path):
+           # Clear existing files to start fresh
+           for f in os.listdir(final_output_path):
+               file_p = os.path.join(final_output_path, f)
+               try:
+                   if os.path.isfile(file_p) or os.path.islink(file_p):
+                       os.unlink(file_p)
+                   elif os.path.isdir(file_p):
+                       shutil.rmtree(file_p)
+               except Exception as e:
+                   print(f"Failed to delete {file_p}. Reason: {e}")
+           print(f"Cleared existing files in: {final_output_path}")
+       else:
+           os.makedirs(final_output_path)
+           print(f"Created output directory: {final_output_path}")
 
    print(f"\nFound {len(matches)} reports with matching variants:\n")
    for m in matches:
@@ -222,11 +226,11 @@ def main():
        print(f"ID: {m['id']} | {filtered} | File: {m['file']}")
 
        if args.output_dir:
-           shutil.copy(m["full_path"], os.path.join(args.output_dir, m["file"]))
+           shutil.copy(m["full_path"], os.path.join(final_output_path, m["file"]))
 
    print()
    if args.output_dir:
-       print(f"Copied {len(matches)} files to {args.output_dir}")
+       print(f"Copied {len(matches)} files to {final_output_path}")
 
    print("-" * 100)
 
