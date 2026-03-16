@@ -48,7 +48,7 @@ def filter_files(input_dir, criteria):
         "cnv": (["plugins/wgts.cnv_purple/results/body", "plugins/wgts.cnv_purple/results/Body", "report/oncogenic_somatic_CNVs/Body", "plugins/tar.cnv_purple/results/Body"], 'array'),
         "snv": (["plugins/wgts.snv_indel/results/body", "plugins/wgts.snv_indel/results/Body", "report/small_mutations_and_indels/Body", "plugins/tar.snv_indel/results/Body"], 'array'),
         "fusion": (["plugins/fusion/results/body", "report/structural_variants_and_fusions/Body"], 'array'),
-        "ctdna_status": (["plugins/pwgs.summary/results/ctdna_detection"]),
+        "ctdna_status": (["plugins/tar.status/results/any_ctdna_detected", "plugins/pwgs.summary/results/ctdna_detection"]),
         "ctdna_cnv": (["config/tar.status/copy_number_ctdna_detected"]),
         "ctdna_snv": (["config/tar.status/small_mutation_ctdna_detected"])
     }
@@ -82,7 +82,7 @@ def filter_files(input_dir, criteria):
         if requested_fusion and not isinstance(fusion_body, list):
             continue
         if criteria.get("ctdna_status"):
-            if str(ctdna_status).lower() != str(criteria["ctdna_status"]).lower():
+            if str(ctdna_status).strip().lower() != str(criteria["ctdna_status"]).strip().lower():
                 continue
         if criteria.get("ctdna_cnv") is not None:
             if bool(ctdna_cnv) != (criteria["ctdna_cnv"].lower() == "true"):
