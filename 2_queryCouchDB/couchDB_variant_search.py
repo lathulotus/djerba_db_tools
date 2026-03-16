@@ -85,7 +85,7 @@ def filter_files(input_dir, criteria):
             if str(ctdna_status).strip().lower() != str(criteria["ctdna_status"]).strip().lower():
                 continue
         if criteria.get("ctdna_cnv") is not None:
-            if bool(ctdna_cnv) != (criteria["ctdna_cnv"].lower() == "true"):
+            if str(ctdna_cnv).strip().lower() != str(criteria["ctdna_cnv"]).strip().lower():
                 continue
         if criteria.get("ctdna_snv"):
             if bool(ctdna_snv) != (criteria["ctdna_snv"].lower() == "true"):
