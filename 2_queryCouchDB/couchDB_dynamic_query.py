@@ -13,6 +13,9 @@ from couchDB_utils import read_login_file, read_filters_yaml, get_couchdb_databa
 
 def build_mango_query(filters: dict):
     """ Builds a CouchDB Mango query selector based on dictionary of filters & ignores null filters """
+    if filters.get("download_all") is True:
+        return {"selector": {}}
+    
     filter_map = {
         "report_id": "_id",
         "donor": (["config/input_params_helper/donor", "config/tar_input_params_helper/donor", "report/patient_info/Patient Study ID", "plugins/pwgs.case_overview/results/donor", "config/tar.snv_indel/donor"]),
