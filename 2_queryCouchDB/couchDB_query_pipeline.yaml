@@ -5,11 +5,9 @@ query_pipeline:
   run_summary: true
 
 paths:
-  retrieve_out: output/retrieve/
-  numeric_out: output/numeric/
-  variant_out: output/variants/
-  summary_out: output/summary.xlsx
-  plot_out: output/figures/
+  output_dir: output/
+  plot_out: output/coverage_over_time.png
+  summary_out: output/summary.csv
   log_file: output/pipeline_log.json
 
 login_file:
@@ -38,7 +36,6 @@ filters:
 
     page_size: null
     count: null
-    download_all: null
 
   variant:
     cnv_gene: null
