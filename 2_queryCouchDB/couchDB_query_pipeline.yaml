@@ -52,6 +52,10 @@ filters:
     fusion_effect: null
     fusion_frame: null
 
+    ctdna_status: null
+    ctdna_cnv: null
+    ctdna_snv: null
+
   numeric:
     djerba_version: null
     date_reported: null
