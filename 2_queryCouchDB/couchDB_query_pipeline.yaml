@@ -35,9 +35,6 @@ filters:
     tmb_status: null
     hrd_status: null
     msi_status: null
-    ctdna_status: null
-    ctdna_cnv: null
-    ctdna_snv: null
 
     page_size: null
     count: null
