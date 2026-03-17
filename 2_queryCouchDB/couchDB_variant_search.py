@@ -93,8 +93,23 @@ def filter_files(input_dir, criteria):
             for entry in cnv_body:
                 if not isinstance(entry, dict):
                     continue
-                if not evaluate_criterion(entry.get("Gene"), criteria["cnv_gene"], mode='exact'):
-                    continue
+                gene_filter = criteria["cnv_gene"]
+                if gene_filter:
+                    gene_value = entry.get("Gene")
+                    # AND logic
+                    if isinstance(gene_filter, dict) and "AND" in gene_filter:
+                        val_and = [g.lower() for g in gene_filter["AND"]]
+                        if gene_value.lower() not in val_and:
+                            continue
+                    # OR logic
+                    elif isinstance(gene_filter, list):
+                        val_or = [g.lower() for g in gene_filter]
+                        if gene_value.lower() not in val_or:
+                            continue
+                    # single value
+                    else:
+                        if gene_value.lower() != str(gene_filter).lower():
+                            continue
                 if not evaluate_criterion(entry.get("Alteration"), criteria["cnv_type"], mode='contains'):
                     continue
                 cnv_values.append(entry)
@@ -104,8 +119,23 @@ def filter_files(input_dir, criteria):
             for entry in snv_body:
                 if not isinstance(entry, dict):
                     continue
-                if not evaluate_criterion(entry.get("Gene"), criteria["snv_gene"], mode='exact'):
-                    continue
+                gene_filter = criteria["snv_gene"]
+                if gene_filter:
+                    gene_value = entry.get("Gene")
+                    # AND logic
+                    if isinstance(gene_filter, dict) and "AND" in gene_filter:
+                        val_and = [g.lower() for g in gene_filter["AND"]]
+                        if gene_value.lower() not in val_and:
+                            continue
+                    # OR logic
+                    elif isinstance(gene_filter, list):
+                        val_or = [g.lower() for g in gene_filter]
+                        if gene_value.lower() not in val_or:
+                            continue
+                    # single value
+                    else:
+                        if gene_value.lower() != str(gene_filter).lower():
+                            continue
                 if not evaluate_criterion(entry.get("type"), criteria["snv_type"], mode='contains'):
                     continue
                 snv_values.append(entry)
