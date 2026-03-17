@@ -33,8 +33,23 @@ def evaluate_criterion(value, criterion, mode="exact"):
         return value_norm == criterion_norm
     if mode == "contains":
         return criterion_norm in value_norm
-    
     return False
+
+def gene_matches(gene_value, gene_filter):
+    if not gene_filter:
+        return True
+    if isinstance(gene_filter, list):
+        return gene_value in [g.lower() for g in gene_filter]
+    if isinstance(gene_filter, dict):
+        return True
+    return gene_value == str(gene_filter).lower()
+
+def all_genes(body, gene_filter):
+    if not isinstance(gene_filter, dict) or "AND" not in gene_filter:
+        return True
+    required = [g.lower() for g in gene_filter["AND"]]
+    report_genes = {entry.get("Gene", "").lower() for entry in body}
+    return all(g in report_genes for g in required)
 
 def filter_files(input_dir, criteria):
     """ Apply variant-level filters to input JSON files """
@@ -64,10 +79,6 @@ def filter_files(input_dir, criteria):
             except:
                 continue
         
-        requested_cnv = criteria["cnv_gene"] or criteria["cnv_type"]
-        requested_snv = criteria["snv_gene"] or criteria["snv_type"]
-        requested_fusion = criteria["fusion_gene"] or criteria["fusion_effect"] or criteria["fusion_frame"]
-
         cnv_body = existing_path(data, paths["cnv"])
         snv_body = existing_path(data, paths["snv"])
         fusion_body = existing_path(data, paths["fusion"])
@@ -75,11 +86,11 @@ def filter_files(input_dir, criteria):
         ctdna_cnv = existing_path(data, paths["ctdna_cnv"])
         ctdna_snv = existing_path(data, paths["ctdna_snv"])
 
-        if requested_cnv and not isinstance(cnv_body, list):
+        if (criteria["cnv_gene"] or criteria["cnv_type"]) and not cnv_body:
             continue
-        if requested_snv and not isinstance(snv_body, list):
+        if (criteria["snv_gene"] or criteria["snv_type"] or criteria["snv_protein"]) and not snv_body:
             continue
-        if requested_fusion and not isinstance(fusion_body, list):
+        if (criteria["fusion_gene"] or criteria["fusion_effect"] or criteria["fusion_frame"]) and not fusion_body:
             continue
         if criteria.get("ctdna_status") and str(ctdna_status).strip().lower() != str(criteria["ctdna_status"]).strip().lower():
                 continue
@@ -88,88 +99,40 @@ def filter_files(input_dir, criteria):
         if criteria.get("ctdna_snv") and str(ctdna_snv).strip().lower() != str(criteria["ctdna_snv"].strip().lower()):
                 continue
         
-        cnv_gene_filter = criteria["cnv_gene"]
-        if isinstance(cnv_gene_filter, dict) and "AND" in cnv_gene_filter:
-            required = [g.lower() for g in cnv_gene_filter["AND"]]
-            report_genes = {
-                entry.get("Gene", "").lower()
-                for entry in cnv_body
-                if isinstance(entry, dict)
-            }
-            if not all(g in report_genes for g in required):
-                continue
+        if not all_genes(cnv_body, criteria["cnv_gene"]):
+            continue
         cnv_values = []
-        if isinstance(cnv_body, list):
+        if cnv_body:
             for entry in cnv_body:
-                if not isinstance(entry, dict):
-                    continue
                 gene_filter = criteria["cnv_gene"]
                 gene_value = entry.get("Gene", "").lower()
-                if gene_filter:
-                    # OR logic
-                    if isinstance(gene_filter, list):
-                        potential = [g.lower() for g in gene_filter]
-                        if gene_value.lower() not in potential:
-                            continue
-                    elif isinstance(gene_filter, dict):
-                        pass
-                    # single value
-                    else:
-                        if gene_value.lower() != str(gene_filter).lower():
-                            continue
+                if not gene_matches(gene_value, gene_filter):
+                    continue
                 if not evaluate_criterion(entry.get("Alteration"), criteria["cnv_type"], mode='contains'):
                     continue
                 cnv_values.append(entry)
         
-        snv_gene_filter = criteria["snv_gene"]
-        if isinstance(snv_gene_filter, dict) and "AND" in snv_gene_filter:
-            required = [g.lower() for g in snv_gene_filter["AND"]]
-            report_genes = {
-                entry.get("Gene", "").lower()
-                for entry in snv_body
-                if isinstance(entry, dict)
-            }
-            if not all(g in report_genes for g in required):
-                continue
+        if not all_genes(snv_body, criteria["snv_gene"]):
+            continue
         snv_values = []
-        if isinstance(snv_body, list):
+        if snv_body:
             for entry in snv_body:
-                if not isinstance(entry, dict):
-                    continue
                 gene_filter = criteria["snv_gene"]
                 gene_value = entry.get("Gene", "").lower()
-                if gene_filter:
-                    # OR logic
-                    if isinstance(gene_filter, list):
-                        potential = [g.lower() for g in gene_filter]
-                        if gene_value.lower() not in potential:
-                            continue
-                    # AND logic
-                    elif isinstance(gene_filter, dict):
-                        pass
-                    # single value
-                    else:
-                        if gene_value.lower() != str(gene_filter).lower():
-                            continue
+                if not gene_matches(gene_value, gene_filter):
+                    continue
                 if not evaluate_criterion(entry.get("type"), criteria["snv_type"], mode='contains'):
+                    continue
+                if not evaluate_criterion(entry.get("Protein"), criteria["snv_protein"], mode='contains'):
                     continue
                 snv_values.append(entry)
 
         fusion_values = []
-        if isinstance(fusion_body, list):
-            fusion_genes = []
-            if criteria["fusion_gene"]:
-                try:
-                    fusion_genes = yaml.safe_load(criteria["fusion_gene"])
-                    if not isinstance(fusion_genes, list):
-                        fusion_genes = [fusion_genes]
-                except:
-                    fusion_genes = []
-
+        if fusion_body:
+            fusion_genes = criteria["fusion_gene"] or []
+            if isinstance(fusion_genes, str):
+                fusion_genes = [fusion_genes]
             for entry in fusion_body:
-                if not isinstance(entry, dict):
-                    continue
-
                 fusion_str = entry.get("fusion", "")
                 partners = fusion_str.replace(" ", "").split("::")
                 partners_norm = [p.lower() for p in partners]
@@ -191,11 +154,11 @@ def filter_files(input_dir, criteria):
                 fusion_values.append(entry)
         
         matched = True
-        if requested_snv and not snv_values:
+        if (criteria["snv_gene"] or criteria["snv_type"] or criteria["snv_protein"]) and not snv_values:
             matched = False
-        if requested_cnv and not cnv_values:
+        if (criteria["cnv_gene"] or criteria["cnv_type"]) and not cnv_values:
             matched = False
-        if requested_fusion and not fusion_values:
+        if (criteria["fusion_gene"] or criteria["fusion_effect"] or criteria["fusion_frame"]) and not fusion_values:
             matched = False
         if matched:
             results.append({
@@ -220,6 +183,7 @@ def main():
     parser.add_argument("--cnv_type", help="Filter by CNV alteration (e.g. amplification)")
     parser.add_argument("--snv_gene", help="Filter by gene symbol (e.g. TP53)")
     parser.add_argument("--snv_type", help="Filter by SNV alteration type (e.g. missense)")
+    parser.add_argument("--snv_protein", help="Filter by altered protein (SNV)")
     parser.add_argument("--fusion_gene", help="Filter by gene involved in fusion event (e.g. [TLE2] or [TLE2, PTPRS])")
     parser.add_argument("--fusion_effect", help="Filter by fusion effect (e.g. loss-of-function)")
     parser.add_argument("--fusion_frame", help="Filter by affected frame (e.g. out-of-frame)")
@@ -234,6 +198,7 @@ def main():
         "cnv_type": args.cnv_type,
         "snv_gene": args.snv_gene,
         "snv_type": args.snv_type,
+        "snv_protein": args.snv_protein,
         "fusion_gene": args.fusion_gene,
         "fusion_effect": args.fusion_effect,
         "fusion_frame": args.fusion_frame,
@@ -242,7 +207,7 @@ def main():
         "ctdna_snv": args.ctdna_snv
     }
 
-    for key in ("cnv_gene", "snv_gene"):
+    for key in ("cnv_gene", "snv_gene", "fusion_gene"):
         val = criteria.get(key)
         if isinstance(val, str):
             val_str = val.strip()
@@ -280,7 +245,7 @@ def main():
     for m in matches:
         v_filters = []
 
-        if (criteria["snv_gene"] or criteria["snv_type"]) and m["snvs"]:
+        if (criteria["snv_gene"] or criteria["snv_type"] or criteria["snv_protein"]) and m["snvs"]:
             for snv in m["snvs"]:
                 gene = snv.get("Gene")
                 alt = snv.get("type")
