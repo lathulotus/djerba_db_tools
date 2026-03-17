@@ -27,7 +27,7 @@ string_fields = {
     "tmb_status": (["plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker alteration"]),
     "hrd_status": (["plugins/genomic_landscape/results/genomic_biomarkers/HRD/Genomic biomarker alteration", "plugins/hrd/results/HRD_short"]),
     "msi_status": (["plugins/genomic_landscape/results/genomic_biomarkers/MSI/Genomic biomarker alteration"]),
-    "ctdna_status": (["plugins/pwgs.summary/results/ctdna_detection"]),
+    "ctdna_status": (["plugins/tar.status/results/any_ctdna_detected", "plugins/pwgs.summary/results/ctdna_detection"]),
     "ctdna_cnv": (["config/tar.status/copy_number_ctdna_detected"]),
     "ctdna_snv": (["config/tar.status/small_mutation_ctdna_detected"]),
     "purple_zip": (["config/wgts.cnv_purple/purple_zip"]),

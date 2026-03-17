@@ -35,6 +35,9 @@ def run_step(name, cmd, log):
     if result.returncode != 0:
         raise RuntimeError(f"{name} failed: {result.stderr}")
 
+def count_reports(directory):
+    return len([f for f in os.listdir(directory) if f.endswith(".json")])
+
 def main():
     start_all = time.time()
     parser = argparse.ArgumentParser()
@@ -115,9 +118,11 @@ def main():
 
     with open(paths["log_file"], "w") as f:
         json.dump(log, f, indent=2)
-
     duration = (time.time() - start_all) / 60
     print(f"\n=== Pipeline finished in {duration:.2f} min ===")
+
+    total_reports = count_reports(filtered_jsons_dir)
+    print(f"=== Downloaded {total_reports} reports ===")
 
 if __name__ == "__main__":
     main()

@@ -33,9 +33,6 @@ filters:
     tmb_status: null
     hrd_status: null
     msi_status: null
-    ctdna_status: null
-    ctdna_cnv: null
-    ctdna_snv: null
 
     page_size: null
     count: null
@@ -49,6 +46,10 @@ filters:
     fusion_gene: null
     fusion_effect: null
     fusion_frame: null
+
+    ctdna_status: null
+    ctdna_cnv: null
+    ctdna_snv: null
 
   numeric:
     djerba_version: null
