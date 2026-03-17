@@ -12,7 +12,7 @@ import shutil
 import yaml
 from couchDB_utils import existing_path
 
-def evaluate_criterion(value, criterion, value_type='string', mode="exact"):
+def evaluate_criterion(value, criterion, mode="exact"):
     """ Case-insensitive match. Supports comma-separated strings or lists (OR condition) """
     if not criterion:
         return True
@@ -24,7 +24,7 @@ def evaluate_criterion(value, criterion, value_type='string', mode="exact"):
         criterion = [c.strip() for c in criterion.split(",")]
     
     if isinstance(criterion, list):
-        return any(evaluate_criterion(value, c, value_type, mode) for c in criterion)
+        return any(evaluate_criterion(value, c, mode) for c in criterion)
 
     value_norm = str(value).lower()
     criterion_norm = str(criterion).lower()
@@ -81,14 +81,11 @@ def filter_files(input_dir, criteria):
             continue
         if requested_fusion and not isinstance(fusion_body, list):
             continue
-        if criteria.get("ctdna_status"):
-            if str(ctdna_status).strip().lower() != str(criteria["ctdna_status"]).strip().lower():
+        if criteria.get("ctdna_status") and str(ctdna_status).strip().lower() != str(criteria["ctdna_status"]).strip().lower():
                 continue
-        if criteria.get("ctdna_cnv") is not None:
-            if str(ctdna_cnv).strip().lower() != str(criteria["ctdna_cnv"]).strip().lower():
+        if criteria.get("ctdna_cnv") and str(ctdna_cnv).strip().lower() != str(criteria["ctdna_cnv"]).strip().lower():
                 continue
-        if criteria.get("ctdna_snv"):
-            if str(ctdna_snv).strip().lower() != str(criteria["ctdna_snv"].strip().lower()):
+        if criteria.get("ctdna_snv") and str(ctdna_snv).strip().lower() != str(criteria["ctdna_snv"].strip().lower()):
                 continue
         
         cnv_values = []
@@ -158,13 +155,6 @@ def filter_files(input_dir, criteria):
         if requested_fusion:
             if not fusion_values:
                 matched = False
-
-        if criteria.get("ctdna_status") and str(ctdna_status).strip().lower() != criteria["ctdna_status"].strip().lower():
-            matched = False
-        if criteria.get("ctdna_cnv") and str(ctdna_cnv).strip().lower() != criteria["ctdna_cnv"].strip().lower():
-            matched = False
-        if criteria.get("ctdna_snv") and str(ctdna_snv).strip().lower() != criteria["ctdna_snv"].strip().lower():
-            matched = False
 
         if matched:
             results.append({
