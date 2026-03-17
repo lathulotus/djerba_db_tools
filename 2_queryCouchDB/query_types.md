@@ -20,9 +20,6 @@ Query types are laid out in the **[filters YAML file](./filters.yaml)**. Fields 
 | `hrd_status` | HRD status | `"HR Proficient"` |
 | `msi_status` | MSI status | `"MSS"` |
 | `tmb_status` | TMB status | `"TMB-L"` |
-| `ctdna_status` | ctDNA status, all fields | `"Detected"` |
-| `ctdna_cnv` | ctDNA status in CNV | `True` |
-| `ctdna_snv` | ctDNA status in SNV | `False` |
 | `failed` | Report failure status | `false` |
 
 
@@ -39,6 +36,9 @@ Query filters can be input using the flag specified below. Individual JSON file(
 | `--fusion_gene` | Fusion-containing gene(s) | `"SDC1"` |
 | `--fusion_effect` | Fusion effect | `"Likely Loss-of-function"` or `"loss"` |
 | `--fusion_frame` | Fusion associated frame | `"out of frame"` or `"out"` |
+| `--ctdna_status` | ctDNA status, all fields | `"Detected"` |
+| `--ctdna_cnv` | ctDNA status in CNV | `True` |
+| `--ctdna_snv` | ctDNA status in SNV | `False` |
 
 | Operator | Definition |
 |----------|------------|
