@@ -111,6 +111,8 @@ def filter_files(input_dir, criteria):
                         potential = [g.lower() for g in gene_filter]
                         if gene_value.lower() not in potential:
                             continue
+                    elif isinstance(gene_filter, dict):
+                        pass
                     # single value
                     else:
                         if gene_value.lower() != str(gene_filter).lower():
@@ -142,6 +144,9 @@ def filter_files(input_dir, criteria):
                         potential = [g.lower() for g in gene_filter]
                         if gene_value.lower() not in potential:
                             continue
+                    # AND logic
+                    elif isinstance(gene_filter, dict):
+                        pass
                     # single value
                     else:
                         if gene_value.lower() != str(gene_filter).lower():
@@ -187,11 +192,11 @@ def filter_files(input_dir, criteria):
         
         matched = True
         if requested_snv and not snv_values:
-                matched = False
+            matched = False
         if requested_cnv and not cnv_values:
-                matched = False
+            matched = False
         if requested_fusion and not fusion_values:
-                matched = False
+            matched = False
         if matched:
             results.append({
                 "id": data.get("_id"),
