@@ -13,6 +13,10 @@ from couchDB_utils import read_login_file, read_filters_yaml, get_couchdb_databa
 
 def build_mango_query(filters: dict):
     """ Builds a CouchDB Mango query selector based on dictionary of filters & ignores null filters """
+    non_null = [v for v in filters.values() if v not in (None, "", [], False)]
+    if len(non_null) == 0:
+        return {"selector": {}}
+    
     filter_map = {
         "report_id": "_id",
         "donor": (["config/input_params_helper/donor", "config/tar_input_params_helper/donor", "report/patient_info/Patient Study ID", "plugins/pwgs.case_overview/results/donor", "config/tar.snv_indel/donor"]),
@@ -27,10 +31,7 @@ def build_mango_query(filters: dict):
         "sample_type": (["plugins/sample/results/Sample Type", "report/sample_info_and_quality/Sample Type"]),
         "hrd_status": (["plugins/genomic_landscape/results/genomic_biomarkers/HRD/Genomic biomarker alteration", "plugins/hrd/results/HRD_short"]),
         "msi_status": (["plugins/genomic_landscape/results/genomic_biomarkers/MSI/Genomic biomarker alteration"]),
-        "tmb_status": (["plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker alteration"]),
-        "ctdna_status": (["plugins/pwgs.summary/results/ctdna_detection"]),
-        "ctdna_cnv": (["config/tar.status/copy_number_ctdna_detected"]),
-        "ctdna_snv": (["config/tar.status/small_mutation_ctdna_detected"])
+        "tmb_status": (["plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker alteration"])
     }
     
     selector = {"$and": []}

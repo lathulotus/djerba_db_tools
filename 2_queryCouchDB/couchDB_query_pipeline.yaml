@@ -5,11 +5,9 @@ query_pipeline:
   run_summary: true
 
 paths:
-  retrieve_out: output/retrieve/
-  numeric_out: output/numeric/
-  variant_out: output/variants/
-  summary_out: output/summary.xlsx
+  output_dir: output/
   plot_out: output/coverage_over_time.png
+  summary_out: output/summary.csv
   log_file: output/pipeline_log.json
 
 login_file:
@@ -35,9 +33,6 @@ filters:
     tmb_status: null
     hrd_status: null
     msi_status: null
-    ctdna_status: null
-    ctdna_cnv: null
-    ctdna_snv: null
 
     page_size: null
     count: null
@@ -51,6 +46,10 @@ filters:
     fusion_gene: null
     fusion_effect: null
     fusion_frame: null
+
+    ctdna_status: null
+    ctdna_cnv: null
+    ctdna_snv: null
 
   numeric:
     djerba_version: null
