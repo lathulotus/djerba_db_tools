@@ -1,0 +1,15 @@
+# Clinical Report Structure: Case Overview - Requisition Approval
+
+```txt
+Clinical.schema.json#/properties/case_overview/properties/results/properties/requisition_approval
+```
+
+Date of requisition approval
+
+| Abstract            | Extensible | Status         | Identifiable            | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                                     |
+| :------------------ | :--------- | :------------- | :---------------------- | :---------------- | :-------------------- | :------------------ | :------------------------------------------------------------------------------------------------------------- |
+| Can be instantiated | No         | Unknown status | Unknown identifiability | Forbidden         | Allowed               | none                | [clinical\_shema.json\*](../../../../../../cygwin64/home/wwwla/out/clinical_shema.json "open original schema") |
+
+## requisition_approval Type
+
+`string`
