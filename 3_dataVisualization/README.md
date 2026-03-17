@@ -37,3 +37,9 @@ Distribution plots can allow for view of non-numerical bins.
 Plotting the number of occurrences of variants (SNV, CNV) in the HR gene by HR status (HRD, HRP).
 ![HR Genes](hr_genes/combined_plot.png)
 
+
+<br>
+
+## Distribution of Low-Purity Fails by Project
+Plotting failed reports with low purity scores by project, with ratio to total reports along with rate visualized.
+![Low-Purity Fails by Project](low_purity/lowpurityfail_by_project.png)
