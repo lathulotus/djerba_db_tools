@@ -12,7 +12,7 @@ import re
 import shutil
 import pandas as pd
 import matplotlib.pyplot as plt
-from couchDB_utils import get_nested, transform_value
+from couchDB_utils import existing_path, transform_value
 
 def evaluate_criterion(value, criterion_str, value_type='float'):
     """
@@ -101,7 +101,7 @@ def filter_files(input_dir, criteria):
 
             for arg_name, (path, val_type) in paths.items():
                 criterion = criteria.get(arg_name)
-                raw_data = get_nested(data, path)
+                raw_data = existing_path(data, path)
 
                 if raw_data is None:
                     if criterion:
@@ -201,7 +201,7 @@ def main():
     parser.add_argument("--purity", help="Criterion for purity (e.g. '>0.5')")
     parser.add_argument("--callability", help="Criterion for callability")
     parser.add_argument("--ploidy", help="Criterion for ploidy")
-    parser.add_argument("--cnv_pga", help="Criterion for percent genome altered")
+    parser.add_argument("--pga", help="Criterion for percent genome altered")
     parser.add_argument("--cnv_clinical", help="Criterion for number of clinically relevant CNVs")
     parser.add_argument("--snv_oncogenic", help="Criterion for number of oncogenic SNVs")
     parser.add_argument("--fusion_clinical", help="Criterion for number of clinically relevant fusions")
@@ -217,7 +217,7 @@ def main():
         "purity": args.purity,
         "callability": args.callability,
         "ploidy": args.ploidy,
-        "cnv_pga": args.cnv_pga,
+        "pga": args.pga,
         "cnv_clinical": args.cnv_clinical,
         "snv_oncogenic": args.snv_oncogenic,
         "fusion_clinical": args.fusion_clinical,

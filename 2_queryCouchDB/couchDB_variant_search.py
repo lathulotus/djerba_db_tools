@@ -10,7 +10,7 @@ import os
 import argparse
 import shutil
 import yaml
-from couchDB_utils import get_nested
+from couchDB_utils import existing_path
 
 def evaluate_criterion(value, criterion, value_type='string', mode="exact"):
     """ Case-insensitive match. Supports comma-separated strings or lists (OR condition) """
@@ -68,12 +68,12 @@ def filter_files(input_dir, criteria):
         requested_snv = criteria["snv_gene"] or criteria["snv_type"]
         requested_fusion = criteria["fusion_gene"] or criteria["fusion_effect"] or criteria["fusion_frame"]
 
-        cnv_body = get_nested(data, paths["cnv"][0])
-        snv_body = get_nested(data, paths["snv"][0])
-        fusion_body = get_nested(data, paths["fusion"][0])
-        ctdna_status = get_nested(data, paths["ctdna_status"][0])
-        ctdna_cnv = get_nested(data, paths["ctdna_cnv"][0])
-        ctdna_snv = get_nested(data, paths["ctdna_snv"][0])
+        cnv_body = existing_path(data, paths["cnv"])
+        snv_body = existing_path(data, paths["snv"])
+        fusion_body = existing_path(data, paths["fusion"])
+        ctdna_status = existing_path(data, paths["ctdna_status"])
+        ctdna_cnv = existing_path(data, paths["ctdna_cnv"])
+        ctdna_snv = existing_path(data, paths["ctdna_snv"])
 
         if requested_cnv and not isinstance(cnv_body, list):
             continue
@@ -88,7 +88,7 @@ def filter_files(input_dir, criteria):
             if str(ctdna_cnv).strip().lower() != str(criteria["ctdna_cnv"]).strip().lower():
                 continue
         if criteria.get("ctdna_snv"):
-            if bool(ctdna_snv) != (criteria["ctdna_snv"].lower() == "true"):
+            if str(ctdna_snv).strip().lower() != str(criteria["ctdna_snv"].strip().lower()):
                 continue
         
         cnv_values = []
@@ -148,11 +148,23 @@ def filter_files(input_dir, criteria):
 
                 fusion_values.append(entry)
         
-        matched = (
-            (requested_cnv and cnv_values) or
-            (requested_snv and snv_values) or
-            (requested_fusion and fusion_values)
-        )
+        matched = True
+        if requested_snv:
+            if not snv_values:
+                matched = False
+        if requested_cnv:
+            if not cnv_values:
+                matched = False
+        if requested_fusion:
+            if not fusion_values:
+                matched = False
+
+        if criteria.get("ctdna_status") and str(ctdna_status).strip().lower() != criteria["ctdna_status"].strip().lower():
+            matched = False
+        if criteria.get("ctdna_cnv") and str(ctdna_cnv).strip().lower() != criteria["ctdna_cnv"].strip().lower():
+            matched = False
+        if criteria.get("ctdna_snv") and str(ctdna_snv).strip().lower() != criteria["ctdna_snv"].strip().lower():
+            matched = False
 
         if matched:
             results.append({
@@ -258,5 +270,5 @@ def main():
 
     print("-" * 100)
 
-    if __name__ == "__main__":
-        main()
+if __name__ == "__main__":
+    main()

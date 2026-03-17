@@ -32,6 +32,14 @@ def get_nested(data, paths):
             return current
     return None
 
+def existing_path(data, path_list):
+    """ Get first existing path to account for different report structures """
+    for p in path_list:
+        val = get_nested(data, p)
+        if val is not None:
+            return val
+    return None
+
 def transform_value(raw_val, value_type):
     """ Convert raw string or JSON value to the appropriate type for comparison """
     if raw_val in (None, "", []):
