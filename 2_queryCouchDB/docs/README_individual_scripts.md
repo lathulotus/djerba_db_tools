@@ -5,7 +5,7 @@ Individual scripts support various purposes, as laid out in this table...
 |**[couchDB_dynamic_query.py](../couchDB_dynamic_query.py)**  |Local report retrieval via string-based Mango querying|
 |**[couchDB_variant_search.py](../couchDB_variant_search.py)**|Variant-based filtering (i.e., SNV, CNV, Fusions)     |
 |**[couchDB_dynamic_query.py](../couchDB_dynamic_query.py)**  |Numeric-based filtering & plotting report accumulation|
-|**[couchDB_variant_search.py](../couchDB_summary.py)**       |Generation of a thorough summary table                |
+|**[couchDB_summary.py](../couchDB_summary.py)**       |Generation of a thorough summary table                |
 
 <br>
 

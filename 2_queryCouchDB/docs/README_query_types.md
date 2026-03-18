@@ -2,7 +2,7 @@
 Querying couchDB supports string-based search via Mango and numeric-based search via Python. Filters may be set through YAML files and/or search flags, depending on the search focus.
 
 
-## String-Based Querying
+## Dynamic Querying
 Fields that do not require querying should remain `null`. Individual JSON file(s) will be output for reports satisfying specific query requirements.
 
 | Filter | Definition | Example |
