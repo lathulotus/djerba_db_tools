@@ -3,7 +3,7 @@ Querying couchDB supports string-based search via Mango and numeric-based search
 
 
 ## String-Based Querying
-Query types are laid out in the **[filters YAML file](./filters.yaml)**. Fields that do not require querying should remain `null`. Individual JSON file(s) will be output for reports satisfying specific query requirements.
+Fields that do not require querying should remain `null`. Individual JSON file(s) will be output for reports satisfying specific query requirements.
 
 | Filter | Definition | Example |
 |--------|------------|---------|

@@ -144,8 +144,9 @@ python3 couchDB_summary.py --input_dir folder_containing_JSONs/ --output_name su
 # Query Types
 Querying couchDB supports string-based search via Mango and numeric-based search via Python. Filters may be set through YAML files and/or search flags, depending on the search focus.
 
+
 ## String-Based Querying
-Query types are laid out in the **[filters YAML file](./filters.yaml)**. Fields that do not require querying should remain `null`. Individual JSON file(s) will be output for reports satisfying specific query requirements.
+Fields that do not require querying should remain `null`. Individual JSON file(s) will be output for reports satisfying specific query requirements.
 
 | Filter | Definition | Example |
 |--------|------------|---------|
@@ -163,6 +164,7 @@ Query types are laid out in the **[filters YAML file](./filters.yaml)**. Fields 
 | `msi_status` | MSI status | `"MSS"` |
 | `tmb_status` | TMB status | `"TMB-L"` |
 | `failed` | Report failure status | `false` |
+
 
 ## Variant-Based Querying
 Query filters can be input using the flag specified below. Individual JSON file(s) will be output for reports satisfying specific query requirements. For specific gene searches, input a singular string containing the gene code. Filters are stacked, thus applying a specific gene and type filter searches for that gene + effect (i.e., TP53 amplification, KRAS missense). Switching between AND or OR is supported when querying through SNV and CNV genes. Fusion gene querying exclusively supports AND condition.
@@ -185,6 +187,7 @@ Query filters can be input using the flag specified below. Individual JSON file(
 |----------|------------|
 | `[GENE1, GENE2]` | GENE1 OR GENE2 |
 | `{AND: [GENE1, GENE2]}` | GENE1 AND GENE2 |
+
 
 ## Numeric-Based Querying
 Query filters can be input using the flag specified below. Individual JSON file(s) will be output for reports satisfying specific query requirements. Operator must be included with the input value, otherwise will be defaulted to `>=`. For filtering across a range (inclusive), input a list formatted as `"[min,max]"` (i.e., `"[0,4]"`). For searching across various values (OR condition), input values seperated by commas as `"num1, num2, num3"` (i.e., `"0, 4, 7"`).
