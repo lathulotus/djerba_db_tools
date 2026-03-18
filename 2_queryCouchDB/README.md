@@ -20,6 +20,8 @@ Querying is done using the pipeline script, found under **[couchDB_query_pipelin
 |**[couchDB_dynamic_query.py](./couchDB_dynamic_query.py)**  |Numeric-based filtering & plotting report accumulation|
 |**[couchDB_summary.py](./couchDB_summary.py)**       |Generation of a thorough summary table                |
 
+![Query Workflow](./docs/query_workflow.png)
+
 <br>
 
 # Usage Guide: Running the Pipeline
@@ -90,7 +92,7 @@ username: username
 password: password
 ```
 
-Similarly, filters must  be defined in a separate YAML file. Use this simplified [filters template](./couchDB_dynamic_filters.yaml) to set filters. Supported filters can be found under the query type's [string-based filters section](#string-based-querying).
+Similarly, filters must  be defined in a separate YAML file. Use this simplified [filters template](./couchDB_dynamic_filters.yaml) to set filters. Supported filters can be found under the query type's [dynamic filters section](#dynamic-querying).
 
 To simply download reports:
 ```
@@ -122,7 +124,7 @@ Sample numeric filtering for reports with failed purity scores:
 python3 couchDB_numeric_analysis.py --input_dir folder_containing_JSONs/ --purity "<=0.3" --output_dir filtered_failed_purity/
 ```
 
-To download a [plot](../../3_dataVisualization/accrual_by_coverage/coverage_over_time_greeq115.png), which can be applied with or without any other numeric filters:
+To download a [plot](../3_dataVisualization/accrual_by_coverage/coverage_over_time_greeq115.png), which can be applied with or without any other numeric filters:
 ```
 python3 couchDB_numeric_analysis.py --input_dir folder_containing_JSONs/ --purity "<=0.3" --output_dir filtered_failed_purity/ --plot
 ```
@@ -145,7 +147,7 @@ python3 couchDB_summary.py --input_dir folder_containing_JSONs/ --output_name su
 Querying couchDB supports string-based search via Mango and numeric-based search via Python. Filters may be set through YAML files and/or search flags, depending on the search focus.
 
 
-## String-Based Querying
+## Dynamic Querying
 Fields that do not require querying should remain `null`. Individual JSON file(s) will be output for reports satisfying specific query requirements.
 
 | Filter | Definition | Example |
@@ -205,7 +207,7 @@ Query filters can be input using the flag specified below. Individual JSON file(
 | `--msi_value` | MSI score per Mb | `"==0.9"` |
 | `--pga` | Percent genome altered | `"==2.75"` or `2,3` |
 | `--cnv_clinical` | Clinically relevant CNVs | `"==2.75"` or `2,3` |
-| `--snv_oncologival` | Oncologically relevant SNVs | `"==2.75"` or `2,3` |
+| `--snv_oncological` | Oncologically relevant SNVs | `"==2.75"` or `2,3` |
 | `--fusion_clinical` | Clinically relevant fusions | `"==2.75"` or `2,3` |
 | `--plot` | Plotting cumulative report count | `true` |
 

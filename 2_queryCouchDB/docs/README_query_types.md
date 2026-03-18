@@ -62,7 +62,7 @@ Query filters can be input using the flag specified below. Individual JSON file(
 | `--msi_value` | MSI score per Mb | `"==0.9"` |
 | `--pga` | Percent genome altered | `"==2.75"` or `2,3` |
 | `--cnv_clinical` | Clinically relevant CNVs | `"==2.75"` or `2,3` |
-| `--snv_oncologival` | Oncologically relevant SNVs | `"==2.75"` or `2,3` |
+| `--snv_oncological` | Oncologically relevant SNVs | `"==2.75"` or `2,3` |
 | `--fusion_clinical` | Clinically relevant fusions | `"==2.75"` or `2,3` |
 | `--plot` | Plotting cumulative report count | `true` |
 
