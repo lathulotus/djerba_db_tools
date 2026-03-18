@@ -28,7 +28,7 @@ python3 couchDB_dynamic_query.py --login_file login.txt --filters_file couchDB_d
 
 To count filtered reports without downloading files:
 ```
-python3 couchDB_dynamic_query.py --login_file login.txt --filters_file filters.yaml --count
+python3 couchDB_dynamic_query.py --login_file login.txt --filters_file couchDB_dynamic_filters.yaml --count
 ```
 
 <br>
@@ -51,7 +51,7 @@ Sample numeric filtering for reports with failed purity scores:
 python3 couchDB_numeric_analysis.py --input_dir folder_containing_JSONs/ --purity "<=0.3" --output_dir filtered_failed_purity/
 ```
 
-To download a plot looking at report accrual over time with mean coverage (which can be applied with or without any other numeric filters):
+To download a [plot](../../3_dataVisualization/accrual_by_coverage/coverage_over_time_greeq115.png), which can be applied with or without any other numeric filters:
 ```
 python3 couchDB_numeric_analysis.py --input_dir folder_containing_JSONs/ --purity "<=0.3" --output_dir filtered_failed_purity/ --plot
 ```
