@@ -221,8 +221,9 @@
                         },
 
                         "cant_report_hrd_reason":{
-                            "description": "Reason to not report HRD (false (boolean) if can_report_hrd is true)",
-                            "type": "string"
+                            "description": "Reason to not report HRD. Typically appears in failed reports. Most clinical reports list a boolean (false) if can_report_hrd is true).",
+                            "type": "string",
+                            "enum": ["purity", false]
                         },
 
                         "ctDNA":{
