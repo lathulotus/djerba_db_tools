@@ -34,8 +34,7 @@ filters:
     hrd_status: null
     msi_status: null
 
-    page_size: null
-    count: null
+    count: null               #do not run if run_numeric or run_variant or run_summary are true
 
   variant:
     cnv_gene: null
@@ -67,4 +66,4 @@ filters:
     snv_oncogenic: null
     fusion_clinical: null
 
-    plot: null
+    plot: false
