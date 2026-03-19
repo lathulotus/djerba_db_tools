@@ -15,9 +15,10 @@ python3 couchDB_query_pipeline.py --config couchDB_query_pipeline.yaml
 ```
 
 Config must be set by running `--config couchDB_query_pipeline.yaml`, which specifies the filters and login credentials.
-- Filters should be defined within the [pre-existing YAML file](../couchDB_query_pipeline.yaml), in which fields that are not being searched should be set to null or false, as per the template.
-- **Examples** on how to format this config YAML can be found under [example_config.md](./example_config.md)
-- Connection **must** be authenticated by setting host, port, database name, and login credentials. Login is directly added to pre-existing config YAML.
+Config must be set by running `--config couchDB_query_pipeline.yaml`, which specifies the filters and login credentials.
+- Filters should be defined within the pre-existing [config YAML (template)](../couchDB_query_pipeline.yaml).
+- **Examples on formatting this config YAML can be found under [examples](../examples).**
+- Login credentials to access CouchDB is directly added to pre-existing config YAML.
 
 ## Run Retrieve
 Retrieval [script](../couchDB_dynamic_query.py) allows for local download of reports from CouchDB. Dynamic querying to download reports based on Mango search logic works best for string-based querying. This script supports querying through fields containing string values. Run_retrieve **must** be set to true for downstream querying.

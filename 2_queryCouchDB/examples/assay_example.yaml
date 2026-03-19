@@ -1,0 +1,69 @@
+query_pipeline:
+  run_retrieve: true
+  run_variant: false
+  run_numeric: false
+  run_summary: true
+
+paths:
+  output_dir: output/
+  plot_out: output/coverage_over_time.png
+  summary_out: output/summary.csv
+  log_file: output/pipeline_log.json
+
+login_file:
+  host: URL
+  port: 0000
+  db_name: DB_NAME
+  username: USERNAME
+  password: PASSWORD
+
+filters:
+  dynamic:
+    report_id: 
+    donor: 
+    project: 
+    study: 
+    report_type: 
+    failed: 
+    cancer_type: 
+    oncotree_code: 
+    assay: ["WGTS", "WGS"]
+    biopsy_site: 
+    sample_type: 
+    tmb_status: 
+    hrd_status: 
+    msi_status: 
+
+    count: 
+
+  variant:
+    cnv_gene: 
+    cnv_type: 
+    snv_gene: 
+    snv_type: 
+    snv_protein: 
+    fusion_gene: 
+    fusion_effect: 
+    fusion_frame: 
+
+    ctdna_status: 
+    ctdna_cnv: 
+    ctdna_snv: 
+
+  numeric:
+    djerba_version: 
+    date_reported: 
+    coverage: 
+    purity: 
+    callability: 
+    ploidy: 
+    TMB: 
+    TMB_value: 
+    HRD_value: 
+    MSI_value: 
+    pga: 
+    cnv_clinical: 
+    snv_oncogenic: 
+    fusion_clinical: 
+
+    plot: 
