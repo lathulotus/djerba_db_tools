@@ -33,7 +33,7 @@ python3 couchDB_query_pipeline.py --config couchDB_query_pipeline.yaml
 
 Config must be set by running `--config couchDB_query_pipeline.yaml`, which specifies the filters and login credentials.
 - Filters should be defined within the pre-existing [config YAML (template)](./couchDB_query_pipeline.yaml).
-- **Examples on formatting this config YAML can be found under [examples](./examples/README.md).**
+- **Examples on formatting this config YAML can be found under [examples](./examples).**
 - Login credentials to access CouchDB is directly added to pre-existing config YAML.
 
 ## Run Retrieve
