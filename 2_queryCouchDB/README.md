@@ -2,10 +2,10 @@
 #### Table of Contents
 1. [Scripts: Supported Querying](#scripts-supported-querying)
 2. [Running the Pipeline](#usage-guide-running-the-pipeline)
-3. [Running the Dynamic Query Script](#usage-guide-dynamic-querying)
-4. [Running the Variant Filter Script](#usage-guide-variant-search)
-5. [Running the Numeric Filter Script](#usage-guide-numeric-analysis)
-6. [Running the Summary Script](#usage-guide-summary)
+3. [Running Individual Scripts: Dynamic Querying](#usage-guide-dynamic-querying-individual)
+4. [Running Individual Scripts: Variant Search](#usage-guide-variant-search-individual)
+5. [Running Individual Scripts: Numeric Search](#usage-guide-numeric-search-individual)
+6. [Running Individual Scripts: Summary Table](#usage-guide-summary-table-individual)
 7. [Query Types](#query-types)
 
 <br>
@@ -33,6 +33,7 @@ python3 couchDB_query_pipeline.py --config couchDB_query_pipeline.yaml
 
 Config must be set by running `--config couchDB_query_pipeline.yaml`, which specifies the filters and login credentials.
 - Filters should be defined within the [pre-existing YAML file](./couchDB_query_pipeline.yaml), in which fields that are not being searched should be set to null or false, as per the template.
+- **Examples** on how to format the config YAML for the pipeline script can be found under [example_config.md](./docs/example_config.md)
 - Connection **must** be authenticated by setting host, port, database name, and login credentials. Login is directly added to pre-existing config YAML.
 
 ## Run Retrieve
@@ -55,7 +56,7 @@ If no variant filters are applied, must set to false:
 run_variant: false
 ```
 
-### Numeric
+### Run Numeric
 Numeric querying [script](./couchDB_numeric_analysis.py) allows for analysis and plotting of quantitative data. To bypass lexicographic logic applied to integers saved as strings, python-based search logic is applied to downloaded reports to perform integer querying and visual analysis. 
 
 To filter through numeric parameters:
@@ -68,7 +69,7 @@ If no numeric filters are applied, must set to false:
 run_numeric: false
 ```
 
-### Summary
+### Run Summary
 Summary [script](./couchDB_summary.py) results in the generation of a summary table as a CSV file. This table contains all data extracted from reports, providing and overview for data analysis or visualization.
 
 To generate a summary table:
@@ -82,7 +83,7 @@ run_summary: true
 
 <br>
 
-# Usage Guide: Dynamic Querying
+# Usage Guide: Dynamic Querying (Individual)
 Dynamic querying can be run without running the pipeline. This is done through directly accessing CouchDB, which requires login credentials. Such credentials can be saved in a text file, organized as follows:
 ```
 host: url
@@ -106,7 +107,7 @@ python3 couchDB_dynamic_query.py --login_file login.txt --filters_file couchDB_d
 
 <br>
 
-# Usage Guide: Variant Search
+# Usage Guide: Variant Search (Individual)
 Variant search can be done without running the entire pipeline, if a folder containing JSON reports exists. Use in-line flags to specify filters. Supported filter flags can be found under the query types's [variant search section](#variant-based-querying).
 
 Sample variant filtering for reports containing TP53 SNVs:
@@ -116,7 +117,7 @@ python3 couchDB_variant_search.py --input_dir folder_containing_JSONs/ --snv_gen
 
 <br>
 
-# Usage Guide: Numeric Analysis
+# Usage Guide: Numeric Search (Individual)
 Numeric analysis (and plotting) can be done without running the entire pipeline, if a folder containing JSON reports exists. Use in-line flags to specify filters. Supported filter flags can be found under the query types's [numeric analysis section](#numeric-based-querying).
 
 Sample numeric filtering for reports with failed purity scores:
@@ -131,7 +132,7 @@ python3 couchDB_numeric_analysis.py --input_dir folder_containing_JSONs/ --purit
 
 <br>
 
-# Usage Guide: Summary
+# Usage Guide: Summary Table (Individual)
 Summary tables can be generated without running the entire pipeline, if a folders containing JSON reports exists. To download a summary table:
 ```
 python3 couchDB_summary.py --input_dir folder_containing_JSONs/ --output_name summary_table
@@ -156,13 +157,13 @@ Fields that do not require querying should remain `null`. Individual JSON file(s
 | `donor` | Donor ID | `"DONOR_123"` |
 | `project` | Project name | `"PROJECT"` |
 | `study` | Study name | `"STUDY"` |
-| `report_type` | Report | `"clinical"`, `"research"` |
+| `report_type` | Report | `"clinical"` |
 | `cancer_type` | Primary cancer diagnosis | `"pancreatic adenocarcinoma"` |
 | `oncotree_code` | Oncotree code | `"PAAD"` |
 | `assay` | Assay | `"WGTS"` |
 | `biopsy_site` | Biopsy/surgery | `"left crest"` |
 | `sample_type` | Type of sample | `"FFPE  tissue block"` |
-| `hrd_status` | HRD status | `"HR Proficient"` |
+| `hrd_status` | HRD status | `"HRP"` |
 | `msi_status` | MSI status | `"MSS"` |
 | `tmb_status` | TMB status | `"TMB-L"` |
 | `failed` | Report failure status | `false` |
@@ -173,17 +174,17 @@ Query filters can be input using the flag specified below. Individual JSON file(
 
 | Filter | Definition | Example |
 |--------|------------|---------|
-| `--cnv_gene` | CNV-containing gene | `"TP53"` or  |
+| `--cnv_gene` | CNV-containing gene | `"TP53"` |
 | `--cnv_type` | CNV type associated with search | `"amplification"` |
 | `--snv_gene` | SNV-containing gene | `"KRAS"` |
-| `--snv_type` | SNV type asssociated with search | `"Missense Mutation"` or `missense` |
+| `--snv_type` | SNV type asssociated with search | `"Missense Mutation"` or `"missense"` |
 | `--snv_protein` | Protein change resulting from SNV | `"p.S110R"` |
 | `--fusion_gene` | Fusion-containing gene(s) | `"SDC1"` |
 | `--fusion_effect` | Fusion effect | `"Likely Loss-of-function"` or `"loss"` |
 | `--fusion_frame` | Fusion associated frame | `"out of frame"` or `"out"` |
 | `--ctdna_status` | ctDNA status, all fields | `"Detected"` |
-| `--ctdna_cnv` | ctDNA status in CNV | `True` |
-| `--ctdna_snv` | ctDNA status in SNV | `False` |
+| `--ctdna_cnv` | ctDNA status in CNV | `"True"` |
+| `--ctdna_snv` | ctDNA status in SNV | `"False"` |
 
 | Operator | Definition |
 |----------|------------|
@@ -219,4 +220,3 @@ Query filters can be input using the flag specified below. Individual JSON file(
 | `<=` | Less than or equal to input value |
 | `==` | Equal to input value |
 | `"[min,max]"` | Search across range, inclusive |
-| `"num1, num2, num3"` | Search various values, OR condition |
