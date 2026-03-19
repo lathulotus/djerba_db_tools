@@ -16,6 +16,7 @@ python3 couchDB_query_pipeline.py --config couchDB_query_pipeline.yaml
 
 Config must be set by running `--config couchDB_query_pipeline.yaml`, which specifies the filters and login credentials.
 - Filters should be defined within the [pre-existing YAML file](../couchDB_query_pipeline.yaml), in which fields that are not being searched should be set to null or false, as per the template.
+- **Examples** on how to format this config YAML can be found under [example_config.md](./example_config.md)
 - Connection **must** be authenticated by setting host, port, database name, and login credentials. Login is directly added to pre-existing config YAML.
 
 ## Run Retrieve
@@ -38,7 +39,7 @@ If no variant filters are applied, must set to false:
 run_variant: false
 ```
 
-### Numeric
+### Run Numeric
 Numeric querying [script](../couchDB_numeric_analysis.py) allows for analysis and plotting of quantitative data. To bypass lexicographic logic applied to integers saved as strings, python-based search logic is applied to downloaded reports to perform integer querying and visual analysis. 
 
 To filter through numeric parameters:
@@ -51,7 +52,7 @@ If no numeric filters are applied, must set to false:
 run_numeric: false
 ```
 
-### Summary
+### Run Summary
 Summary [script](../couchDB_summary.py) results in the generation of a summary table as a CSV file. This table contains all data extracted from reports, providing and overview for data analysis or visualization.
 
 To generate a summary table:

@@ -43,7 +43,7 @@ python3 couchDB_variant_search.py --input_dir folder_containing_JSONs/ --snv_gen
 
 <br>
 
-# Usage Guide: Numeric Analysis
+# Usage Guide: Numeric Search
 Numeric analysis (and plotting) can be done without running the entire pipeline, if a folder containing JSON reports exists. Use in-line flags to specify filters. Supported filter flags can be found under the query types's [numeric analysis section](#numeric-based-querying).
 
 Sample numeric filtering for reports with failed purity scores:
@@ -58,7 +58,7 @@ python3 couchDB_numeric_analysis.py --input_dir folder_containing_JSONs/ --purit
 
 <br>
 
-# Usage Guide: Summary
+# Usage Guide: Summary Table
 Summary tables can be generated without running the entire pipeline, if a folders containing JSON reports exists. To download a summary table:
 ```
 python3 couchDB_summary.py --input_dir folder_containing_JSONs/ --output_name summary_table
