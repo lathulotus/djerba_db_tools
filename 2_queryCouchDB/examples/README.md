@@ -166,7 +166,7 @@ filters:
 - Scenario: Filtering for cases with failed purity (less than or equal to 30%)
 - Output: All cases with failed purity, and a summary.csv
 - Application: Can be applied to any other scenarios that simply query through run_numeric
-- Note: run_retrieve must be set to true! Setting all values under run_retrieve to  "" (blank or `null`)  allows for all reports to be downloaded for numeric filtering.
+- Note: run_retrieve must be set to true! Setting all values under run_retrieve to "" (blank or `null`) allows for all reports to be downloaded for numeric filtering.
 ```
 query_pipeline:
   run_retrieve: true
