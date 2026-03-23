@@ -11,3 +11,8 @@
 pip install marimo
 pip install "marimo[recommended]"
 ```
+
+## Running the Notebook
+```
+marimo run couchDB_marimo.py
+```
