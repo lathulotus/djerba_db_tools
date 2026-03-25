@@ -93,11 +93,6 @@ def _(
     else:
         weekly_date_controls = mo.md("")
 
-    weekly_control_panel = mo.vstack([
-        toggle_weekly,
-        weekly_date_controls
-    ]).style(width="30%")
-
     # Determine week view
     if not toggle_weekly.value:
         selected = summary_weekly[summary_weekly["week_start"] == week_latest]
@@ -112,6 +107,7 @@ def _(
         title_date = f"{week_start.date()} to {week_end.date()}"
 
     weekly_counts = selected.groupby("project").size().reset_index(name="count")
+    total_per_week = int(weekly_counts["count"].sum()) if not weekly_counts.empty else 0
     fig1, ax1 = plt.subplots(figsize=(8,5))
 
     if weekly_counts.empty:
@@ -133,6 +129,13 @@ def _(
     ax1.grid(True, alpha=0.6)
     plt.xticks(rotation=45)
     plt.tight_layout()
+
+    weekly_control_panel = mo.vstack([
+        toggle_weekly,
+        weekly_date_controls,
+        mo.md("---"),
+        mo.md(f"**Total reports:** {total_per_week}")
+    ]).style(width="30%")
 
     mo.hstack([
         weekly_control_panel,
