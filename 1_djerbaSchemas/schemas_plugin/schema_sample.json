@@ -32,8 +32,7 @@
 
                         "Sample Type":{
                             "description": "Type of sample",
-                            "type": "string",
-                            "enum": ["Fresh frozen", "FFPE", "Blood", "Nucleic Acids Extracted from Tissue in a CLIA-certified Laboratory"]
+                            "type": "string"
                         },
 
                         "Estimated Cancer Cell Content (%)":{

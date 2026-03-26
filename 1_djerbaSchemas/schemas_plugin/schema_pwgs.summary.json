@@ -1,0 +1,42 @@
+{
+    "$id":"https://https://github.com/oicr-gsi/djerba/tree/main/src/lib/djerba/plugins/pwgs/summary/schema_pwgs.summary.json",
+    "title": "Results Structure for pwgs.summary Plugin",
+    "description": "Schema documentation of results structure for pwgs.summary plugin.",
+    "type": "object",
+
+    "properties":{
+        "report_title":{
+            "description": "Plugin for pwgs.summary plugin section",
+            "type": "object",
+            "properties":{
+
+                "plugin_name":{
+                    "description": "pwgs.summary plugin",
+                    "type": "string"
+                },
+
+                "version":{
+                    "description": "Plugin version (1.0)",
+                    "type": "string"
+                },
+
+                "results":{
+                    "description": "Results from pwgs.summary plugin plugin",
+                    "type": "object",
+                    "properties":{
+
+                        "outcome": {
+                            "description": "Detection outcome (i.e., UNDETECTED, DETECTED)",
+                            "type": "string"
+                        },
+
+                        "ctdna_detection": {
+                            "description": "Status of ctDNA detection (i.e., Undetected, Detected)",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

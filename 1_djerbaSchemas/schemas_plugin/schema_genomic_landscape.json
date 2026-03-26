@@ -101,8 +101,7 @@
 
                                         "Genomic biomarker text":{
                                             "description": "Biomarker alteration description",
-                                            "type": "string",
-                                            "enum": ["Tumour Mutational Burden Low (TMB-L, < 10 coding mutations / Mb)"]
+                                            "type": "string"
                                         },
 
                                         "Genomic biomarker plot":{
@@ -146,8 +145,7 @@
 
                                         "Genomic biomarker text":{
                                             "description": "Biomarker alteration description",
-                                            "type": "string",
-                                            "enum": ["Microsatellite Stable (MSS)"]
+                                            "type": "string"
                                         },
 
                                         "Genomic biomarker plot":{
@@ -191,8 +189,7 @@
 
                                         "Genomic biomarker text":{
                                             "description": "Biomarker alteration description",
-                                            "type": "string",
-                                            "enum": ["Homologous Recombination Proficiency"]
+                                            "type": "string"
                                         },
 
                                         "Genomic biomarker value":{
@@ -222,8 +219,7 @@
 
                         "cant_report_hrd_reason":{
                             "description": "Reason to not report HRD. Typically appears in failed reports. Most clinical reports list a boolean (false) if can_report_hrd is true).",
-                            "type": "string",
-                            "enum": ["purity", false]
+                            "type": "string"
                         },
 
                         "ctDNA":{

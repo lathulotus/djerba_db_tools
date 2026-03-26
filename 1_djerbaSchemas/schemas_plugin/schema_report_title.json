@@ -27,8 +27,7 @@
 
                         "header_type":{
                             "description": "Header based on report type/attributes. Typically in clinical reports.",
-                            "type": "string",
-                            "enum": ["clinical_title"]
+                            "type": "string"
                         }
                     }
                 }
