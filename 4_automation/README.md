@@ -1,8 +1,8 @@
 # Automate Pipeline
-- Submit cron jobs to generate weekly/monthly...
-    - Summary CSV files for Marimo
-    - Key figures (i.e. HRD Coverage monthly, report counts weekly)
-    - note: figures also generated in marimo
+- Set up Olives to run weekly generation of summary.csv from CouchDB
+    - Run query pipeline
+    - Obtain summary CSV
+    - Input summary CSV into Marimo
 
 # Marimo Notebook
 - Interactive UI for tables and plots

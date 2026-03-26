@@ -178,7 +178,7 @@ def _(mo, summary):
         label = "Custom view of summary table:"
     )
 
-    mo.hstack([preset_view, mo.md("*or*"), column_view]).style(width="75%")
+    mo.hstack([preset_view, mo.md(" **|** "), column_view]).style(width="60%")
     return column_view, preset_view, presets
 
 
@@ -419,8 +419,7 @@ def _(
         apply_button,
         mo.md("---"),
         mo.md("### All Settings"),
-        mo.hstack([date_start, date_end]).style(width="15px"),
-    ]).style(width="30%", padding="15px")
+        mo.hstack([date_start, date_end])]).style(width="30%", padding="15px")
 
     right_panel = mo.vstack([
         mo.carousel(plots)
