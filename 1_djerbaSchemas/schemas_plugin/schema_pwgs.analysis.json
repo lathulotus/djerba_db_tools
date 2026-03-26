@@ -6,7 +6,7 @@
 
     "properties":{
         "report_title":{
-            "description": "Plugin for pwgs.analysis plugin section",
+            "description": "DJerba plugin for pwgs.analysis reporting",
             "type": "object",
             "properties":{
 

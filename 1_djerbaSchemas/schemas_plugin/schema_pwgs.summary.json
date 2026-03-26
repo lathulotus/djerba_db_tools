@@ -6,7 +6,7 @@
 
     "properties":{
         "report_title":{
-            "description": "Plugin for pwgs.summary plugin section",
+            "description": "Djerba plugin for pwgs summary reporting",
             "type": "object",
             "properties":{
 

@@ -6,7 +6,7 @@
 
     "properties":{
         "report_title":{
-            "description": "Plugin for pwgs.sample plugin section",
+            "description": "Djerba plugin for pwgs case overview reporting",
             "type": "object",
             "properties":{
 
