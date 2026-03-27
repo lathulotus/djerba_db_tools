@@ -244,10 +244,10 @@ def _(mo, quanthist_select, summary):
         col_series = summary[c].dropna()
         col_min = col_series.min()
         col_max = col_series.max()
-    
+
         x_min_input[c] = mo.ui.number(label=f"Min", value=None)
         x_max_input[c] = mo.ui.number(label=f"Max", value=None)
-    
+
         x_axis_content.append(
             mo.vstack([
                 mo.md(f"**{c}**"),
@@ -256,7 +256,7 @@ def _(mo, quanthist_select, summary):
                     x_max_input[c].style(width="120px")])
             ])
         )
-    
+
     bin_select = mo.ui.slider(start=0, stop=100, value=10, label="Number of bins: ")
     date_start = mo.ui.date(label="From", value="2020-01-01")
     date_end = mo.ui.date(label="To")
@@ -373,7 +373,7 @@ def _(
     # Qualitative plots
     for col in qualhist_select.value:
         series = filtered_summary[col].dropna()
-    
+
         label = col.replace("_", " ").title()
         label = re.sub(r"\bSnv\b", "SNV", label)
         label = re.sub(r"\bCnv\b", "CNV", label)
@@ -381,7 +381,7 @@ def _(
         label = re.sub(r"\bHrd\b", "HRD", label)
         label = re.sub(r"\bMsi\b", "MSI", label)
         label = re.sub(r"\bTmb\b", "TMB", label)
-    
+
         qualexpand = []
         for cell in series:
             for item in cell.split(","):
@@ -426,6 +426,19 @@ def _(
     ]).style(width="70%", padding="15px")
 
     mo.hstack([left_panel, right_panel])
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md("""
+    ## Trend Analysis
+    """)
+    return
+
+
+@app.cell
+def _():
     return
 
 
