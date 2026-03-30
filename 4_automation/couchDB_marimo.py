@@ -13,7 +13,7 @@ def _():
     import re
     import matplotlib.pyplot as plt
     import datetime as dt
-    mo.md(" # CouchDB Notebook")
+    mo.md(" # CouchDB Analytics")
     return io, mo, np, pd, plt, re
 
 
@@ -207,7 +207,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md("""
-    ## Summary Figures
+    ## Descriptive Analytics
     """)
     return
 
@@ -423,7 +423,7 @@ def _(
 
     right_panel = mo.vstack([
         mo.carousel(plots)
-    ]).style(width="70%", padding="15px")
+    ]).style(width="70%", padding="10px")
 
     mo.hstack([left_panel, right_panel])
     return
@@ -432,13 +432,251 @@ def _(
 @app.cell
 def _(mo):
     mo.md("""
-    ## Trend Analysis
+    ## Cumulative Case Trends
     """)
     return
 
 
 @app.cell
-def _():
+def _(mo, summary):
+    # Cohort: select general cohort
+    qual_cols = [c for c in summary.select_dtypes(include=["string"]).columns]
+
+    cohort_select = mo.ui.dropdown(
+        label = "Cohort: ",
+        options = qual_cols)
+    return (cohort_select,)
+
+
+@app.cell
+def _(cohort_select, mo, summary):
+    # Cohort: filter specific cohorts
+    if cohort_select.value:
+        cohort_values = sorted(summary[cohort_select.value].dropna().unique())
+    else:
+        cohort_values = []
+
+    cohort_filter = mo.ui.multiselect(
+        label = "Filter: ",
+        options = cohort_values
+    )
+    return (cohort_filter,)
+
+
+@app.cell
+def _(mo, summary):
+    # Group: select general group
+    group_cols = summary.columns.tolist()
+    group_select = mo.ui.dropdown(
+        label = "Group: ",
+        options = group_cols
+    )
+    return (group_select,)
+
+
+@app.cell
+def _(group_select, mo, summary):
+    # Group: user input depends on group type (string vs integer)
+    if group_select.value:
+        group_type = summary[group_select.value].dtype
+        if group_type.kind in ["i", "u", "f"]:
+            group_input = mo.ui.text(
+                label = "Numeric groups: ",
+                placeholder = ">=115, <115, ==115"
+            )
+        else:
+            group_unique = sorted(summary[group_select.value].dropna().unique())
+            group_input = mo.ui.multiselect(
+                label = "Categorical groups: ",
+                options = group_unique
+            )
+    else:
+        group_input= mo.md("")
+    return (group_input,)
+
+
+@app.cell
+def _(group_input, group_select, summary):
+    # Group: filter specific groups
+    group_filters = []
+
+    if group_select.value and group_input is not None:
+        group_type2 = summary[group_select.value].dtype
+    
+        if group_type2.kind in ["i", "u", "f"]:
+            group_input_raw = group_input.value.strip()
+            if group_input_raw:
+                group_input_expr = [e.strip() for e in group_input_raw.split(",") if e.strip()]
+                for group_expr_temp in group_input_expr:
+                    group_filters.append({
+                        "column": group_select.value,
+                        "type": "numeric",
+                        "input": group_expr_temp
+                    })
+        else:
+            group_input_raw = group_input.value
+            if group_input_raw:
+                group_filters.append({
+                    "column": group_select.value,
+                    "type": "categorical",
+                    "input": list(group_input_raw)
+                })
+    return (group_filters,)
+
+
+@app.cell
+def _(mo, summary):
+    # Colour: select colour bar
+    quan_cols = [c for c in summary.select_dtypes(include=["number"]).columns]
+
+    colour_bar = mo.ui.dropdown(
+        label = "Colour by: ",
+        options = quan_cols
+    )
+
+    # Date: select date range
+    date_cols = [c for c in summary.columns if "date_reported" in c.lower()]
+
+    date_start_cumulative = mo.ui.date(label = "From: ", value = "2020-01-01")
+    date_end_cumulative = mo.ui.date(label = "To: ")
+
+    # Apply: button to apply filters
+    apply_cumulative = mo.ui.button(label = "Apply")
+    return (
+        apply_cumulative,
+        colour_bar,
+        date_end_cumulative,
+        date_start_cumulative,
+    )
+
+
+@app.cell
+def _(
+    apply_cumulative,
+    cohort_filter,
+    cohort_select,
+    colour_bar,
+    date_end_cumulative,
+    date_start_cumulative,
+    group_filters,
+    group_input,
+    group_select,
+    mo,
+    pd,
+    plt,
+    summary,
+):
+    apply_cumulative.value
+
+    # Putting together plot settings
+    df_cc = summary.copy()
+
+    if cohort_select.value and cohort_filter.value:
+        df_cc = df_cc[df_cc[cohort_select.value].isin(cohort_filter.value)]
+
+    group_lines = []
+    if group_filters:
+        for gf in group_filters:
+            gf_col = gf["column"]
+            if gf["type"] == "numeric":
+                gf_expr = f"{gf_col} {gf['input']}"
+            else:
+                gf_expr = f"{gf_col}.isin([{','.join([repr(v) for v in gf['input']])}])"
+            group_lines.append({"label": f"{gf_col}: {gf['input']}", "expr": gf_expr})
+
+    if "date_reported" in df_cc.columns:
+        df_cc["date_reported"] = pd.to_datetime(df_cc["date_reported"], errors="coerce")
+        df_cc = df_cc[
+            (df_cc["date_reported"] >= pd.to_datetime(date_start_cumulative.value)) &
+            (df_cc["date_reported"] <= pd.to_datetime(date_end_cumulative.value))
+        ]
+
+    # Plot cumulative cases (cc)
+    if df_cc.empty:
+        right_panel_cc = mo.md("No data selected")
+    else:
+        fig_cc, ax_cc = plt.subplots(figsize=(10, 5))
+        colour_by = colour_bar.value or None
+        handles_cc = []
+        labels_cc = []
+
+        if not group_lines:
+            group_lines = [{"label": "All cases", "expr": None}]
+
+        for gl in group_lines:
+            label_cc = gl["label"]
+            expr_cc = gl["expr"]
+
+            sub_cc = df_cc.query(expr_cc) if expr_cc else df_cc
+            if sub_cc.empty:
+                continue
+
+            group_cc = sub_cc.groupby("date_reported").size().reset_index(name="Case_Count")
+            if colour_by:
+                group_cc["Avg_Value"] = sub_cc.groupby("date_reported")[colour_by].mean().values
+            group_cc["Cumulative_Count"] = group_cc["Case_Count"].cumsum()
+
+            ax_cc.plot(
+                group_cc["date_reported"],
+                group_cc["Cumulative_Count"],
+                color="steelblue",
+                linewidth=2,
+                alpha=0.5,
+            )
+
+            if colour_by:
+                sc = ax_cc.scatter(
+                    group_cc["date_reported"],
+                    group_cc["Cumulative_Count"],
+                    c=group_cc["Avg_Value"],
+                    cmap="viridis",
+                    s=60,
+                    edgecolors="w",
+                )
+                sc.set_label(label_cc)
+                handles_cc.append(sc)
+                labels_cc.append(label_cc)
+            else:
+                line_cc, = ax_cc.plot(
+                    group_cc["date_reported"],
+                    group_cc["Cumulative_Count"],
+                    marker="o",
+                    linestyle="none",
+                    label=label_cc,
+                )
+                handles_cc.append(line_cc)
+                labels_cc.append(label_cc)
+
+        if handles_cc:
+            ax_cc.legend(handles_cc, labels_cc, title="Groups")
+            if colour_by:
+                cbar = plt.colorbar(handles_cc[-1], ax=ax_cc)
+                cbar.set_label(colour_by)
+
+        ax_cc.set_title("Cumulative Case Accrual Over Time")
+        ax_cc.set_xlabel("Date Reported")
+        ax_cc.set_ylabel("Number of Cases (Cumulative)")
+        ax_cc.grid(True, linestyle=":", alpha=0.6)
+        fig_cc.autofmt_xdate()
+
+        right_panel_cc = mo.carousel([fig_cc]).style(width="70%", padding="10px")
+
+    # View settings and plot
+    left_panel_cc = mo.vstack([
+        mo.md("### Cohort"),
+        cohort_select,
+        cohort_filter,
+        mo.md("### Groups"),
+        group_select,
+        group_input,
+        mo.md("### Colour Bar"),
+        colour_bar,
+        mo.md("### Date"),
+        mo.hstack([date_start_cumulative, date_end_cumulative]),
+        apply_cumulative,
+    ]).style(width="30%", padding="10px")
+
+    mo.hstack([left_panel_cc, right_panel_cc])
     return
 
 
