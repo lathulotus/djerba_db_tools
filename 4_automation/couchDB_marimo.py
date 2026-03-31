@@ -12,9 +12,10 @@ def _():
     import io
     import re
     import matplotlib.pyplot as plt
+    from matplotlib.ticker import MaxNLocator
     import datetime as dt
     mo.md(" # CouchDB Analytics")
-    return io, mo, np, pd, plt, re
+    return MaxNLocator, io, mo, np, pd, plt, re
 
 
 @app.cell
@@ -161,38 +162,21 @@ def _(mo):
 
 @app.cell
 def _(mo, summary):
-    # Preset column filters
-    presets = {
-        "HRD": ["report_id", "donor", "project", "failed", "coverage", "hrd_status", "hrd_value"]
-    }
-    preset_view = mo.ui.dropdown(
-        options = ["None"] + list(presets.keys()),
-        value = "None",
-        label = "Prefiltered view of summary table:"
-    )
-
     # Custom column filters
     column_view = mo.ui.multiselect(
         options = list(summary.columns),
         value = list(summary.columns),
-        label = "Custom view of summary table:"
-    )
-
-    mo.hstack([preset_view, mo.md(" **|** "), column_view]).style(width="60%")
-    return column_view, preset_view, presets
+        label = "Custom view of summary table: ")
+    return (column_view,)
 
 
 @app.cell
-def _(column_view, mo, pd, preset_view, presets, summary):
-    if preset_view.value != "None":
-        visible_columns = [c for c in presets[preset_view.value] if c in summary.columns]
-    else:
-        visible_columns = column_view.value
-
-    summary_table = summary[visible_columns].copy()
+def _(column_view, mo, pd, summary):
+    summary_table = summary[column_view.value].copy()
     if "date_reported" in summary_table.columns:
         summary_table["date_reported"] = pd.to_datetime(summary_table["date_reported"], errors="coerce").dt.strftime("%Y-%m-%d")
-    mo.ui.table(summary_table)
+
+    mo.vstack([column_view, mo.ui.table(summary_table)])
     return
 
 
@@ -281,6 +265,7 @@ def _(
     date_end,
     date_start,
     mo,
+    normalize_name,
     np,
     pd,
     plt,
@@ -374,13 +359,7 @@ def _(
     for col in qualhist_select.value:
         series = filtered_summary[col].dropna()
 
-        label = col.replace("_", " ").title()
-        label = re.sub(r"\bSnv\b", "SNV", label)
-        label = re.sub(r"\bCnv\b", "CNV", label)
-        label = re.sub(r"\bPga\b", "PGA", label)
-        label = re.sub(r"\bHrd\b", "HRD", label)
-        label = re.sub(r"\bMsi\b", "MSI", label)
-        label = re.sub(r"\bTmb\b", "TMB", label)
+        label = normalize_name(col)
 
         qualexpand = []
         for cell in series:
@@ -539,20 +518,12 @@ def _(mo, summary):
 
     date_start_cumulative = mo.ui.date(label = "From: ", value = "2020-01-01")
     date_end_cumulative = mo.ui.date(label = "To: ")
-
-    # Apply: button to apply filters
-    apply_cumulative = mo.ui.button(label = "Apply")
-    return (
-        apply_cumulative,
-        colour_bar,
-        date_end_cumulative,
-        date_start_cumulative,
-    )
+    return colour_bar, date_end_cumulative, date_start_cumulative
 
 
 @app.cell
 def _(
-    apply_cumulative,
+    MaxNLocator,
     cohort_filter,
     cohort_select,
     colour_bar,
@@ -562,12 +533,11 @@ def _(
     group_input,
     group_select,
     mo,
+    normalize_name,
     pd,
     plt,
     summary,
 ):
-    apply_cumulative.value
-
     # Putting together plot settings
     df_cc = summary.copy()
 
@@ -580,28 +550,42 @@ def _(
             gf_col = gf["column"]
             if gf["type"] == "numeric":
                 gf_expr = f"{gf_col} {gf['input']}"
+                group_lines.append({"column": gf_col, "value": gf['input'], "label": normalize_name(str(gf['input'])), "expr": gf_expr})
             else:
-                gf_expr = f"{gf_col}.isin([{','.join([repr(v) for v in gf['input']])}])"
-            group_lines.append({"label": f"{gf_col}: {gf['input']}", "expr": gf_expr})
+                for gf_val in gf["input"]:
+                    gf_expr = f"{gf_col} == {repr(gf_val)}"
+                    group_lines.append({"column": gf_col, "value": gf_val, "label": normalize_name(str(gf_val)), "expr": gf_expr})
+        
 
     if "date_reported" in df_cc.columns:
         df_cc["date_reported"] = pd.to_datetime(df_cc["date_reported"], errors="coerce")
         df_cc = df_cc[
             (df_cc["date_reported"] >= pd.to_datetime(date_start_cumulative.value)) &
-            (df_cc["date_reported"] <= pd.to_datetime(date_end_cumulative.value))
-        ]
+            (df_cc["date_reported"] <= pd.to_datetime(date_end_cumulative.value))]
 
     # Plot cumulative cases (cc)
     if df_cc.empty:
         right_panel_cc = mo.md("No data selected")
     else:
         fig_cc, ax_cc = plt.subplots(figsize=(10, 5))
-        colour_by = colour_bar.value or None
         handles_cc = []
         labels_cc = []
 
         if not group_lines:
-            group_lines = [{"label": "All cases", "expr": None}]
+            group_lines = [{"column": None, "value": None, "label": "All cases", "expr": None}]
+
+        colour_by = colour_bar.value or None
+        if colour_by:
+            col_all = []
+            for gl in group_lines if group_lines else [{"expr": None}]:
+                expr_cc = gl["expr"]
+                sub_cc = df_cc.query(expr_cc) if expr_cc else df_cc
+                if sub_cc.empty:
+                    continue
+                col_avg = (sub_cc.groupby("date_reported")[colour_by].mean().dropna().tolist())
+                col_all.extend(col_avg)
+            col_bar_min = min(col_all)
+            col_bar_max = max(col_all)
 
         for gl in group_lines:
             label_cc = gl["label"]
@@ -632,6 +616,8 @@ def _(
                     cmap="viridis",
                     s=60,
                     edgecolors="w",
+                    vmin=col_bar_min,
+                    vmax=col_bar_max,
                 )
                 sc.set_label(label_cc)
                 handles_cc.append(sc)
@@ -648,10 +634,16 @@ def _(
                 labels_cc.append(label_cc)
 
         if handles_cc:
-            ax_cc.legend(handles_cc, labels_cc, title="Groups")
+            if group_lines:
+                legend_title_cc = normalize_name(group_lines[0]["column"])
+            else:
+                legend_title_cc = "Groups"
+            ax_cc.legend(handles_cc, labels_cc, title=legend_title_cc)
             if colour_by:
                 cbar = plt.colorbar(handles_cc[-1], ax=ax_cc)
                 cbar.set_label(colour_by)
+                cbar.locator = MaxNLocator(integer=True)
+                cbar.update_ticks()
 
         ax_cc.set_title("Cumulative Case Accrual Over Time")
         ax_cc.set_xlabel("Date Reported")
@@ -673,11 +665,28 @@ def _(
         colour_bar,
         mo.md("### Date"),
         mo.hstack([date_start_cumulative, date_end_cumulative]),
-        apply_cumulative,
     ]).style(width="30%", padding="10px")
 
     mo.hstack([left_panel_cc, right_panel_cc])
     return
+
+
+@app.cell(hide_code=True)
+def _(re):
+    def normalize_name(text):
+        if not text:
+            return ""
+        text = text.replace("_", " ").title()
+        text = re.sub(r"\bSnv\b", "SNV", text)
+        text = re.sub(r"\bCnv\b", "CNV", text)
+        text = re.sub(r"\bPga\b", "PGA", text)
+        text = re.sub(r"\bHrd\b", "HRD", text)
+        text = re.sub(r"\bHrp\b", "HRP", text)
+        text = re.sub(r"\bMsi\b", "MSI", text)
+        text = re.sub(r"\bTmb\b", "TMB", text)
+        return text
+
+    return (normalize_name,)
 
 
 if __name__ == "__main__":
