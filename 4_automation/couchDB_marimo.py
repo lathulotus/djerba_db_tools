@@ -200,14 +200,14 @@ def _(mo):
 def _(mo, summary):
     # Select quantitative histograms
     quanthist_select = mo.ui.multiselect(
-        options=list(summary.select_dtypes(include=["number"]).columns),
+        options=sorted(list(summary.select_dtypes(include=["number"]).columns)),
         value=[],
         label="Generate histograms for:")
 
     # Select qualitative histograms
     qual_exclude = ["report_id", "purple_zip", "sequenza_solution"]
     qualhist_select = mo.ui.multiselect(
-        options=[c for c in summary.select_dtypes(include=["string"]).columns if c not in qual_exclude],
+        options=sorted([c for c in summary.select_dtypes(include=["string"]).columns if c not in qual_exclude]),
         value=[],
         label="Generate bar plots for:")
     return qualhist_select, quanthist_select
@@ -413,7 +413,7 @@ def _(mo):
 @app.cell
 def _(mo, summary):
     # Cohort: select general cohort
-    qual_cols = [c for c in summary.select_dtypes(include=["string"]).columns]
+    qual_cols = sorted([c for c in summary.select_dtypes(include=["string"]).columns])
 
     cohort_select = mo.ui.dropdown(
         label = "Cohort: ",
@@ -440,7 +440,7 @@ def _(cohort_select, mo, summary):
 @app.cell
 def _(mo, summary):
     # Group: select general group
-    group_cols = summary.columns.tolist()
+    group_cols =  sorted([c for c in summary.columns])
     group_select = mo.ui.dropdown(
         label = "Group: ",
         options = group_cols,
@@ -496,7 +496,7 @@ def _(group_input, group_select, summary):
 @app.cell
 def _(mo, summary):
     # Colour: select colour bar
-    quan_cols = [c for c in summary.select_dtypes(include=["number"]).columns]
+    quan_cols = sorted([c for c in summary.select_dtypes(include=["number"]).columns])
 
     colour_bar = mo.ui.dropdown(
         label = "Colour by: ",
