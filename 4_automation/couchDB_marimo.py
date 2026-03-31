@@ -12,6 +12,7 @@ def _():
     import io
     import re
     import matplotlib.pyplot as plt
+    import matplotlib.dates as mdates
     from matplotlib.ticker import MaxNLocator
     import datetime as dt
     mo.md(" # CouchDB Analytics")
@@ -135,8 +136,7 @@ def _(
         toggle_weekly,
         weekly_date_controls,
         mo.md("---"),
-        mo.md(f"**Total reports:** {total_per_week}")
-    ]).style(width="30%")
+        mo.md(f"**Total reports:** {total_per_week}")]).style(width="30%")
 
     mo.hstack([
         weekly_control_panel,
@@ -202,16 +202,14 @@ def _(mo, summary):
     quanthist_select = mo.ui.multiselect(
         options=list(summary.select_dtypes(include=["number"]).columns),
         value=[],
-        label="Generate histograms for:"
-    )
+        label="Generate histograms for:")
 
     # Select qualitative histograms
     qual_exclude = ["report_id", "purple_zip", "sequenza_solution"]
     qualhist_select = mo.ui.multiselect(
         options=[c for c in summary.select_dtypes(include=["string"]).columns if c not in qual_exclude],
         value=[],
-        label="Generate bar plots for:"
-    )
+        label="Generate bar plots for:")
     return qualhist_select, quanthist_select
 
 
@@ -237,12 +235,10 @@ def _(mo, quanthist_select, summary):
                 mo.md(f"**{c}**"),
                 mo.hstack([
                     x_min_input[c].style(width="120px"),
-                    x_max_input[c].style(width="120px")])
-            ])
-        )
+                    x_max_input[c].style(width="120px")])]))
 
     bin_select = mo.ui.slider(start=0, stop=100, value=10, label="Number of bins: ")
-    date_start = mo.ui.date(label="From", value="2020-01-01")
+    date_start = mo.ui.date(label="From", value="2022-01-01")
     date_end = mo.ui.date(label="To")
 
     apply_button = mo.ui.button(label="Apply")
@@ -286,8 +282,7 @@ def _(
     summary["date_reported"] = pd.to_datetime(summary["date_reported"], errors="coerce")
     filtered_summary = summary[
         (summary["date_reported"] >= start_date) &
-        (summary["date_reported"] <= end_date)
-    ]
+        (summary["date_reported"] <= end_date)]
     if filtered_summary.empty:
         plots = [mo.md("No data in date range")]
     else:
@@ -401,8 +396,7 @@ def _(
         mo.hstack([date_start, date_end])]).style(width="30%", padding="15px")
 
     right_panel = mo.vstack([
-        mo.carousel(plots)
-    ]).style(width="70%", padding="10px")
+        mo.carousel(plots)]).style(width="70%", padding="10px")
 
     mo.hstack([left_panel, right_panel])
     return
@@ -437,8 +431,7 @@ def _(cohort_select, mo, summary):
 
     cohort_filter = mo.ui.multiselect(
         label = "Filter: ",
-        options = cohort_values
-    )
+        options = cohort_values)
     return (cohort_filter,)
 
 
@@ -448,8 +441,7 @@ def _(mo, summary):
     group_cols = summary.columns.tolist()
     group_select = mo.ui.dropdown(
         label = "Group: ",
-        options = group_cols
-    )
+        options = group_cols)
     return (group_select,)
 
 
@@ -460,15 +452,13 @@ def _(group_select, mo, summary):
         group_type = summary[group_select.value].dtype
         if group_type.kind in ["i", "u", "f"]:
             group_input = mo.ui.text(
-                label = "Numeric groups: ",
-                placeholder = ">=115, <115, ==115"
-            )
+                label = "Filter: ",
+                placeholder = ">=115, <115, ==115")
         else:
             group_unique = sorted(summary[group_select.value].dropna().unique())
             group_input = mo.ui.multiselect(
-                label = "Categorical groups: ",
-                options = group_unique
-            )
+                label = "Filter: ",
+                options = group_unique)
     else:
         group_input= mo.md("")
     return (group_input,)
@@ -479,10 +469,8 @@ def _(group_input, group_select, summary):
     # Group: filter specific groups
     group_filters = []
 
-    if group_select.value and group_input is not None:
-        group_type2 = summary[group_select.value].dtype
-    
-        if group_type2.kind in ["i", "u", "f"]:
+    if group_select.value and group_input is not None:    
+        if summary[group_select.value].dtype.kind in ["i", "u", "f"]:
             group_input_raw = group_input.value.strip()
             if group_input_raw:
                 group_input_expr = [e.strip() for e in group_input_raw.split(",") if e.strip()]
@@ -490,16 +478,14 @@ def _(group_input, group_select, summary):
                     group_filters.append({
                         "column": group_select.value,
                         "type": "numeric",
-                        "input": group_expr_temp
-                    })
+                        "input": group_expr_temp})
         else:
             group_input_raw = group_input.value
             if group_input_raw:
                 group_filters.append({
                     "column": group_select.value,
                     "type": "categorical",
-                    "input": list(group_input_raw)
-                })
+                    "input": list(group_input_raw)})
     return (group_filters,)
 
 
@@ -510,15 +496,62 @@ def _(mo, summary):
 
     colour_bar = mo.ui.dropdown(
         label = "Colour by: ",
-        options = quan_cols
-    )
+        options = quan_cols)
 
     # Date: select date range
     date_cols = [c for c in summary.columns if "date_reported" in c.lower()]
 
-    date_start_cumulative = mo.ui.date(label = "From: ", value = "2020-01-01")
+    date_start_cumulative = mo.ui.date(label = "From: ", value = "2022-01-01")
     date_end_cumulative = mo.ui.date(label = "To: ")
-    return colour_bar, date_end_cumulative, date_start_cumulative
+
+    # Percent line
+    percent_line_cc = mo.ui.checkbox(label="Percent Line")
+    return (
+        colour_bar,
+        date_end_cumulative,
+        date_start_cumulative,
+        percent_line_cc,
+    )
+
+
+@app.cell
+def _(group_filters, group_select, mo, percent_line_cc, summary):
+    # Percent line: UI
+    if percent_line_cc.value:
+        if group_select.value:
+            dtype = summary[group_select.value].dtype
+
+            if dtype.kind in ["i", "u", "f"]:
+                options_percent = []
+                for gf_temp in group_filters:
+                    if gf_temp["column"] == group_select.value:
+                        options_percent.append((gf_temp["column"], gf_temp["input"]))
+                percent_interval_cc = mo.ui.dropdown(
+                    options=["Daily", "Weekly", "Monthly", "Quarterly", "Yearly"],
+                    label="Interval: ",
+                    value="Monthly")
+                percent_focus_cc = mo.ui.dropdown(
+                    label="Focus on:",
+                    options=options_percent)
+            else:
+                unique_vals = sorted(summary[group_select.value].dropna().unique().tolist())
+                percent_interval_cc = mo.ui.dropdown(
+                    options=["Daily", "Weekly", "Monthly", "Quarterly", "Yearly"],
+                    label="Interval: ",
+                    value="Monthly")
+                percent_focus_cc = mo.ui.dropdown(
+                    label="Focus on:",
+                    options=[(group_select.value, v) for v in unique_vals])
+        else:
+            percent_interval_cc = mo.md("")
+            percent_focus_cc = mo.md("")
+    else:
+        percent_interval_cc = mo.md("")
+        percent_focus_cc = mo.md("")
+
+    percent_interval_controls = (
+        percent_interval_cc if percent_line_cc.value else mo.md(""))
+    return percent_focus_cc, percent_interval_cc
 
 
 @app.cell
@@ -535,6 +568,9 @@ def _(
     mo,
     normalize_name,
     pd,
+    percent_focus_cc,
+    percent_interval_cc,
+    percent_line_cc,
     plt,
     summary,
 ):
@@ -555,7 +591,6 @@ def _(
                 for gf_val in gf["input"]:
                     gf_expr = f"{gf_col} == {repr(gf_val)}"
                     group_lines.append({"column": gf_col, "value": gf_val, "label": normalize_name(str(gf_val)), "expr": gf_expr})
-        
 
     if "date_reported" in df_cc.columns:
         df_cc["date_reported"] = pd.to_datetime(df_cc["date_reported"], errors="coerce")
@@ -567,7 +602,7 @@ def _(
     if df_cc.empty:
         right_panel_cc = mo.md("No data selected")
     else:
-        fig_cc, ax_cc = plt.subplots(figsize=(10, 5))
+        fig_cc, ax_cc = plt.subplots(figsize=(12, 7))
         handles_cc = []
         labels_cc = []
 
@@ -587,7 +622,9 @@ def _(
             col_bar_min = min(col_all)
             col_bar_max = max(col_all)
 
-        for gl in group_lines:
+        marker_options = ["o", "s", "^", "D", "P", "X", ]
+        for mt, gl in enumerate(group_lines):
+            marker_type = marker_options[mt % len(marker_options)]
             label_cc = gl["label"]
             expr_cc = gl["expr"]
 
@@ -605,8 +642,7 @@ def _(
                 group_cc["Cumulative_Count"],
                 color="steelblue",
                 linewidth=2,
-                alpha=0.5,
-            )
+                alpha=0.5,)
 
             if colour_by:
                 sc = ax_cc.scatter(
@@ -615,10 +651,10 @@ def _(
                     c=group_cc["Avg_Value"],
                     cmap="viridis",
                     s=60,
+                    marker=marker_type,
                     edgecolors="w",
                     vmin=col_bar_min,
-                    vmax=col_bar_max,
-                )
+                    vmax=col_bar_max,)
                 sc.set_label(label_cc)
                 handles_cc.append(sc)
                 labels_cc.append(label_cc)
@@ -626,46 +662,109 @@ def _(
                 line_cc, = ax_cc.plot(
                     group_cc["date_reported"],
                     group_cc["Cumulative_Count"],
-                    marker="o",
+                    marker=marker_type,
                     linestyle="none",
-                    label=label_cc,
-                )
+                    label=label_cc,)
                 handles_cc.append(line_cc)
                 labels_cc.append(label_cc)
 
-        if handles_cc:
-            if group_lines:
-                legend_title_cc = normalize_name(group_lines[0]["column"])
-            else:
-                legend_title_cc = "Groups"
-            ax_cc.legend(handles_cc, labels_cc, title=legend_title_cc)
-            if colour_by:
-                cbar = plt.colorbar(handles_cc[-1], ax=ax_cc)
-                cbar.set_label(colour_by)
-                cbar.locator = MaxNLocator(integer=True)
-                cbar.update_ticks()
+        legend_title_cc = normalize_name(group_lines[0]["column"]) if group_lines else "Groups"
+        if (percent_line_cc.value
+            and isinstance(percent_focus_cc, mo.ui.dropdown)
+            and percent_focus_cc.value
+            and "date_reported" in df_cc.columns):
+            interval_cc = percent_interval_cc.value or "Daily"
+            interval_cc = interval_cc.lower()
+
+            if interval_cc == "daily":
+                df_cc["_period"] = df_cc["date_reported"]
+            elif interval_cc == "weekly":
+                df_cc["_period"] = df_cc["date_reported"].dt.to_period("W").dt.start_time
+            elif interval_cc == "monthly":
+                df_cc["_period"] = df_cc["date_reported"].dt.to_period("M").dt.to_timestamp()
+            elif interval_cc == "quarterly":
+                df_cc["_period"] = df_cc["date_reported"].dt.to_period("Q").dt.to_timestamp()
+            elif interval_cc == "yearly":
+                df_cc["_period"] = df_cc["date_reported"].dt.to_period("Y").dt.to_timestamp()
+
+            if "_period" in df_cc.columns:
+                total = df_cc.groupby("_period").size().rename("Total")
+
+                focus_col2, focus_val = percent_focus_cc.value
+
+                if summary[focus_col2].dtype.kind in ["i", "u", "f"]:
+                    focus_sub = df_cc.query(f"{focus_col2} {focus_val}")
+                else:
+                    focus_sub = df_cc[df_cc[focus_col2] == focus_val]
+
+                focus_line = (focus_sub.groupby("_period").size().rename("Focus").reindex(total.index, fill_value=0))
+
+                percent_df = pd.concat([total, focus_line], axis=1)
+                percent_df["Percent"] = (percent_df["Focus"] / percent_df["Total"]) * 100
+
+                ax_percent = ax_cc.twinx()
+                ax_percent.grid(False)
+                ax_percent.plot(
+                    percent_df.index,
+                    percent_df["Percent"],
+                    color="darkred",
+                    linewidth=1.5,
+                    label=f"% {normalize_name(str(focus_val))}",)
+                ax_percent.set_ylabel("Percent(%)")
+                ax_percent.set_ylim(0, 100)
+
+                lines_cc1, labels_cc1 = ax_cc.get_legend_handles_labels()
+                lines_cc2, labels_cc2 = ax_percent.get_legend_handles_labels()
+                ax_cc.legend(lines_cc1 + lines_cc2, labels_cc1 + labels_cc2, title=legend_title_cc)
+
+                if colour_by:
+                    cbar = fig_cc.colorbar(handles_cc[-1], ax=ax_percent, location="right", pad=0.1)
+                    cbar.set_label(colour_by)
+                    cbar.locator = MaxNLocator(integer=True)
+                    cbar.update_ticks()
+        else:
+            if handles_cc:
+                if group_lines:
+                    legend_title_cc = normalize_name(group_lines[0]["column"])
+                else:
+                    legend_title_cc = "Groups"
+                ax_cc.legend(handles_cc, labels_cc, title=legend_title_cc)
+                if colour_by:
+                    cbar = fig_cc.colorbar(handles_cc[-1], ax=ax_cc)
+                    cbar.set_label(colour_by)
+                    cbar.locator = MaxNLocator(integer=True)
+                    cbar.update_ticks()
 
         ax_cc.set_title("Cumulative Case Accrual Over Time")
         ax_cc.set_xlabel("Date Reported")
+        ax_cc.set_xlim(pd.to_datetime(date_start_cumulative.value), pd.to_datetime(date_end_cumulative.value))
         ax_cc.set_ylabel("Number of Cases (Cumulative)")
         ax_cc.grid(True, linestyle=":", alpha=0.6)
         fig_cc.autofmt_xdate()
 
-        right_panel_cc = mo.carousel([fig_cc]).style(width="70%", padding="10px")
+        right_panel_cc = mo.carousel([fig_cc]).style(width="75%")
 
     # View settings and plot
     left_panel_cc = mo.vstack([
         mo.md("### Cohort"),
         cohort_select,
         cohort_filter,
+        mo.md("---"),
         mo.md("### Groups"),
         group_select,
         group_input,
+        mo.md("---"),
         mo.md("### Colour Bar"),
         colour_bar,
+        mo.md("---"),
         mo.md("### Date"),
-        mo.hstack([date_start_cumulative, date_end_cumulative]),
-    ]).style(width="30%", padding="10px")
+        date_start_cumulative,
+        date_end_cumulative,
+        mo.md("---"),
+        mo.md("### Percent Line"),
+        percent_line_cc,
+        percent_focus_cc,
+        percent_interval_cc,]).style(width="25%")
 
     mo.hstack([left_panel_cc, right_panel_cc])
     return
