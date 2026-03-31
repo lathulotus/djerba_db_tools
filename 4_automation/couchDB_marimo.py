@@ -164,7 +164,7 @@ def _(mo):
 def _(mo, summary):
     # Custom column filters
     column_view = mo.ui.multiselect(
-        options = list(summary.columns),
+        options = sorted(list(summary.columns)),
         value = list(summary.columns),
         label = "Custom view of summary table: ")
     return (column_view,)
@@ -267,7 +267,6 @@ def _(
     plt,
     qualhist_select,
     quanthist_select,
-    re,
     summary,
     top_n_view,
     x_axis_content,
@@ -302,13 +301,7 @@ def _(
     for col in quanthist_select.value:
         series = filtered_summary[col].dropna()
 
-        label = col.replace("_", " ").title()
-        label = re.sub(r"\bSnv\b", "SNV", label)
-        label = re.sub(r"\bCnv\b", "CNV", label)
-        label = re.sub(r"\bPga\b", "PGA", label)
-        label = re.sub(r"\bHrd\b", "HRD", label)
-        label = re.sub(r"\bMsi\b", "MSI", label)
-        label = re.sub(r"\bTmb\b", "TMB", label)
+        label = normalize_name(col)
 
         suffix = ""
         for key, val in metrics.items():
