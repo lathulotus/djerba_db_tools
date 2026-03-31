@@ -417,7 +417,8 @@ def _(mo, summary):
 
     cohort_select = mo.ui.dropdown(
         label = "Cohort: ",
-        options = qual_cols)
+        options = qual_cols,
+        value="hrd_status")
     return (cohort_select,)
 
 
@@ -431,7 +432,8 @@ def _(cohort_select, mo, summary):
 
     cohort_filter = mo.ui.multiselect(
         label = "Filter: ",
-        options = cohort_values)
+        options = cohort_values,
+        value=["HRD"])
     return (cohort_filter,)
 
 
@@ -441,7 +443,8 @@ def _(mo, summary):
     group_cols = summary.columns.tolist()
     group_select = mo.ui.dropdown(
         label = "Group: ",
-        options = group_cols)
+        options = group_cols,
+        value = "coverage")
     return (group_select,)
 
 
@@ -453,7 +456,8 @@ def _(group_select, mo, summary):
         if group_type.kind in ["i", "u", "f"]:
             group_input = mo.ui.text(
                 label = "Filter: ",
-                placeholder = ">=115, <115, ==115")
+                placeholder = ">=115, <115, ==115",
+                value=">=115, <115")
         else:
             group_unique = sorted(summary[group_select.value].dropna().unique())
             group_input = mo.ui.multiselect(
@@ -496,12 +500,13 @@ def _(mo, summary):
 
     colour_bar = mo.ui.dropdown(
         label = "Colour by: ",
-        options = quan_cols)
+        options = quan_cols,
+        value="coverage")
 
     # Date: select date range
     date_cols = [c for c in summary.columns if "date_reported" in c.lower()]
 
-    date_start_cumulative = mo.ui.date(label = "From: ", value = "2022-01-01")
+    date_start_cumulative = mo.ui.date(label = "From: ", value = "2024-01-01")
     date_end_cumulative = mo.ui.date(label = "To: ")
 
     # Percent line
