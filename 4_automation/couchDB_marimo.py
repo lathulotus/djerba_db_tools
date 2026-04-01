@@ -9,73 +9,47 @@ def _():
     import marimo as mo
     import pandas as pd
     import numpy as np
-    import io
-    import re
+    import io, re, datetime as dt
     import matplotlib.pyplot as plt
-    import matplotlib.dates as mdates
     from matplotlib.ticker import MaxNLocator
-    import datetime as dt
     mo.md(" # CouchDB Analytics")
     return MaxNLocator, io, mo, np, pd, plt, re
 
 
 @app.cell
 def _(mo):
-    summary_upload = mo.ui.file(label="Upload one or more summary CSVs", multiple=True)
-
-    mo.hstack([("Summary table generated through the couchDB query pipeline: "), summary_upload]).style(width="fit-content")
+    summary_upload = mo.ui.file(label="Upload CSV", multiple=True)
+    mo.hstack([("Summary CSV from query pipeline: "), summary_upload]).style(width="fit-content")
     return (summary_upload,)
 
 
 @app.cell
 def _(io, pd, summary_upload):
     if summary_upload.value:
-        file_bytes = summary_upload.contents(0)
-        summary = pd.read_csv(io.BytesIO(file_bytes))
+        summary = pd.read_csv(io.BytesIO(summary_upload.contents(0)))
     else:
-        print("Upload valid summary CSV")
+        print("Upload summary CSV")
     return (summary,)
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md("""
-    ---
-    """)
-    return
 
 
 @app.cell
 def _(mo):
-    mo.md("""
-    ## Weekly Summary
-    """)
+    mo.vstack([mo.md("---"), mo.md("## Weekly Summary").style(padding_top="5px")])
     return
 
 
 @app.cell
 def _(mo, pd, summary):
+    # Create UI elements for weekly summary plot
     summary_weekly = summary.copy()
     summary_weekly["date_reported"] = pd.to_datetime(summary_weekly["date_reported"], errors="coerce")
     summary_weekly = summary_weekly.dropna(subset=["date_reported"])
-
-    # Latest week
     summary_weekly["week_start"] = summary_weekly["date_reported"].dt.to_period("W").apply(lambda r: r.start_time)
-    week_latest = summary_weekly["week_start"].max()
 
-    # Custom week
     week_custom_start = mo.ui.date(label="Start date")
     week_custom_end = mo.ui.date(label="End date")
-
-    # Toggle week view
     toggle_weekly = mo.ui.switch(label="Custom date range", value=False)
-    return (
-        summary_weekly,
-        toggle_weekly,
-        week_custom_end,
-        week_custom_start,
-        week_latest,
-    )
+    return summary_weekly, toggle_weekly, week_custom_end, week_custom_start
 
 
 @app.cell
@@ -87,167 +61,119 @@ def _(
     toggle_weekly,
     week_custom_end,
     week_custom_start,
-    week_latest,
 ):
-    # Conditional view for custom date
-    if toggle_weekly.value:
-        weekly_date_controls = mo.vstack([week_custom_start, week_custom_end])
-    else:
-        weekly_date_controls = mo.md("")
+    # Plot weekly summary
+    weekly_date_controls = mo.vstack([week_custom_start, week_custom_end]) if toggle_weekly.value else mo.md("")
 
-    # Determine week view
     if not toggle_weekly.value:
-        selected = summary_weekly[summary_weekly["week_start"] == week_latest]
-        last_report_date = selected["date_reported"].max()
-        title_date = f"{week_latest.date()} to {last_report_date.date()}"
+        week_start = summary_weekly["week_start"].max()
+        selected = summary_weekly[summary_weekly["week_start"] == week_start]
+        week_end = selected["date_reported"].max()
     else:
         week_start = pd.to_datetime(week_custom_start.value)
         week_end = pd.to_datetime(week_custom_end.value)
-        selected = summary_weekly[
-            (summary_weekly["date_reported"] >= week_start) &
-            (summary_weekly["date_reported"] <= week_end)]
-        title_date = f"{week_start.date()} to {week_end.date()}"
+        selected = summary_weekly[(summary_weekly["date_reported"] >= week_start) & (summary_weekly["date_reported"] <= week_end)]
 
     weekly_counts = selected.groupby("project").size().reset_index(name="count")
     total_per_week = int(weekly_counts["count"].sum()) if not weekly_counts.empty else 0
-    fig1, ax1 = plt.subplots(figsize=(8,5))
 
+    fig_weekly, ax_weekly = plt.subplots(figsize=(8,5))
     if weekly_counts.empty:
-        ax1.text(0.5, 0.5, "No data in date range", ha="center", va="center")
-        ax1.set_xticks([])
-        ax1.set_yticks([])
-        ymax = 5
+        ax_weekly.text(0.5, 0.5, "No data in date range", ha="center", va="center")
+        ax_weekly.set_xticks([]); ax_weekly.set_yticks([]); ymax = 5
     else:
-        bars = ax1.bar(weekly_counts["project"], weekly_counts["count"],color="steelblue", edgecolor="white")
-        for bar in bars:
-            ax1.text(bar.get_x() + bar.get_width()/2, bar.get_height(),
-                     str(bar.get_height()), ha="center", va="bottom", fontsize=10)
+        bars_weekly = ax_weekly.bar(weekly_counts["project"], weekly_counts["count"],color="steelblue", edgecolor="white")
+        for bar_w in bars_weekly:
+            ax_weekly.text(bar_w.get_x() + bar_w.get_width()/2, bar_w.get_height(),
+                           str(bar_w.get_height()), ha="center", va="bottom", fontsize=10)
         ymax = weekly_counts["count"].max()
 
-    ax1.set_ylim(0, ymax * 1.15)
-    ax1.set_title(f"Weekly Summary of Completed Reports (From {title_date})")
-    ax1.set_xlabel("Project")
-    ax1.set_ylabel("Number of Reports")
-    ax1.grid(True, alpha=0.6)
+    ax_weekly.set_ylim(0, ymax * 1.15)
+    ax_weekly.set_title(f"Weekly Summary of Completed Reports ({week_start.date()} to {week_end.date()})")
+    ax_weekly.set_xlabel("Project")
+    ax_weekly.set_ylabel("Number of Reports")
+    ax_weekly.grid(True, alpha=0.6)
     plt.xticks(rotation=45)
     plt.tight_layout()
 
-    weekly_control_panel = mo.vstack([
-        toggle_weekly,
-        weekly_date_controls,
-        mo.md("---"),
-        mo.md(f"**Total reports:** {total_per_week}")]).style(width="30%")
-
     mo.hstack([
-        weekly_control_panel,
-        mo.vstack([mo.carousel([fig1])]).style(width="70%")]).style(width="100%")
+        mo.vstack([toggle_weekly, weekly_date_controls,
+                   mo.md("---"),
+                   mo.md(f"**Total reports:** {total_per_week}")]).style(width="25%"),
+        mo.vstack([mo.carousel([fig_weekly])]).style(width="75%")]).style(width="100%")
     return
 
 
 @app.cell
 def _(mo):
-    mo.md("""
-    ---
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md("""
-    ## Summary Table
-    """)
+    mo.vstack([mo.md("---"), mo.md("## Summary Table").style(padding_top="5px")])
     return
 
 
 @app.cell
 def _(mo, summary):
-    # Custom column filters
-    column_view = mo.ui.multiselect(
-        options = sorted(list(summary.columns)),
-        value = list(summary.columns),
-        label = "Custom view of summary table: ")
+    # Create UI elements for summary table
+    column_view = mo.ui.multiselect(options = sorted(list(summary.columns)),
+                                    value = list(summary.columns),
+                                    label = "Custom view of summary table: ")
     return (column_view,)
 
 
 @app.cell
 def _(column_view, mo, pd, summary):
+    # View summary table
     summary_table = summary[column_view.value].copy()
     if "date_reported" in summary_table.columns:
         summary_table["date_reported"] = pd.to_datetime(summary_table["date_reported"], errors="coerce").dt.strftime("%Y-%m-%d")
 
-    mo.vstack([column_view, mo.ui.table(summary_table)])
+    mo.vstack([column_view.style(padding_bottom="10px"), mo.ui.table(summary_table)])
     return
 
 
 @app.cell
 def _(mo):
-    mo.md("""
-    ---
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md("""
-    ## Descriptive Analytics
-    """)
+    mo.vstack([mo.md("---"), mo.md("## Descriptive Analytics").style(padding_top="5px")])
     return
 
 
 @app.cell
 def _(mo, summary):
-    # Select quantitative histograms
-    quanthist_select = mo.ui.multiselect(
+    # Create UI elements for plot selection (numeric & categorical)
+    num_hist = mo.ui.multiselect(
         options=sorted(list(summary.select_dtypes(include=["number"]).columns)),
         value=[],
         label="Generate histograms for:")
 
-    # Select qualitative histograms
-    qual_exclude = ["report_id", "purple_zip", "sequenza_solution"]
-    qualhist_select = mo.ui.multiselect(
-        options=sorted([c for c in summary.select_dtypes(include=["string"]).columns if c not in qual_exclude]),
+    cat_select = mo.ui.multiselect(
+        options=sorted([c for c in summary.select_dtypes(include=["string"]).columns]),
         value=[],
         label="Generate bar plots for:")
-    return qualhist_select, quanthist_select
+    return cat_select, num_hist
 
 
 @app.cell
-def _(mo, quanthist_select, summary):
-    # Controls for bar plots
-    top_n_view = mo.ui.number(label="Top ", value=20)
+def _(mo, normalize_name, num_hist):
+    # Controls for plots
+    cat_top_n = mo.ui.number(label="Top ", value=20)
 
-    # Controls for histograms
-    x_min_input = {}
-    x_max_input = {}
-    x_axis_content = []
-    for c in quanthist_select.value:
-        col_series = summary[c].dropna()
-        col_min = col_series.min()
-        col_max = col_series.max()
-
-        x_min_input[c] = mo.ui.number(label=f"Min", value=None)
-        x_max_input[c] = mo.ui.number(label=f"Max", value=None)
-
-        x_axis_content.append(
-            mo.vstack([
-                mo.md(f"**{c}**"),
-                mo.hstack([
-                    x_min_input[c].style(width="120px"),
-                    x_max_input[c].style(width="120px")])]))
+    x_min_input, x_max_input, x_axis_content = {}, {}, []
+    for num_hist_col in num_hist.value:
+        x_min_input[num_hist_col] = mo.ui.number(label=f"Min", value=None)
+        x_max_input[num_hist_col] = mo.ui.number(label=f"Max", value=None)
+        x_axis_content.append(mo.vstack([mo.md(f"####{normalize_name(num_hist_col)}"),
+                                         mo.hstack([x_min_input[num_hist_col],
+                                                    x_max_input[num_hist_col]]).style(width="fit-content")]))
 
     bin_select = mo.ui.slider(start=0, stop=100, value=10, label="Number of bins: ")
-    date_start = mo.ui.date(label="From", value="2022-01-01")
-    date_end = mo.ui.date(label="To")
-
+    date_start_select = mo.ui.date(label="From", value="2022-01-01")
+    date_end_select = mo.ui.date(label="To")
     apply_button = mo.ui.button(label="Apply")
     return (
         apply_button,
         bin_select,
-        date_end,
-        date_start,
-        top_n_view,
+        cat_top_n,
+        date_end_select,
+        date_start_select,
         x_axis_content,
         x_max_input,
         x_min_input,
@@ -258,17 +184,17 @@ def _(mo, quanthist_select, summary):
 def _(
     apply_button,
     bin_select,
-    date_end,
-    date_start,
+    cat_select,
+    cat_top_n,
+    date_end_select,
+    date_start_select,
     mo,
     normalize_name,
     np,
+    num_hist,
     pd,
     plt,
-    qualhist_select,
-    quanthist_select,
     summary,
-    top_n_view,
     x_axis_content,
     x_max_input,
     x_min_input,
@@ -276,41 +202,25 @@ def _(
     apply_button.value
 
     # Date select
-    start_date = pd.to_datetime(date_start.value)
-    end_date = pd.to_datetime(date_end.value)
     summary["date_reported"] = pd.to_datetime(summary["date_reported"], errors="coerce")
-    filtered_summary = summary[
-        (summary["date_reported"] >= start_date) &
-        (summary["date_reported"] <= end_date)]
-    if filtered_summary.empty:
-        plots = [mo.md("No data in date range")]
-    else:
-        plots = []
+    filtered_summary = summary[(summary["date_reported"] >= pd.to_datetime(date_start_select.value)) &
+                               (summary["date_reported"] <= pd.to_datetime(date_end_select.value))]
+    plots_desc = [] if not filtered_summary.empty else [mo.md("No data in date range")]
 
-    # Add metrics
-    metrics = {"TMB": "(Mb)", "PGA": "(%)"}
-
-    # Plot styling
+    # Plot style
     plt.style.use("ggplot")
-    plt.rcParams["axes.facecolor"] = "white"
-    plt.rcParams["figure.facecolor"] = "white"
-    plt.rcParams["axes.grid"] = True
-    plt.rcParams["grid.color"] = "lightgrey"
+    plt.rcParams.update({"axes.facecolor": "white", "figure.facecolor": "white",
+                         "axes.grid": True, "grid.color": "lightgrey"})
 
     # Quantitative plots
-    for col in quanthist_select.value:
-        series = filtered_summary[col].dropna()
-
-        label = normalize_name(col)
-
-        suffix = ""
-        for key, val in metrics.items():
-            if key in col.upper():
-                suffix = f" {val}"
-                break
-
-        xmin = x_min_input[col].value
-        xmax = x_max_input[col].value
+    metrics = {"TMB": "(Mb)", "PGA": "(%)"}
+    for num_col in num_hist.value:
+        series = filtered_summary[num_col].dropna()
+        label = normalize_name(num_col)
+        suffix = next((f" {val}" for key, val in metrics.items() if key in num_col.upper()), "")
+    
+        xmin = x_min_input[num_col].value
+        xmax = x_max_input[num_col].value
         xmin = float(xmin) if xmin is not None else None
         xmax = float(xmax) if xmax is not None else None
 
@@ -319,98 +229,73 @@ def _(
             plot_series = plot_series[plot_series >= xmin]
         if xmax is not None:
             plot_series = plot_series[plot_series <= xmax]
-
-        fig2, ax2 = plt.subplots()
-        if plot_series.empty:
-            quant_x_min = series.min()
-            quant_x_max = series.max()
-        else:
-            quant_x_min = plot_series.min()
-            quant_x_max = plot_series.max()
-
+    
+        quant_x_min = series.min() if plot_series.empty else plot_series.min()
+        quant_x_max = series.max() if plot_series.empty else plot_series.max()
         quant_x_min_final = xmin if xmin is not None else quant_x_min
         quant_x_max_final = xmax if xmax is not None else quant_x_max
 
+        fig_hist_num, ax_hist = plt.subplots()
         edges = np.linspace(quant_x_min_final, quant_x_max_final, bin_select.value + 1)
-        ax2.hist(plot_series, bins=edges, color="steelblue", edgecolor="white")
-        ax2.set_xlim(quant_x_min_final, quant_x_max_final)
-        ax2.set_xticks(edges)
+        ax_hist.hist(plot_series, bins=edges, color="steelblue", edgecolor="white")
+        ax_hist.set_xlim(quant_x_min_final, quant_x_max_final)
+        ax_hist.set_xticks(edges)
         plt.xticks(rotation=45, ha="right")
-        ax2.set_title(f"Histogram of {label}")
-        ax2.set_xlabel(label + suffix)
-        ax2.set_ylabel("Case Count")
-        ax2.set_ylim(0, ax2.get_ylim()[1] * 1.1)
-
-        plots.append(fig2)
+        ax_hist.set_title(f"Histogram of {label}")
+        ax_hist.set_xlabel(label + suffix)
+        ax_hist.set_ylabel("Case Count")
+        ax_hist.set_ylim(0, ax_hist.get_ylim()[1] * 1.1)
+        plots_desc.append(fig_hist_num)
 
     # Qualitative plots
-    for col in qualhist_select.value:
-        series = filtered_summary[col].dropna()
-
-        label = normalize_name(col)
-
+    for cat_col in cat_select.value:
+        series = filtered_summary[cat_col].dropna()
+        label = normalize_name(cat_col)
+    
         qualexpand = []
         for cell in series:
             for item in cell.split(","):
                 item_norm = item.strip()
                 if item_norm:
                     qualexpand.append(item_norm)
+                
         counts = pd.Series(qualexpand).value_counts()
-        top_n = top_n_view.value if top_n_view.value is not None else 20
-        counts = counts.head(int(top_n))
+        counts = counts.head(int(cat_top_n or 20))
 
-        fig3, ax3 = plt.subplots()
-        ax3.bar(counts.index.astype(str), counts.values, color="steelblue", edgecolor="white")
-
-        ymax3 = counts.max()
-        ax3.set_ylim(0, ymax3 * 1.15)
-
-        ax3.set_title(f"Counts of {label}")
-        ax3.set_xlabel(label)
-        ax3.set_ylabel("Counts")
+        fig_bar, ax_bar = plt.subplots()
+        ax_bar.bar(counts.index.astype(str), counts.values, color="steelblue", edgecolor="white")
+        ymax_bar = counts.max()
+        ax_bar.set_ylim(0, ymax_bar * 1.15)
+        ax_bar.set_title(f"Counts of {label}")
+        ax_bar.set_xlabel(label)
+        ax_bar.set_ylabel("Counts")
         plt.xticks(rotation=45, ha="right")
+        plots_desc.append(fig_bar)
 
-        plots.append(fig3)
-
-    # View settings and plot
+    # View settings & plot
     left_panel = mo.vstack([
-        mo.md("### Bar Plot Settings"),
-        qualhist_select,
-        top_n_view.style(width="15px"),
-        mo.md("---"),
-        mo.md("### Histogram Settings"),
-        quanthist_select,
-        bin_select,
-        mo.md("### X-axis Limits").style(margin_top="15px"),
-        *x_axis_content,
-        apply_button,
-        mo.md("---"),
-        mo.md("### All Settings"),
-        mo.hstack([date_start, date_end])]).style(width="30%", padding="15px")
-
+        mo.md("### Bar Plot Settings"), cat_select, cat_top_n.style(width="15px"),
+        mo.md("---\n ### Histogram Settings"), num_hist, bin_select,
+        mo.md("### X-axis Limits").style(margin_top="15px"), *x_axis_content, apply_button,
+        mo.md("---\n ### All Settings"), mo.hstack([date_start_select, date_end_select])]).style(width="30%", padding="15px")
     right_panel = mo.vstack([
-        mo.carousel(plots)]).style(width="70%", padding="10px")
-
+        mo.carousel(plots_desc)]).style(width="70%", padding="10px")
     mo.hstack([left_panel, right_panel])
     return
 
 
 @app.cell
 def _(mo):
-    mo.md("""
-    ## Cumulative Case Trends
-    """)
+    mo.vstack([mo.md("---"), mo.md("## Cumulative Case Trends").style(padding_top="5px")])
     return
 
 
 @app.cell
 def _(mo, summary):
     # Cohort: select general cohort
-    qual_cols = sorted([c for c in summary.select_dtypes(include=["string"]).columns])
-
     cohort_select = mo.ui.dropdown(
         label = "Cohort: ",
-        options = qual_cols,
+        options = sorted([c for c in summary.select_dtypes(include=["string"]).columns]),
         value="hrd_status")
     return (cohort_select,)
 
@@ -418,14 +303,9 @@ def _(mo, summary):
 @app.cell
 def _(cohort_select, mo, summary):
     # Cohort: filter specific cohorts
-    if cohort_select.value:
-        cohort_values = sorted(summary[cohort_select.value].dropna().unique())
-    else:
-        cohort_values = []
-
     cohort_filter = mo.ui.multiselect(
         label = "Filter: ",
-        options = cohort_values,
+        options = sorted(summary[cohort_select.value].dropna().unique()) if cohort_select.value else [],
         value=["HRD"])
     return (cohort_filter,)
 
@@ -433,10 +313,9 @@ def _(cohort_select, mo, summary):
 @app.cell
 def _(mo, summary):
     # Group: select general group
-    group_cols =  sorted([c for c in summary.columns])
     group_select = mo.ui.dropdown(
         label = "Group: ",
-        options = group_cols,
+        options = sorted([c for c in summary.columns]),
         value = "coverage")
     return (group_select,)
 
@@ -445,17 +324,15 @@ def _(mo, summary):
 def _(group_select, mo, summary):
     # Group: user input depends on group type (string vs integer)
     if group_select.value:
-        group_type = summary[group_select.value].dtype
-        if group_type.kind in ["i", "u", "f"]:
+        if summary[group_select.value].dtype.kind in "iuf":
             group_input = mo.ui.text(
                 label = "Filter: ",
                 placeholder = ">=115, <115, ==115",
                 value=">=115, <115")
         else:
-            group_unique = sorted(summary[group_select.value].dropna().unique())
             group_input = mo.ui.multiselect(
                 label = "Filter: ",
-                options = group_unique)
+                options = sorted(summary[group_select.value].dropna().unique()))
     else:
         group_input= mo.md("")
     return (group_input,)
@@ -465,9 +342,8 @@ def _(group_select, mo, summary):
 def _(group_input, group_select, summary):
     # Group: filter specific groups
     group_filters = []
-
     if group_select.value and group_input is not None:    
-        if summary[group_select.value].dtype.kind in ["i", "u", "f"]:
+        if summary[group_select.value].dtype.kind in "iuf":
             group_input_raw = group_input.value.strip()
             if group_input_raw:
                 group_input_expr = [e.strip() for e in group_input_raw.split(",") if e.strip()]
@@ -489,16 +365,13 @@ def _(group_input, group_select, summary):
 @app.cell
 def _(mo, summary):
     # Colour: select colour bar
-    quan_cols = sorted([c for c in summary.select_dtypes(include=["number"]).columns])
-
     colour_bar = mo.ui.dropdown(
         label = "Colour by: ",
-        options = quan_cols,
+        options = sorted([c for c in summary.select_dtypes(include=["number"]).columns]),
         value="coverage")
 
     # Date: select date range
     date_cols = [c for c in summary.columns if "date_reported" in c.lower()]
-
     date_start_cumulative = mo.ui.date(label = "From: ", value = "2024-01-01")
     date_end_cumulative = mo.ui.date(label = "To: ")
 
@@ -519,7 +392,7 @@ def _(group_filters, group_select, mo, percent_line_cc, summary):
         if group_select.value:
             dtype = summary[group_select.value].dtype
 
-            if dtype.kind in ["i", "u", "f"]:
+            if dtype.kind in "iuf":
                 options_percent = []
                 for gf_temp in group_filters:
                     if gf_temp["column"] == group_select.value:
@@ -574,29 +447,32 @@ def _(
 ):
     # Putting together plot settings
     df_cc = summary.copy()
-
     if cohort_select.value and cohort_filter.value:
         df_cc = df_cc[df_cc[cohort_select.value].isin(cohort_filter.value)]
 
+    # Handling groups
     group_lines = []
-    if group_filters:
-        for gf in group_filters:
-            gf_col = gf["column"]
-            if gf["type"] == "numeric":
-                gf_expr = f"{gf_col} {gf['input']}"
-                group_lines.append({"column": gf_col, "value": gf['input'], "label": normalize_name(str(gf['input'])), "expr": gf_expr})
-            else:
-                for gf_val in gf["input"]:
-                    gf_expr = f"{gf_col} == {repr(gf_val)}"
-                    group_lines.append({"column": gf_col, "value": gf_val, "label": normalize_name(str(gf_val)), "expr": gf_expr})
+    for gf in group_filters or []:
+        gf_col = gf["column"]
+        if gf["type"] == "numeric":
+            group_lines.append({"column": gf_col,
+                                "value": gf['input'],
+                                "label": normalize_name(str(gf['input'])),
+                                "expr": f"{gf_col} {gf['input']}"})
+        else:
+            for gf_val in gf["input"]:
+                group_lines.append({"column": gf_col,
+                                    "value": gf_val,
+                                    "label": normalize_name(str(gf_val)),
+                                    "expr": f"{gf_col} == {repr(gf_val)}"})
 
+    # Handling date
     if "date_reported" in df_cc.columns:
         df_cc["date_reported"] = pd.to_datetime(df_cc["date_reported"], errors="coerce")
-        df_cc = df_cc[
-            (df_cc["date_reported"] >= pd.to_datetime(date_start_cumulative.value)) &
-            (df_cc["date_reported"] <= pd.to_datetime(date_end_cumulative.value))]
+        df_cc = df_cc[(df_cc["date_reported"] >= pd.to_datetime(date_start_cumulative.value)) &
+                      (df_cc["date_reported"] <= pd.to_datetime(date_end_cumulative.value))]
 
-    # Plot cumulative cases (cc)
+    # Plot cumulative cases
     if df_cc.empty:
         right_panel_cc = mo.md("No data selected")
     else:
@@ -611,22 +487,19 @@ def _(
         if colour_by:
             col_all = []
             for gl in group_lines if group_lines else [{"expr": None}]:
-                expr_cc = gl["expr"]
-                sub_cc = df_cc.query(expr_cc) if expr_cc else df_cc
-                if sub_cc.empty:
-                    continue
-                col_avg = (sub_cc.groupby("date_reported")[colour_by].mean().dropna().tolist())
-                col_all.extend(col_avg)
-            col_bar_min = min(col_all)
-            col_bar_max = max(col_all)
+                sub_cc = df_cc.query(gl["expr"]) if gl["expr"] else df_cc
+                if not sub_cc.empty:
+                    col_all.extend((sub_cc.groupby("date_reported")[colour_by].mean().dropna().tolist()))
+            if col_all:
+                col_bar_min, col_bar_max = min(col_all), max(col_all)
+            else:
+                colour_by = None
 
-        marker_options = ["o", "s", "^", "D", "P", "X", ]
+        markers = ["o", "s", "^", "D", "P", "X", ]
         for mt, gl in enumerate(group_lines):
-            marker_type = marker_options[mt % len(marker_options)]
+            marker_type = markers[mt % len(markers)]
             label_cc = gl["label"]
-            expr_cc = gl["expr"]
-
-            sub_cc = df_cc.query(expr_cc) if expr_cc else df_cc
+            sub_cc = df_cc.query(gl["expr"]) if gl["expr"] else df_cc
             if sub_cc.empty:
                 continue
 
@@ -671,30 +544,20 @@ def _(
             and isinstance(percent_focus_cc, mo.ui.dropdown)
             and percent_focus_cc.value
             and "date_reported" in df_cc.columns):
-            interval_cc = percent_interval_cc.value or "Daily"
-            interval_cc = interval_cc.lower()
 
-            if interval_cc == "daily":
-                df_cc["_period"] = df_cc["date_reported"]
-            elif interval_cc == "weekly":
-                df_cc["_period"] = df_cc["date_reported"].dt.to_period("W").dt.start_time
-            elif interval_cc == "monthly":
-                df_cc["_period"] = df_cc["date_reported"].dt.to_period("M").dt.to_timestamp()
-            elif interval_cc == "quarterly":
-                df_cc["_period"] = df_cc["date_reported"].dt.to_period("Q").dt.to_timestamp()
-            elif interval_cc == "yearly":
-                df_cc["_period"] = df_cc["date_reported"].dt.to_period("Y").dt.to_timestamp()
-
+            interval_map = {"daily": lambda s: s,
+                            "weekly": lambda s: s.dt.to_period("W").dt.start_time,
+                            "monthly": lambda s: s.dt.to_period("M").dt.start_time,
+                            "quarterly": lambda s: s.dt.to_period("Q").dt.start_time,
+                            "yearly": lambda s: s.dt.to_period("Y").dt.start_time}
+            interval_cc = (percent_interval_cc.value or "Daily").lower()
+            df_cc["_period"] = interval_map[interval_cc](df_cc["date_reported"])
+        
             if "_period" in df_cc.columns:
                 total = df_cc.groupby("_period").size().rename("Total")
-
-                focus_col2, focus_val = percent_focus_cc.value
-
-                if summary[focus_col2].dtype.kind in ["i", "u", "f"]:
-                    focus_sub = df_cc.query(f"{focus_col2} {focus_val}")
-                else:
-                    focus_sub = df_cc[df_cc[focus_col2] == focus_val]
-
+                percent_col, percent_val = percent_focus_cc.value           
+                focus_sub = (df_cc.query(f"{percent_col} {percent_val}") if summary[percent_col].dtype.kind in "iuf"
+                            else df_cc[df_cc[percent_col] == percent_val])
                 focus_line = (focus_sub.groupby("_period").size().rename("Focus").reindex(total.index, fill_value=0))
 
                 percent_df = pd.concat([total, focus_line], axis=1)
@@ -707,7 +570,7 @@ def _(
                     percent_df["Percent"],
                     color="darkred",
                     linewidth=1.5,
-                    label=f"% {normalize_name(str(focus_val))}",)
+                    label=f"% {normalize_name(str(percent_val))}",)
                 ax_percent.set_ylabel("Percent(%)")
                 ax_percent.set_ylim(0, 100)
 
@@ -722,10 +585,7 @@ def _(
                     cbar.update_ticks()
         else:
             if handles_cc:
-                if group_lines:
-                    legend_title_cc = normalize_name(group_lines[0]["column"])
-                else:
-                    legend_title_cc = "Groups"
+                legend_title_cc = normalize_name(group_lines[0]["column"]) if group_lines else "Groups"
                 ax_cc.legend(handles_cc, labels_cc, title=legend_title_cc)
                 if colour_by:
                     cbar = fig_cc.colorbar(handles_cc[-1], ax=ax_cc)
@@ -739,31 +599,15 @@ def _(
         ax_cc.set_ylabel("Number of Cases (Cumulative)")
         ax_cc.grid(True, linestyle=":", alpha=0.6)
         fig_cc.autofmt_xdate()
-
         right_panel_cc = mo.carousel([fig_cc]).style(width="75%")
 
     # View settings and plot
     left_panel_cc = mo.vstack([
-        mo.md("### Cohort"),
-        cohort_select,
-        cohort_filter,
-        mo.md("---"),
-        mo.md("### Groups"),
-        group_select,
-        group_input,
-        mo.md("---"),
-        mo.md("### Colour Bar"),
-        colour_bar,
-        mo.md("---"),
-        mo.md("### Date"),
-        date_start_cumulative,
-        date_end_cumulative,
-        mo.md("---"),
-        mo.md("### Percent Line"),
-        percent_line_cc,
-        percent_focus_cc,
-        percent_interval_cc,]).style(width="25%")
-
+        mo.md("### Cohort"), cohort_select, cohort_filter,
+        mo.md("---\n ### Groups"), group_select, group_input,
+        mo.md("---\n ### Colour Bar"), colour_bar,
+        mo.md("---\n ### Date"), date_start_cumulative, date_end_cumulative,
+        mo.md("---\n ### Percent Line"), percent_line_cc, percent_focus_cc, percent_interval_cc,]).style(width="25%")
     mo.hstack([left_panel_cc, right_panel_cc])
     return
 
