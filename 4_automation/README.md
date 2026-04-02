@@ -1,16 +1,16 @@
-# Automate Pipeline
-- Set up Olives to run weekly generation of summary.csv from CouchDB
-    - Run query pipeline
-    - Obtain summary CSV
-    - Input summary CSV into Marimo
+# Visualizing the Data
+Marimo notebook offers interactive UI for table-viewing and automatic plot generation. This allows for...
+- View weekly count of completed reports by project
+- View and filter summary table with specified column view
+- Generate descriptive histograms and bar plots
+- Generate complex case accrual plots by cohort, group, colour bar, etc
+    - Ex: Cumulative case accrual in HRD cases by coverage
 
-# Marimo Notebook
-- Interactive UI for tables and plots
-    - Input specific report/donor IDs
-    - Change summary table columns (i.e., filter values/view)
-    - Automatically change plots
-- Generate various plots from summary.csv
-    - Case accrual in [parameter 1] by [parameter 2] (i.e., HRD by coverage, project by gene)
+## Automate Pipeline
+- Set up Olives to run weekly generation of summary.csv from CouchDB that:
+    - Runs query pipeline
+    - Obtains summary CSV
+    - Inputs summary CSV into Marimo
 
 ## Requirements
 ```
