@@ -571,7 +571,7 @@ def _(
                     color="darkred",
                     linewidth=1.5,
                     label=f"% {normalize_name(str(percent_val))}",)
-                ax_percent.set_ylabel("Percent(%)")
+                ax_percent.set_ylabel(f"Percent of {interval_cc.capitalize()} Cases (%)")
                 ax_percent.set_ylim(0, 100)
 
                 lines_cc1, labels_cc1 = ax_cc.get_legend_handles_labels()
