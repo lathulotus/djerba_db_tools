@@ -113,7 +113,7 @@ def _(mo):
 @app.cell
 def _(mo, summary):
     # Create UI elements for summary table
-    column_view = mo.ui.multiselect(options = sorted(list(summary.columns)),
+    column_view = mo.ui.multiselect(options = (list(summary.columns)),
                                     value = list(summary.columns),
                                     label = "Custom view of summary table: ")
     return (column_view,)
@@ -583,6 +583,8 @@ def _(
                     cbar.set_label(colour_by)
                     cbar.locator = MaxNLocator(integer=True)
                     cbar.update_ticks()
+                    cbar.outline.set_edgecolor("black")
+                    cbar.outline.set_linewidth(0.6)
         else:
             if handles_cc:
                 legend_title_cc = normalize_name(group_lines[0]["column"]) if group_lines else "Groups"
@@ -592,12 +594,14 @@ def _(
                     cbar.set_label(colour_by)
                     cbar.locator = MaxNLocator(integer=True)
                     cbar.update_ticks()
+                    cbar.outline.set_edgecolor("black")
+                    cbar.outline.set_linewidth(0.6)
 
         ax_cc.set_title("Cumulative Case Accrual Over Time")
         ax_cc.set_xlabel("Date Reported")
         ax_cc.set_xlim(pd.to_datetime(date_start_cumulative.value), pd.to_datetime(date_end_cumulative.value))
         ax_cc.set_ylabel("Number of Cases (Cumulative)")
-        ax_cc.grid(True, linestyle=":", alpha=0.6)
+        ax_cc.grid(True, linestyle=":")
         fig_cc.autofmt_xdate()
         right_panel_cc = mo.carousel([fig_cc]).style(width="75%")
 
