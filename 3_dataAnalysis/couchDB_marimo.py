@@ -89,7 +89,7 @@ def _(
         ymax = weekly_counts["count"].max()
 
     ax_weekly.set_ylim(0, ymax * 1.15)
-    ax_weekly.set_title(f"Weekly Summary of Completed Reports ({week_start.date()} to {week_end.date()})")
+    ax_weekly.set_title(f"Summary of Completed Reports ({week_start.date()} to {week_end.date()})")
     ax_weekly.set_xlabel("Project")
     ax_weekly.set_ylabel("Number of Reports")
     ax_weekly.grid(True, linestyle=":", alpha=0.3)
