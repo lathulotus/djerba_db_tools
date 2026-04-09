@@ -53,7 +53,7 @@ def plot_nonhr(csv_hrd, hr_genes, top_n=25):
    plt.xticks(x, table["Gene"], rotation=90)
    plt.xlabel("Non-HR Gene")
    plt.ylabel("Number of Cases")
-   plt.title(f"Top 25 Non‑HR Genes in HRD Cases Containing No HR Genes")
+   plt.title(f"Top 25 Non‑HR Genes in HRD Cases Absent of HR Gene Variants")
    plt.grid(True, linestyle=":", alpha=0.5)
    plt.legend()
    plt.tight_layout()
