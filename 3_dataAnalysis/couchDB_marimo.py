@@ -258,7 +258,7 @@ def _(
                     qualexpand.append(item_norm)
 
         counts = pd.Series(qualexpand).value_counts()
-        counts = counts.head(20 or int(cat_top_n))
+        counts = counts.head(cat_top_n.value or 20)
 
         fig_bar, ax_bar = plt.subplots()
         ax_bar.bar(counts.index.astype(str), counts.values, color="#7cb066ff", edgecolor="white")
