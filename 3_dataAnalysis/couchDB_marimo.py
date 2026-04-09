@@ -93,6 +93,8 @@ def _(
     ax_weekly.set_xlabel("Project")
     ax_weekly.set_ylabel("Number of Reports")
     ax_weekly.grid(True, linestyle=":", alpha=0.3)
+    ax_weekly.spines["left"].set_visible(True); ax_weekly.spines["left"].set_color("black"); ax_weekly.spines["left"].set_linewidth(0.5)
+    ax_weekly.spines["bottom"].set_visible(True); ax_weekly.spines["bottom"].set_color("black"); ax_weekly.spines["bottom"].set_linewidth(0.5)
     plt.xticks(rotation=45, ha="right")
     plt.tight_layout()
 
@@ -243,6 +245,8 @@ def _(
         ax_hist.set_xlabel(label + suffix)
         ax_hist.set_ylabel("Case Count")
         ax_hist.set_ylim(0, ax_hist.get_ylim()[1] * 1.1)
+        ax_hist.spines["left"].set_visible(True); ax_hist.spines["left"].set_color("black"); ax_hist.spines["left"].set_linewidth(0.5)
+        ax_hist.spines["bottom"].set_visible(True); ax_hist.spines["bottom"].set_color("black"); ax_hist.spines["bottom"].set_linewidth(0.5)
         plots_desc.append(fig_hist_num)
 
     # Qualitative plots
@@ -275,6 +279,8 @@ def _(
             plt.xticks(rotation=45, ha="right")
         ax_bar.set_axisbelow(True)
         ax_bar.grid(True, linestyle=":", alpha=0.3)
+        ax_bar.spines["left"].set_visible(True); ax_bar.spines["left"].set_color("black"); ax_bar.spines["left"].set_linewidth(0.5)
+        ax_bar.spines["bottom"].set_visible(True); ax_bar.spines["bottom"].set_color("black"); ax_bar.spines["bottom"].set_linewidth(0.5)
         plots_desc.append(fig_bar)
 
     # View settings & plot
@@ -569,7 +575,7 @@ def _(
                 percent_df["Percent"] = (percent_df["Focus"] / percent_df["Total"]) * 100
 
                 ax_percent = ax_cc.twinx()
-                ax_percent.grid(False)
+                ax_percent.grid(False); ax_percent.spines["left"].set_visible(False); ax_percent.spines["bottom"].set_visible(False)
                 ax_percent.plot(
                     percent_df.index,
                     percent_df["Percent"],
@@ -607,6 +613,8 @@ def _(
         ax_cc.set_xlim(pd.to_datetime(date_start_cumulative.value), pd.to_datetime(date_end_cumulative.value))
         ax_cc.set_ylabel("Number of Cases (Cumulative)")
         ax_cc.grid(True, linestyle=":")
+        ax_cc.spines["left"].set_visible(True); ax_cc.spines["left"].set_color("black"); ax_cc.spines["left"].set_linewidth(0.5)
+        ax_cc.spines["bottom"].set_visible(True); ax_cc.spines["bottom"].set_color("black"); ax_cc.spines["bottom"].set_linewidth(0.5)
         fig_cc.autofmt_xdate()
         right_panel_cc = mo.carousel([fig_cc]).style(width="75%")
 
