@@ -39,7 +39,7 @@ def plot_combine(csv1, csv2, genes):
     plt.bar(x + 0.3, plot_df["SNV_HRP"], 0.6, color="#234c13ff", edgecolor="white", alpha=0.9, label="HRP SNV")
     plt.bar(x + 0.3, plot_df["CNV_HRP"], 0.6, bottom=plot_df["SNV_HRP"], color="#234c13ff", edgecolor="white", alpha=0.9, hatch="////", label="HRP CNV")
 
-    plt.xticks(x, genes, rotation=90)
+    plt.xticks(x, genes, rotation=45, fontstyle="italic")
     plt.ylabel("Number of Cases")
     plt.gca().yaxis.set_major_locator(plt.MaxNLocator(integer=True))
     plt.title("Variant Occurrence per HR Gene: HRD vs HRP")

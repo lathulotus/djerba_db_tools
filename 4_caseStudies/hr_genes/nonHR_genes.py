@@ -50,7 +50,7 @@ def plot_nonhr(csv_hrd, hr_genes, top_n=25):
    plt.bar(x, table["SNV"], 0.6, color="#7cb066ff", edgecolor="white", alpha=0.9, label="SNV")
    plt.bar(x, table["CNV"], 0.6, bottom=table["SNV"], color="#234c13ff", edgecolor="white", alpha=0.9,label="CNV")
    
-   plt.xticks(x, table["Gene"], rotation=90)
+   plt.xticks(x, table["Gene"], rotation=45, fontstyle="italic")
    plt.xlabel("Non-HR Gene")
    plt.ylabel("Number of Cases")
    plt.title(f"Top 25 Non‑HR Genes in HRD Cases Absent of HR Gene Variants")
