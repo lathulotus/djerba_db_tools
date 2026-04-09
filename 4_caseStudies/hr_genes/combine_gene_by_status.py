@@ -42,7 +42,7 @@ def plot_combine(csv1, csv2, genes):
     plt.xticks(x, genes, rotation=45, fontstyle="italic")
     plt.ylabel("Number of Cases")
     plt.gca().yaxis.set_major_locator(plt.MaxNLocator(integer=True))
-    plt.title("Variant Occurrence in HR Genes by HR Status")
+    plt.title("Variant Occurrence per HR Gene in HR Deficient vs Proficient Cases")
     plt.grid(True, linestyle=":", alpha=0.6)
     plt.legend(ncol=2)
     plt.tight_layout()
