@@ -93,7 +93,7 @@ def _(
     ax_weekly.set_xlabel("Project")
     ax_weekly.set_ylabel("Number of Reports")
     ax_weekly.grid(True, linestyle=":", alpha=0.3)
-    plt.xticks(rotation=45)
+    plt.xticks(rotation=45, ha="right")
     plt.tight_layout()
 
     mo.hstack([
