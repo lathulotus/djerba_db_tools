@@ -82,7 +82,7 @@ def _(
         ax_weekly.text(0.5, 0.5, "No data in date range", ha="center", va="center")
         ax_weekly.set_xticks([]); ax_weekly.set_yticks([]); ymax = 5
     else:
-        bars_weekly = ax_weekly.bar(weekly_counts["project"], weekly_counts["count"],color="steelblue", edgecolor="white")
+        bars_weekly = ax_weekly.bar(weekly_counts["project"], weekly_counts["count"],color="#7cb066ff", edgecolor="white")
         for bar_w in bars_weekly:
             ax_weekly.text(bar_w.get_x() + bar_w.get_width()/2, bar_w.get_height(),
                            str(bar_w.get_height()), ha="center", va="bottom", fontsize=10)
@@ -92,7 +92,7 @@ def _(
     ax_weekly.set_title(f"Weekly Summary of Completed Reports ({week_start.date()} to {week_end.date()})")
     ax_weekly.set_xlabel("Project")
     ax_weekly.set_ylabel("Number of Reports")
-    ax_weekly.grid(True, alpha=0.6)
+    ax_weekly.grid(True, linestyle=":", alpha=0.3)
     plt.xticks(rotation=45)
     plt.tight_layout()
 
@@ -188,6 +188,7 @@ def _(
     cat_top_n,
     date_end_select,
     date_start_select,
+    italicize_genes,
     mo,
     normalize_name,
     np,
@@ -207,18 +208,13 @@ def _(
                                (summary["date_reported"] <= pd.to_datetime(date_end_select.value))]
     plots_desc = [] if not filtered_summary.empty else [mo.md("No data in date range")]
 
-    # Plot style
-    plt.style.use("ggplot")
-    plt.rcParams.update({"axes.facecolor": "white", "figure.facecolor": "white",
-                         "axes.grid": True, "grid.color": "lightgrey"})
-
     # Quantitative plots
     metrics = {"TMB": "(Mb)", "PGA": "(%)"}
     for num_col in num_hist.value:
         series = filtered_summary[num_col].dropna()
         label = normalize_name(num_col)
         suffix = next((f" {val}" for key, val in metrics.items() if key in num_col.upper()), "")
-    
+
         xmin = x_min_input[num_col].value
         xmax = x_max_input[num_col].value
         xmin = float(xmin) if xmin is not None else None
@@ -229,7 +225,7 @@ def _(
             plot_series = plot_series[plot_series >= xmin]
         if xmax is not None:
             plot_series = plot_series[plot_series <= xmax]
-    
+
         quant_x_min = series.min() if plot_series.empty else plot_series.min()
         quant_x_max = series.max() if plot_series.empty else plot_series.max()
         quant_x_min_final = xmin if xmin is not None else quant_x_min
@@ -237,10 +233,12 @@ def _(
 
         fig_hist_num, ax_hist = plt.subplots()
         edges = np.linspace(quant_x_min_final, quant_x_max_final, bin_select.value + 1)
-        ax_hist.hist(plot_series, bins=edges, color="steelblue", edgecolor="white")
+        ax_hist.hist(plot_series, bins=edges, color="#7cb066ff", edgecolor="white")
         ax_hist.set_xlim(quant_x_min_final, quant_x_max_final)
         ax_hist.set_xticks(edges)
         plt.xticks(rotation=45, ha="right")
+        ax_hist.set_axisbelow(True)
+        ax_hist.grid(True, linestyle=":", alpha=0.3)
         ax_hist.set_title(f"Histogram of {label}")
         ax_hist.set_xlabel(label + suffix)
         ax_hist.set_ylabel("Case Count")
@@ -251,25 +249,32 @@ def _(
     for cat_col in cat_select.value:
         series = filtered_summary[cat_col].dropna()
         label = normalize_name(cat_col)
-    
+
         qualexpand = []
         for cell in series:
             for item in cell.split(","):
                 item_norm = item.strip()
                 if item_norm:
                     qualexpand.append(item_norm)
-                
+
         counts = pd.Series(qualexpand).value_counts()
-        counts = counts.head(int(cat_top_n or 20))
+        counts = counts.head(20 or int(cat_top_n))
 
         fig_bar, ax_bar = plt.subplots()
-        ax_bar.bar(counts.index.astype(str), counts.values, color="steelblue", edgecolor="white")
+        ax_bar.bar(counts.index.astype(str), counts.values, color="#7cb066ff", edgecolor="white")
         ymax_bar = counts.max()
         ax_bar.set_ylim(0, ymax_bar * 1.15)
         ax_bar.set_title(f"Counts of {label}")
         ax_bar.set_xlabel(label)
         ax_bar.set_ylabel("Counts")
-        plt.xticks(rotation=45, ha="right")
+        if cat_col in ("snv_genes", "cnv_genes", "fusion_pairs"):
+            styled = [italicize_genes(gene_label) for gene_label in counts.index.astype(str)]
+            ax_bar.set_xticks(range(len(styled)))
+            ax_bar.set_xticklabels(styled, rotation=45, ha="right")
+        else:
+            plt.xticks(rotation=45, ha="right")
+        ax_bar.set_axisbelow(True)
+        ax_bar.grid(True, linestyle=":", alpha=0.3)
         plots_desc.append(fig_bar)
 
     # View settings & plot
@@ -552,7 +557,7 @@ def _(
                             "yearly": lambda s: s.dt.to_period("Y").dt.start_time}
             interval_cc = (percent_interval_cc.value or "Daily").lower()
             df_cc["_period"] = interval_map[interval_cc](df_cc["date_reported"])
-        
+
             if "_period" in df_cc.columns:
                 total = df_cc.groupby("_period").size().rename("Total")
                 percent_col, percent_val = percent_focus_cc.value           
@@ -631,7 +636,20 @@ def _(re):
         text = re.sub(r"\bTmb\b", "TMB", text)
         return text
 
-    return (normalize_name,)
+    def italicize_genes(gene_raw):
+        if "::" in gene_raw:
+            formatted = []
+            for part in gene_raw.split("::"):
+                if part.isupper():
+                    formatted.append(f"$\\it{{{part}}}$")
+                else:
+                    formatted.append(part)
+            return "::".join(formatted)
+        if gene_raw.isupper():
+            return f"$\\it{{{gene_raw}}}$"
+        return gene_raw
+
+    return italicize_genes, normalize_name
 
 
 if __name__ == "__main__":
