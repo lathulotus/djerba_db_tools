@@ -25,6 +25,7 @@ filters:
     study: 
     report_type: 
     failed: False
+    author: 
     cancer_type: 
     oncotree_code: 
     assay: 
