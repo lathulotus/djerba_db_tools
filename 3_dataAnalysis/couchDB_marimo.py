@@ -146,8 +146,9 @@ def _(mo, summary):
         value=[],
         label="Generate histograms for:")
 
+    cat_exclude = {"report_id", "author", "sequenza_version", "sequenza_solution", "purple_zip"}
     cat_select = mo.ui.multiselect(
-        options=sorted([c for c in summary.select_dtypes(include=["string"]).columns]),
+        options=sorted([c for c in summary.select_dtypes(include=["string"]).columns if c not in cat_exclude]),
         value=[],
         label="Generate bar plots for:")
     return cat_select, num_hist
@@ -164,18 +165,20 @@ def _(mo, normalize_name, num_hist):
         x_max_input[num_hist_col] = mo.ui.number(label=f"Max", value=None)
         x_axis_content.append(mo.vstack([mo.md(f"####{normalize_name(num_hist_col)}"),
                                          mo.hstack([x_min_input[num_hist_col],
-                                                    x_max_input[num_hist_col]]).style(width="fit-content")]))
+                                        x_max_input[num_hist_col]]).style(width="fit-content")]))
 
     bin_select = mo.ui.slider(start=0, stop=100, value=10, label="Number of bins: ")
     date_start_select = mo.ui.date(label="From", value="2022-01-01")
     date_end_select = mo.ui.date(label="To")
     apply_button = mo.ui.button(label="Apply")
+    desc_count_toggle = mo.ui.switch(label="Show counts", value=True)
     return (
         apply_button,
         bin_select,
         cat_top_n,
         date_end_select,
         date_start_select,
+        desc_count_toggle,
         x_axis_content,
         x_max_input,
         x_min_input,
@@ -190,6 +193,7 @@ def _(
     cat_top_n,
     date_end_select,
     date_start_select,
+    desc_count_toggle,
     italicize_genes,
     mo,
     normalize_name,
@@ -236,6 +240,13 @@ def _(
         fig_hist_num, ax_hist = plt.subplots()
         edges = np.linspace(quant_x_min_final, quant_x_max_final, bin_select.value + 1)
         ax_hist.hist(plot_series, bins=edges, color="#7cb066ff", edgecolor="white")
+        if desc_count_toggle.value:
+            for histcounti in range(len(edges)-1):
+                hist_bin_mask = (plot_series >= edges[histcounti]) & (plot_series < edges[histcounti+1])
+                hist_count = hist_bin_mask.sum()
+                if hist_count > 0:
+                    ax_hist.text((edges[histcounti] + edges[histcounti+1])/2, hist_count, str(hist_count), ha="center", va="bottom", fontsize=9)
+        if plot_series.empty or pd.isna(plot_series.max()): continue
         ax_hist.set_xlim(quant_x_min_final, quant_x_max_final)
         ax_hist.set_xticks(edges)
         plt.xticks(rotation=45, ha="right")
@@ -255,22 +266,30 @@ def _(
         label = normalize_name(cat_col)
 
         qualexpand = []
-        for cell in series:
-            for item in cell.split(","):
-                item_norm = item.strip()
-                if item_norm:
-                    qualexpand.append(item_norm)
+        if cat_col == "djerba_version":
+            for cell in series:
+                qualexpand.append(cell)
+        else:
+            for cell in series:
+                for item in cell.split(","):
+                    item_norm = item.strip()
+                    if item_norm:
+                        qualexpand.append(item_norm)
 
         counts = pd.Series(qualexpand).value_counts()
         counts = counts.head(cat_top_n.value or 20)
 
         fig_bar, ax_bar = plt.subplots()
         ax_bar.bar(counts.index.astype(str), counts.values, color="#7cb066ff", edgecolor="white")
+        if desc_count_toggle.value:
+            for barcounti, barcountv in enumerate(counts.values):
+                ax_bar.text(barcounti, barcountv, str(barcountv), ha="center", va="bottom", fontsize=9)
+        if counts.empty or pd.isna(counts.max()): continue
         ymax_bar = counts.max()
         ax_bar.set_ylim(0, ymax_bar * 1.15)
-        ax_bar.set_title(f"Counts of {label}")
+        ax_bar.set_title(f"Counts by {label}")
         ax_bar.set_xlabel(label)
-        ax_bar.set_ylabel("Counts")
+        ax_bar.set_ylabel("Count of Occurrence")
         if cat_col in ("snv_genes", "cnv_genes", "fusion_pairs"):
             styled = [italicize_genes(gene_label) for gene_label in counts.index.astype(str)]
             ax_bar.set_xticks(range(len(styled)))
@@ -288,7 +307,7 @@ def _(
         mo.md("### Bar Plot Settings"), cat_select, cat_top_n.style(width="15px"),
         mo.md("---\n ### Histogram Settings"), num_hist, bin_select,
         mo.md("### X-axis Limits").style(margin_top="15px"), *x_axis_content, apply_button,
-        mo.md("---\n ### All Settings"), mo.hstack([date_start_select, date_end_select])]).style(width="30%", padding="15px")
+        mo.md("---\n ### All Settings"), desc_count_toggle, mo.hstack([date_start_select, date_end_select])]).style(width="30%", padding="15px")
     right_panel = mo.vstack([
         mo.carousel(plots_desc)]).style(width="70%", padding="10px")
     mo.hstack([left_panel, right_panel])
@@ -537,9 +556,9 @@ def _(
                     edgecolors="w",
                     vmin=col_bar_min,
                     vmax=col_bar_max,)
-                sc.set_label(label_cc)
+                sc.set_label(normalize_name(label_cc))
                 handles_cc.append(sc)
-                labels_cc.append(label_cc)
+                labels_cc.append(normalize_name(label_cc))
             else:
                 line_cc, = ax_cc.plot(
                     group_cc["date_reported"],
@@ -591,7 +610,7 @@ def _(
 
                 if colour_by:
                     cbar = fig_cc.colorbar(handles_cc[-1], ax=ax_percent, location="right", pad=0.1)
-                    cbar.set_label(colour_by)
+                    cbar.set_label(normalize_name(colour_by))
                     cbar.locator = MaxNLocator(integer=True)
                     cbar.update_ticks()
                     cbar.outline.set_edgecolor("black")
@@ -602,7 +621,7 @@ def _(
                 ax_cc.legend(handles_cc, labels_cc, title=legend_title_cc)
                 if colour_by:
                     cbar = fig_cc.colorbar(handles_cc[-1], ax=ax_cc)
-                    cbar.set_label(colour_by)
+                    cbar.set_label(normalize_name(colour_by))
                     cbar.locator = MaxNLocator(integer=True)
                     cbar.update_ticks()
                     cbar.outline.set_edgecolor("black")
