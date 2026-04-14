@@ -82,18 +82,20 @@ def _(
         ax_weekly.text(0.5, 0.5, "No data in date range", ha="center", va="center")
         ax_weekly.set_xticks([]); ax_weekly.set_yticks([]); ymax = 5
     else:
-        bars_weekly = ax_weekly.bar(weekly_counts["project"], weekly_counts["count"],color="steelblue", edgecolor="white")
+        bars_weekly = ax_weekly.bar(weekly_counts["project"], weekly_counts["count"],color="#7cb066ff", edgecolor="white")
         for bar_w in bars_weekly:
             ax_weekly.text(bar_w.get_x() + bar_w.get_width()/2, bar_w.get_height(),
                            str(bar_w.get_height()), ha="center", va="bottom", fontsize=10)
         ymax = weekly_counts["count"].max()
 
     ax_weekly.set_ylim(0, ymax * 1.15)
-    ax_weekly.set_title(f"Weekly Summary of Completed Reports ({week_start.date()} to {week_end.date()})")
+    ax_weekly.set_title(f"Summary of Completed Reports ({week_start.date()} to {week_end.date()})")
     ax_weekly.set_xlabel("Project")
     ax_weekly.set_ylabel("Number of Reports")
-    ax_weekly.grid(True, alpha=0.6)
-    plt.xticks(rotation=45)
+    ax_weekly.grid(True, linestyle=":", alpha=0.3)
+    ax_weekly.spines["left"].set_visible(True); ax_weekly.spines["left"].set_color("black"); ax_weekly.spines["left"].set_linewidth(0.5)
+    ax_weekly.spines["bottom"].set_visible(True); ax_weekly.spines["bottom"].set_color("black"); ax_weekly.spines["bottom"].set_linewidth(0.5)
+    plt.xticks(rotation=45, ha="right")
     plt.tight_layout()
 
     mo.hstack([
@@ -144,8 +146,9 @@ def _(mo, summary):
         value=[],
         label="Generate histograms for:")
 
+    cat_exclude = {"report_id", "author", "sequenza_version", "sequenza_solution", "purple_zip"}
     cat_select = mo.ui.multiselect(
-        options=sorted([c for c in summary.select_dtypes(include=["string"]).columns]),
+        options=sorted([c for c in summary.select_dtypes(include=["string"]).columns if c not in cat_exclude]),
         value=[],
         label="Generate bar plots for:")
     return cat_select, num_hist
@@ -162,18 +165,20 @@ def _(mo, normalize_name, num_hist):
         x_max_input[num_hist_col] = mo.ui.number(label=f"Max", value=None)
         x_axis_content.append(mo.vstack([mo.md(f"####{normalize_name(num_hist_col)}"),
                                          mo.hstack([x_min_input[num_hist_col],
-                                                    x_max_input[num_hist_col]]).style(width="fit-content")]))
+                                        x_max_input[num_hist_col]]).style(width="fit-content")]))
 
     bin_select = mo.ui.slider(start=0, stop=100, value=10, label="Number of bins: ")
     date_start_select = mo.ui.date(label="From", value="2022-01-01")
     date_end_select = mo.ui.date(label="To")
     apply_button = mo.ui.button(label="Apply")
+    desc_count_toggle = mo.ui.switch(label="Show counts", value=True)
     return (
         apply_button,
         bin_select,
         cat_top_n,
         date_end_select,
         date_start_select,
+        desc_count_toggle,
         x_axis_content,
         x_max_input,
         x_min_input,
@@ -188,6 +193,8 @@ def _(
     cat_top_n,
     date_end_select,
     date_start_select,
+    desc_count_toggle,
+    italicize_genes,
     mo,
     normalize_name,
     np,
@@ -207,18 +214,13 @@ def _(
                                (summary["date_reported"] <= pd.to_datetime(date_end_select.value))]
     plots_desc = [] if not filtered_summary.empty else [mo.md("No data in date range")]
 
-    # Plot style
-    plt.style.use("ggplot")
-    plt.rcParams.update({"axes.facecolor": "white", "figure.facecolor": "white",
-                         "axes.grid": True, "grid.color": "lightgrey"})
-
     # Quantitative plots
     metrics = {"TMB": "(Mb)", "PGA": "(%)"}
     for num_col in num_hist.value:
         series = filtered_summary[num_col].dropna()
         label = normalize_name(num_col)
         suffix = next((f" {val}" for key, val in metrics.items() if key in num_col.upper()), "")
-    
+
         xmin = x_min_input[num_col].value
         xmax = x_max_input[num_col].value
         xmin = float(xmin) if xmin is not None else None
@@ -229,7 +231,7 @@ def _(
             plot_series = plot_series[plot_series >= xmin]
         if xmax is not None:
             plot_series = plot_series[plot_series <= xmax]
-    
+
         quant_x_min = series.min() if plot_series.empty else plot_series.min()
         quant_x_max = series.max() if plot_series.empty else plot_series.max()
         quant_x_min_final = xmin if xmin is not None else quant_x_min
@@ -237,39 +239,67 @@ def _(
 
         fig_hist_num, ax_hist = plt.subplots()
         edges = np.linspace(quant_x_min_final, quant_x_max_final, bin_select.value + 1)
-        ax_hist.hist(plot_series, bins=edges, color="steelblue", edgecolor="white")
+        ax_hist.hist(plot_series, bins=edges, color="#7cb066ff", edgecolor="white")
+        if desc_count_toggle.value:
+            for histcounti in range(len(edges)-1):
+                hist_bin_mask = (plot_series >= edges[histcounti]) & (plot_series < edges[histcounti+1])
+                hist_count = hist_bin_mask.sum()
+                if hist_count > 0:
+                    ax_hist.text((edges[histcounti] + edges[histcounti+1])/2, hist_count, str(hist_count), ha="center", va="bottom", fontsize=9)
+        if plot_series.empty or pd.isna(plot_series.max()): continue
         ax_hist.set_xlim(quant_x_min_final, quant_x_max_final)
         ax_hist.set_xticks(edges)
         plt.xticks(rotation=45, ha="right")
+        ax_hist.set_axisbelow(True)
+        ax_hist.grid(True, linestyle=":", alpha=0.3)
         ax_hist.set_title(f"Histogram of {label}")
         ax_hist.set_xlabel(label + suffix)
         ax_hist.set_ylabel("Case Count")
         ax_hist.set_ylim(0, ax_hist.get_ylim()[1] * 1.1)
+        ax_hist.spines["left"].set_visible(True); ax_hist.spines["left"].set_color("black"); ax_hist.spines["left"].set_linewidth(0.5)
+        ax_hist.spines["bottom"].set_visible(True); ax_hist.spines["bottom"].set_color("black"); ax_hist.spines["bottom"].set_linewidth(0.5)
         plots_desc.append(fig_hist_num)
 
     # Qualitative plots
     for cat_col in cat_select.value:
         series = filtered_summary[cat_col].dropna()
         label = normalize_name(cat_col)
-    
+
         qualexpand = []
-        for cell in series:
-            for item in cell.split(","):
-                item_norm = item.strip()
-                if item_norm:
-                    qualexpand.append(item_norm)
-                
+        if cat_col == "djerba_version":
+            for cell in series:
+                qualexpand.append(cell)
+        else:
+            for cell in series:
+                for item in cell.split(","):
+                    item_norm = item.strip()
+                    if item_norm:
+                        qualexpand.append(item_norm)
+
         counts = pd.Series(qualexpand).value_counts()
-        counts = counts.head(int(cat_top_n or 20))
+        counts = counts.head(cat_top_n.value or 20)
 
         fig_bar, ax_bar = plt.subplots()
-        ax_bar.bar(counts.index.astype(str), counts.values, color="steelblue", edgecolor="white")
+        ax_bar.bar(counts.index.astype(str), counts.values, color="#7cb066ff", edgecolor="white")
+        if desc_count_toggle.value:
+            for barcounti, barcountv in enumerate(counts.values):
+                ax_bar.text(barcounti, barcountv, str(barcountv), ha="center", va="bottom", fontsize=9)
+        if counts.empty or pd.isna(counts.max()): continue
         ymax_bar = counts.max()
         ax_bar.set_ylim(0, ymax_bar * 1.15)
-        ax_bar.set_title(f"Counts of {label}")
+        ax_bar.set_title(f"Counts by {label}")
         ax_bar.set_xlabel(label)
-        ax_bar.set_ylabel("Counts")
-        plt.xticks(rotation=45, ha="right")
+        ax_bar.set_ylabel("Count of Occurrence")
+        if cat_col in ("snv_genes", "cnv_genes", "fusion_pairs"):
+            styled = [italicize_genes(gene_label) for gene_label in counts.index.astype(str)]
+            ax_bar.set_xticks(range(len(styled)))
+            ax_bar.set_xticklabels(styled, rotation=45, ha="right")
+        else:
+            plt.xticks(rotation=45, ha="right")
+        ax_bar.set_axisbelow(True)
+        ax_bar.grid(True, linestyle=":", alpha=0.3)
+        ax_bar.spines["left"].set_visible(True); ax_bar.spines["left"].set_color("black"); ax_bar.spines["left"].set_linewidth(0.5)
+        ax_bar.spines["bottom"].set_visible(True); ax_bar.spines["bottom"].set_color("black"); ax_bar.spines["bottom"].set_linewidth(0.5)
         plots_desc.append(fig_bar)
 
     # View settings & plot
@@ -277,7 +307,7 @@ def _(
         mo.md("### Bar Plot Settings"), cat_select, cat_top_n.style(width="15px"),
         mo.md("---\n ### Histogram Settings"), num_hist, bin_select,
         mo.md("### X-axis Limits").style(margin_top="15px"), *x_axis_content, apply_button,
-        mo.md("---\n ### All Settings"), mo.hstack([date_start_select, date_end_select])]).style(width="30%", padding="15px")
+        mo.md("---\n ### All Settings"), desc_count_toggle, mo.hstack([date_start_select, date_end_select])]).style(width="30%", padding="15px")
     right_panel = mo.vstack([
         mo.carousel(plots_desc)]).style(width="70%", padding="10px")
     mo.hstack([left_panel, right_panel])
@@ -526,9 +556,9 @@ def _(
                     edgecolors="w",
                     vmin=col_bar_min,
                     vmax=col_bar_max,)
-                sc.set_label(label_cc)
+                sc.set_label(normalize_name(label_cc))
                 handles_cc.append(sc)
-                labels_cc.append(label_cc)
+                labels_cc.append(normalize_name(label_cc))
             else:
                 line_cc, = ax_cc.plot(
                     group_cc["date_reported"],
@@ -552,7 +582,7 @@ def _(
                             "yearly": lambda s: s.dt.to_period("Y").dt.start_time}
             interval_cc = (percent_interval_cc.value or "Daily").lower()
             df_cc["_period"] = interval_map[interval_cc](df_cc["date_reported"])
-        
+
             if "_period" in df_cc.columns:
                 total = df_cc.groupby("_period").size().rename("Total")
                 percent_col, percent_val = percent_focus_cc.value           
@@ -564,7 +594,7 @@ def _(
                 percent_df["Percent"] = (percent_df["Focus"] / percent_df["Total"]) * 100
 
                 ax_percent = ax_cc.twinx()
-                ax_percent.grid(False)
+                ax_percent.grid(False); ax_percent.spines["left"].set_visible(False); ax_percent.spines["bottom"].set_visible(False)
                 ax_percent.plot(
                     percent_df.index,
                     percent_df["Percent"],
@@ -580,7 +610,7 @@ def _(
 
                 if colour_by:
                     cbar = fig_cc.colorbar(handles_cc[-1], ax=ax_percent, location="right", pad=0.1)
-                    cbar.set_label(colour_by)
+                    cbar.set_label(normalize_name(colour_by))
                     cbar.locator = MaxNLocator(integer=True)
                     cbar.update_ticks()
                     cbar.outline.set_edgecolor("black")
@@ -591,7 +621,7 @@ def _(
                 ax_cc.legend(handles_cc, labels_cc, title=legend_title_cc)
                 if colour_by:
                     cbar = fig_cc.colorbar(handles_cc[-1], ax=ax_cc)
-                    cbar.set_label(colour_by)
+                    cbar.set_label(normalize_name(colour_by))
                     cbar.locator = MaxNLocator(integer=True)
                     cbar.update_ticks()
                     cbar.outline.set_edgecolor("black")
@@ -602,6 +632,8 @@ def _(
         ax_cc.set_xlim(pd.to_datetime(date_start_cumulative.value), pd.to_datetime(date_end_cumulative.value))
         ax_cc.set_ylabel("Number of Cases (Cumulative)")
         ax_cc.grid(True, linestyle=":")
+        ax_cc.spines["left"].set_visible(True); ax_cc.spines["left"].set_color("black"); ax_cc.spines["left"].set_linewidth(0.5)
+        ax_cc.spines["bottom"].set_visible(True); ax_cc.spines["bottom"].set_color("black"); ax_cc.spines["bottom"].set_linewidth(0.5)
         fig_cc.autofmt_xdate()
         right_panel_cc = mo.carousel([fig_cc]).style(width="75%")
 
@@ -631,7 +663,20 @@ def _(re):
         text = re.sub(r"\bTmb\b", "TMB", text)
         return text
 
-    return (normalize_name,)
+    def italicize_genes(gene_raw):
+        if "::" in gene_raw:
+            formatted = []
+            for part in gene_raw.split("::"):
+                if part.isupper():
+                    formatted.append(f"$\\it{{{part}}}$")
+                else:
+                    formatted.append(part)
+            return "::".join(formatted)
+        if gene_raw.isupper():
+            return f"$\\it{{{gene_raw}}}$"
+        return gene_raw
+
+    return italicize_genes, normalize_name
 
 
 if __name__ == "__main__":

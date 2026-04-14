@@ -44,7 +44,7 @@ def plot_variants(csv):
     x = np.arange(len(variant_names))
     plt.figure(figsize=(12, 7))
 
-    plt.bar(x, values, 0.6, color="indigo", edgecolor="white", alpha=0.9)
+    plt.bar(x, values, 0.6, color="#7cb066ff", edgecolor="white", alpha=0.9)
 
     for index, (count, percent) in enumerate(zip(values, percentage)):
         plt.text(index, count + 0.3, f"{round(percent, 2)}%", ha="center", va="bottom", fontsize=9)

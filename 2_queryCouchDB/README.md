@@ -158,6 +158,7 @@ Fields that do not require querying should remain `null`. Individual JSON file(s
 | `project` | Project name | `"PROJECT"` |
 | `study` | Study name | `"STUDY"` |
 | `report_type` | Report | `"clinical"` |
+| `author` | Author name | `"Person Name"` |
 | `cancer_type` | Primary cancer diagnosis | `"pancreatic adenocarcinoma"` |
 | `oncotree_code` | Oncotree code | `"PAAD"` |
 | `assay` | Assay | `"WGTS"` |

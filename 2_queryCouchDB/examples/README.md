@@ -37,6 +37,7 @@ filters:
     study: 
     report_type: 
     failed: 
+    author: 
     cancer_type: 
     oncotree_code: 
     assay: ["WGTS", "WGS"]
@@ -116,6 +117,7 @@ filters:
     study: 
     report_type: 
     failed: 
+    author: 
     cancer_type: 
     oncotree_code: 
     assay: 
@@ -195,6 +197,7 @@ filters:
     study: 
     report_type: 
     failed: 
+    author: 
     cancer_type: 
     oncotree_code: 
     assay: 
@@ -273,6 +276,7 @@ filters:
     study: 
     report_type: 
     failed: False
+    author: 
     cancer_type: 
     oncotree_code: 
     assay: 

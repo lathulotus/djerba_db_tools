@@ -31,7 +31,8 @@ string_fields = {
     "ctdna_cnv": (["config/tar.status/copy_number_ctdna_detected"]),
     "ctdna_snv": (["config/tar.status/small_mutation_ctdna_detected"]),
     "purple_zip": (["config/wgts.cnv_purple/purple_zip"]),
-    "sequenza_solution": (["config/cnv/sequenza_solution"])
+    "sequenza_solution": (["config/cnv/sequenza_solution"]),
+    "author": (["config/core/author", "core/author", "report/author"])
 }
 
 numeric_fields = {
@@ -277,7 +278,7 @@ def main():
 
     csv_path = f"{args.output_name}.csv"
     
-    column_order = ["report_id", "donor", "project", "study", "date_reported", "djerba_version", "failed", "report_type", "purple_zip", "sequenza_solution"]
+    column_order = ["report_id", "donor", "project", "study", "date_reported", "djerba_version", "failed", "report_type", "author"]
     df = df[column_order + [c for c in df.columns if c not in column_order]]
 
     df.to_csv(csv_path, index=False)

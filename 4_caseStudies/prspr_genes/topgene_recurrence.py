@@ -33,13 +33,13 @@ def plot_topgenes(csv):
     x = np.arange(len(genes))
     plt.figure(figsize=(12, 7))
 
-    plt.bar(x, table["SNV"], 0.6, color="thistle", edgecolor="white", alpha=0.9, label="SNV")
-    plt.bar(x, table["CNV"], 0.6, bottom=table["SNV"], color="indigo", edgecolor="white", alpha=0.9,label="CNV")
+    plt.bar(x, table["SNV"], 0.6, color="#7cb066ff", edgecolor="white", alpha=0.9, label="SNV")
+    plt.bar(x, table["CNV"], 0.6, bottom=table["SNV"], color="#234c13ff", edgecolor="white", alpha=0.9,label="CNV")
 
     for index, row in table.iterrows():
         plt.text(index, row["Total"] + 0.5, f"{round(row['Percent'], 2)}%", ha="center", va="bottom", fontsize=9)
     
-    plt.xticks(x, genes)
+    plt.xticks(x, genes, rotation=45, fontstyle="italic")
     plt.xlabel("Candidate Genes")
     plt.ylabel("Number of Cases")
     plt.title(f"Recurrence of Key Pancreatic Cancer Genes in PRSPR Cases")

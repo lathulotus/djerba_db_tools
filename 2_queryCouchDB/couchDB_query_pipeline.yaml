@@ -25,6 +25,7 @@ filters:
     study: null
     report_type: null
     failed: null
+    author: null
     cancer_type: null
     oncotree_code: null
     assay: null

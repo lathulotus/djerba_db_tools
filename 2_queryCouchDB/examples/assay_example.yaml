@@ -25,6 +25,7 @@ filters:
     study: 
     report_type: 
     failed: 
+    author: 
     cancer_type: 
     oncotree_code: 
     assay: ["WGTS", "WGS"]
