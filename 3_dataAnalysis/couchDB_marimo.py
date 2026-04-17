@@ -77,7 +77,7 @@ def _(
     weekly_counts = selected.groupby("project").size().reset_index(name="count")
     total_per_week = int(weekly_counts["count"].sum()) if not weekly_counts.empty else 0
 
-    fig_weekly, ax_weekly = plt.subplots(figsize=(8,5))
+    fig_weekly, ax_weekly = plt.subplots(figsize=(12,7))
     if weekly_counts.empty:
         ax_weekly.text(0.5, 0.5, "No data in date range", ha="center", va="center")
         ax_weekly.set_xticks([]); ax_weekly.set_yticks([]); ymax = 5
@@ -155,6 +155,32 @@ def _(mo, summary):
 
 
 @app.cell
+def _(mo, summary):
+    # Cohort select
+    cohort_select_desc = mo.ui.dropdown(
+        label = "Cohort: ",
+        options = sorted([c for c in summary.columns]))
+    return (cohort_select_desc,)
+
+
+@app.cell
+def _(cohort_select_desc, mo, summary):
+    # Cohort value
+    if cohort_select_desc.value:
+        if summary[cohort_select_desc.value].dtype.kind in "iuf":
+            cohort_input_desc = mo.ui.text(
+                label = "Filter: ",
+                placeholder = ">=115, <115, ==115")
+        else:
+            cohort_input_desc = mo.ui.multiselect(
+                label = "Filter: ",
+                options = sorted(summary[cohort_select_desc.value].dropna().unique()))
+    else:
+        cohort_input_desc= mo.md("")
+    return (cohort_input_desc,)
+
+
+@app.cell
 def _(mo, normalize_name, num_hist):
     # Controls for plots
     cat_top_n = mo.ui.number(label="Top ", value=20)
@@ -191,6 +217,8 @@ def _(
     bin_select,
     cat_select,
     cat_top_n,
+    cohort_input_desc,
+    cohort_select_desc,
     date_end_select,
     date_start_select,
     desc_count_toggle,
@@ -210,8 +238,19 @@ def _(
 
     # Date select
     summary["date_reported"] = pd.to_datetime(summary["date_reported"], errors="coerce")
-    filtered_summary = summary[(summary["date_reported"] >= pd.to_datetime(date_start_select.value)) &
+    filtered_summary_date = summary[(summary["date_reported"] >= pd.to_datetime(date_start_select.value)) &
                                (summary["date_reported"] <= pd.to_datetime(date_end_select.value))]
+    filtered_summary = filtered_summary_date.copy()
+    if cohort_select_desc.value:
+        col = cohort_select_desc.value
+        if summary[col].dtype.kind in "iuf":
+            expr = cohort_input_desc.value
+            if expr:
+                filtered_summary=filtered_summary.query(f"{col} {expr}")
+        else:
+            vals = cohort_input_desc.value
+            if vals:
+                filtered_summary=filtered_summary[filtered_summary[col].isin(vals)]
     plots_desc = [] if not filtered_summary.empty else [mo.md("No data in date range")]
 
     # Quantitative plots
@@ -237,7 +276,7 @@ def _(
         quant_x_min_final = xmin if xmin is not None else quant_x_min
         quant_x_max_final = xmax if xmax is not None else quant_x_max
 
-        fig_hist_num, ax_hist = plt.subplots()
+        fig_hist_num, ax_hist = plt.subplots(figsize=(12,7))
         edges = np.linspace(quant_x_min_final, quant_x_max_final, bin_select.value + 1)
         ax_hist.hist(plot_series, bins=edges, color="#7cb066ff", edgecolor="white")
         if desc_count_toggle.value:
@@ -279,7 +318,7 @@ def _(
         counts = pd.Series(qualexpand).value_counts()
         counts = counts.head(cat_top_n.value or 20)
 
-        fig_bar, ax_bar = plt.subplots()
+        fig_bar, ax_bar = plt.subplots(figsize=(12,7))
         ax_bar.bar(counts.index.astype(str), counts.values, color="#7cb066ff", edgecolor="white")
         if desc_count_toggle.value:
             for barcounti, barcountv in enumerate(counts.values):
@@ -304,12 +343,13 @@ def _(
 
     # View settings & plot
     left_panel = mo.vstack([
-        mo.md("### Bar Plot Settings"), cat_select, cat_top_n.style(width="15px"),
-        mo.md("---\n ### Histogram Settings"), num_hist, bin_select,
-        mo.md("### X-axis Limits").style(margin_top="15px"), *x_axis_content, apply_button,
-        mo.md("---\n ### All Settings"), desc_count_toggle, mo.hstack([date_start_select, date_end_select])]).style(width="30%", padding="15px")
+        mo.accordion({"### All Settings": mo.vstack([cohort_select_desc, cohort_input_desc, desc_count_toggle, mo.hstack([date_start_select, date_end_select])])}),
+        mo.accordion({"### Bar Plot Settings": mo.vstack([cat_select, cat_top_n.style(width="100px")])}),
+        mo.accordion({"### Histogram Settings": mo.vstack([num_hist, bin_select, mo.md("### X-axis Limits").style(margin_top="15px"), *x_axis_content, apply_button])})]).style(width="30%", padding="15px")
+
     right_panel = mo.vstack([
         mo.carousel(plots_desc)]).style(width="70%", padding="10px")
+
     mo.hstack([left_panel, right_panel])
     return
 
