@@ -158,7 +158,7 @@ def _(mo, summary):
 def _(mo, summary):
     # Cohort select
     cohort_select_desc = mo.ui.dropdown(
-        label = "Group: ",
+        label = "Cohort: ",
         options = sorted([c for c in summary.columns]))
     return (cohort_select_desc,)
 
