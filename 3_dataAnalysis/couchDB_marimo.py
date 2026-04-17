@@ -77,7 +77,7 @@ def _(
     weekly_counts = selected.groupby("project").size().reset_index(name="count")
     total_per_week = int(weekly_counts["count"].sum()) if not weekly_counts.empty else 0
 
-    fig_weekly, ax_weekly = plt.subplots(figsize=(8,5))
+    fig_weekly, ax_weekly = plt.subplots(figsize=(12,7))
     if weekly_counts.empty:
         ax_weekly.text(0.5, 0.5, "No data in date range", ha="center", va="center")
         ax_weekly.set_xticks([]); ax_weekly.set_yticks([]); ymax = 5
@@ -237,7 +237,7 @@ def _(
         quant_x_min_final = xmin if xmin is not None else quant_x_min
         quant_x_max_final = xmax if xmax is not None else quant_x_max
 
-        fig_hist_num, ax_hist = plt.subplots()
+        fig_hist_num, ax_hist = plt.subplots(figsize=(12,7))
         edges = np.linspace(quant_x_min_final, quant_x_max_final, bin_select.value + 1)
         ax_hist.hist(plot_series, bins=edges, color="#7cb066ff", edgecolor="white")
         if desc_count_toggle.value:
@@ -279,7 +279,7 @@ def _(
         counts = pd.Series(qualexpand).value_counts()
         counts = counts.head(cat_top_n.value or 20)
 
-        fig_bar, ax_bar = plt.subplots()
+        fig_bar, ax_bar = plt.subplots(figsize=(12,7))
         ax_bar.bar(counts.index.astype(str), counts.values, color="#7cb066ff", edgecolor="white")
         if desc_count_toggle.value:
             for barcounti, barcountv in enumerate(counts.values):
