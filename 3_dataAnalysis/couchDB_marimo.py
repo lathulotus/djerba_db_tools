@@ -631,7 +631,7 @@ def _(
                 percent_df["Percent"] = (percent_df["Focus"] / percent_df["Total"]) * 100
 
                 ax_percent = ax_cc.twinx()
-                ax_percent.grid(False); ax_percent.spines["left"].set_visible(False); ax_percent.spines["bottom"].set_visible(False)
+                ax_percent.grid(False); ax_percent.spines["left"].set_visible(False); ax_percent.spines["bottom"].set_visible(False); ax_percent.spines["top"].set_visible(False); ax_percent.spines["right"].set_visible(False)
                 ax_percent.plot(
                     percent_df.index,
                     percent_df["Percent"],
