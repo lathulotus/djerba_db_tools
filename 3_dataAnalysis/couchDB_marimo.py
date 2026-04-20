@@ -93,8 +93,7 @@ def _(
     ax_weekly.set_xlabel("Project")
     ax_weekly.set_ylabel("Number of Reports")
     ax_weekly.grid(True, linestyle=":", alpha=0.3)
-    ax_weekly.spines["left"].set_visible(True); ax_weekly.spines["left"].set_color("black"); ax_weekly.spines["left"].set_linewidth(0.5)
-    ax_weekly.spines["bottom"].set_visible(True); ax_weekly.spines["bottom"].set_color("black"); ax_weekly.spines["bottom"].set_linewidth(0.5)
+    ax_weekly.spines["top"].set_visible(False); ax_weekly.spines["right"].set_visible(False); ax_weekly.spines["left"].set_color("black"); ax_weekly.spines["bottom"].set_color("black")
     plt.xticks(rotation=45, ha="right")
     plt.tight_layout()
 
@@ -279,12 +278,6 @@ def _(
         fig_hist_num, ax_hist = plt.subplots(figsize=(12,7))
         edges = np.linspace(quant_x_min_final, quant_x_max_final, bin_select.value + 1)
         ax_hist.hist(plot_series, bins=edges, color="#7cb066ff", edgecolor="white")
-        if desc_count_toggle.value:
-            for histcounti in range(len(edges)-1):
-                hist_bin_mask = (plot_series >= edges[histcounti]) & (plot_series < edges[histcounti+1])
-                hist_count = hist_bin_mask.sum()
-                if hist_count > 0:
-                    ax_hist.text((edges[histcounti] + edges[histcounti+1])/2, hist_count, str(hist_count), ha="center", va="bottom", fontsize=9)
         if plot_series.empty or pd.isna(plot_series.max()): continue
         ax_hist.set_xlim(quant_x_min_final, quant_x_max_final)
         ax_hist.set_xticks(edges)
@@ -295,8 +288,13 @@ def _(
         ax_hist.set_xlabel(label + suffix)
         ax_hist.set_ylabel("Case Count")
         ax_hist.set_ylim(0, ax_hist.get_ylim()[1] * 1.1)
-        ax_hist.spines["left"].set_visible(True); ax_hist.spines["left"].set_color("black"); ax_hist.spines["left"].set_linewidth(0.5)
-        ax_hist.spines["bottom"].set_visible(True); ax_hist.spines["bottom"].set_color("black"); ax_hist.spines["bottom"].set_linewidth(0.5)
+        if desc_count_toggle.value:
+            for histcounti in range(len(edges)-1):
+                hist_bin_mask = (plot_series >= edges[histcounti]) & (plot_series <= edges[histcounti+1])
+                hist_count = hist_bin_mask.sum()
+                if hist_count > 0:
+                    ax_hist.text((edges[histcounti] + edges[histcounti+1])/2, hist_count, str(hist_count), ha="center", va="bottom", fontsize=9)
+        ax_hist.spines["top"].set_visible(False); ax_hist.spines["right"].set_visible(False); ax_hist.spines["left"].set_color("black"); ax_hist.spines["bottom"].set_color("black")
         plots_desc.append(fig_hist_num)
 
     # Qualitative plots
@@ -320,12 +318,12 @@ def _(
 
         fig_bar, ax_bar = plt.subplots(figsize=(12,7))
         ax_bar.bar(counts.index.astype(str), counts.values, color="#7cb066ff", edgecolor="white")
+        ymax_bar = counts.max()
+        ax_bar.set_ylim(0, ymax_bar * 1.15)
         if desc_count_toggle.value:
             for barcounti, barcountv in enumerate(counts.values):
                 ax_bar.text(barcounti, barcountv, str(barcountv), ha="center", va="bottom", fontsize=9)
         if counts.empty or pd.isna(counts.max()): continue
-        ymax_bar = counts.max()
-        ax_bar.set_ylim(0, ymax_bar * 1.15)
         ax_bar.set_title(f"Counts by {label}")
         ax_bar.set_xlabel(label)
         ax_bar.set_ylabel("Count of Occurrence")
@@ -337,8 +335,7 @@ def _(
             plt.xticks(rotation=45, ha="right")
         ax_bar.set_axisbelow(True)
         ax_bar.grid(True, linestyle=":", alpha=0.3)
-        ax_bar.spines["left"].set_visible(True); ax_bar.spines["left"].set_color("black"); ax_bar.spines["left"].set_linewidth(0.5)
-        ax_bar.spines["bottom"].set_visible(True); ax_bar.spines["bottom"].set_color("black"); ax_bar.spines["bottom"].set_linewidth(0.5)
+        ax_bar.spines["top"].set_visible(False); ax_bar.spines["right"].set_visible(False); ax_bar.spines["left"].set_color("black"); ax_bar.spines["bottom"].set_color("black")
         plots_desc.append(fig_bar)
 
     # View settings & plot
@@ -672,8 +669,7 @@ def _(
         ax_cc.set_xlim(pd.to_datetime(date_start_cumulative.value), pd.to_datetime(date_end_cumulative.value))
         ax_cc.set_ylabel("Number of Cases (Cumulative)")
         ax_cc.grid(True, linestyle=":")
-        ax_cc.spines["left"].set_visible(True); ax_cc.spines["left"].set_color("black"); ax_cc.spines["left"].set_linewidth(0.5)
-        ax_cc.spines["bottom"].set_visible(True); ax_cc.spines["bottom"].set_color("black"); ax_cc.spines["bottom"].set_linewidth(0.5)
+        ax_cc.spines["top"].set_visible(False); ax_cc.spines["right"].set_visible(False); ax_cc.spines["left"].set_color("black");  ax_cc.spines["bottom"].set_color("black")
         fig_cc.autofmt_xdate()
         right_panel_cc = mo.carousel([fig_cc]).style(width="75%")
 
