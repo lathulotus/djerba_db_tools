@@ -51,8 +51,9 @@ Query filters can be input using the flag specified below. Individual JSON file(
 Query filters can be input using the flag specified below. Individual JSON file(s) will be output for reports satisfying specific query requirements. Operator must be included with the input value, otherwise will be defaulted to `>=`. For filtering across a range (inclusive), input a list formatted as `"[min,max]"` (i.e., `"[0,4]"`). For searching across various values (OR condition), input values seperated by commas as `"num1, num2, num3"` (i.e., `"0, 4, 7"`).
 | Filter | Definition | Example |
 |--------|------------|---------|
-| `--date_reported` | Date report created | `"2026/12/01"` |
-| `--djerba_version` | Report version | `"1.10.0"` |
+| `--date_reported` | Date report created | `"==2026-01-01"`|
+| `--date_requisition` | Date of requisition approval | `"==2026-01-01"`|
+| `--djerba_version` | Report version | `"==1.10.0"` |
 | `--coverage` | Average read coverage | `"==75.0"` or `70,80` |
 | `--purity` | Estimated tumour purity % | `"==75"` or `70,80` |
 | `--callability` | Percent of callable genome | `"==75.0"` or `70,80` |
