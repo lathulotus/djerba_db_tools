@@ -279,7 +279,7 @@ def main():
 
     csv_path = f"{args.output_name}.csv"
     
-    column_order = ["report_id", "donor", "project", "study", "date_reported", "date_requisition", "djerba_version", "failed", "report_type", "author"]
+    column_order = ["report_id", "donor", "project", "study", "date_reported", "date_requested", "djerba_version", "failed", "report_type", "author"]
     df = df[column_order + [c for c in df.columns if c not in column_order]]
 
     df.to_csv(csv_path, index=False)
