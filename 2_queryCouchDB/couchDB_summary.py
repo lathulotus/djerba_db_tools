@@ -41,8 +41,8 @@ numeric_fields = {
     "callability": (["plugins/sample/results/Callability (%)", "report/sample_info_and_quality/Callability (%)"], 'float'),
     "ploidy": (["plugins/sample/results/Estimated Ploidy", "report/sample_info_and_quality/Estimated Ploidy", "config/wgts.cnv_purple/ploidy"], 'float'),
     "djerba_version": (["core/core_version", "report/djerba_version", "plugins/case_overview/version"], 'version'),
-    "date_reported": (["plugins/supplement.body/results/extract_date", "last_updated"], 'date_updated'),
-    "date_requested": (["config/case_overview/requisition_approved", "config/input_params_helper/requisition_approved", "config/tar_input_params_helper/requisition_approved", "supplementary/config/inputs/req_approved_date"], 'date_requisition'),
+    "date_reported": (["plugins/supplement.body/results/extract_date", "last_updated"], 'date'),
+    "date_requested": (["config/case_overview/requisition_approved", "config/input_params_helper/requisition_approved", "config/tar_input_params_helper/requisition_approved", "supplementary/config/inputs/req_approved_date"], 'date'),
 
     "TMB": (["report/genomic_landscape_info/Tumour Mutation Burden", "plugins/genomic_landscape/results/genomic_landscape_info/Tumour Mutation Burden"], 'float'),
     "tmb_value": (["plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker value", "report/genomic_landscape_info/TMB per megabase"], 'float'),
