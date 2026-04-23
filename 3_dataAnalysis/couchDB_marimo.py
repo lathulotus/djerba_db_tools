@@ -138,27 +138,26 @@ def _(mo):
 
 
 @app.cell
-def _(mo, summary):
+def _(columns_excluded, mo, summary):
     # Create UI elements for plot selection (numeric & categorical)
     num_hist = mo.ui.multiselect(
         options=sorted(list(summary.select_dtypes(include=["number"]).columns)),
         value=[],
         label="Generate histograms for:")
 
-    cat_exclude = {"report_id", "author", "sequenza_version", "sequenza_solution", "purple_zip"}
     cat_select = mo.ui.multiselect(
-        options=sorted([c for c in summary.select_dtypes(include=["string"]).columns if c not in cat_exclude]),
+        options=sorted([c for c in summary.select_dtypes(include=["string"]).columns if c not in columns_excluded]),
         value=[],
         label="Generate bar plots for:")
     return cat_select, num_hist
 
 
 @app.cell
-def _(mo, summary):
+def _(columns_excluded, mo, summary):
     # Cohort select
     cohort_select_desc = mo.ui.dropdown(
         label = "Cohort: ",
-        options = sorted([c for c in summary.columns]))
+        options=sorted([c for c in summary.columns if c not in columns_excluded]))
     return (cohort_select_desc,)
 
 
@@ -362,7 +361,7 @@ def _(
         mo.carousel(plots_desc)]).style(width="70%", padding="10px")
 
     mo.hstack([left_panel, right_panel])
-    return
+    return (filtered_summary,)
 
 
 @app.cell
@@ -372,11 +371,12 @@ def _(mo):
 
 
 @app.cell
-def _(mo, summary):
+def _(columns_excluded, mo, summary):
     # Cohort: select general cohort
+    cohort_select_cc = ["all"] + sorted(c for c in summary.select_dtypes(include=["string"]).columns if c not in columns_excluded)
     cohort_select = mo.ui.dropdown(
         label = "Cohort: ",
-        options = sorted([c for c in summary.select_dtypes(include=["string"]).columns]),
+        options = cohort_select_cc,
         value="hrd_status")
     return (cohort_select,)
 
@@ -384,19 +384,26 @@ def _(mo, summary):
 @app.cell
 def _(cohort_select, mo, summary):
     # Cohort: filter specific cohorts
+    if cohort_select.value and cohort_select.value != "all":
+        cohort_options_raw_cc = summary[cohort_select.value].dropna().astype(str)
+        cohort_options_split_cc = cohort_options_raw_cc.str.split(",").explode().str.strip().unique()
+        cohort_options_cc = sorted(cohort_options_split_cc)
+    else:
+        cohort_options_cc = []
+
     cohort_filter = mo.ui.multiselect(
         label = "Filter: ",
-        options = sorted(summary[cohort_select.value].dropna().unique()) if cohort_select.value else [],
-        value=["HRD"])
+        options = cohort_options_cc,
+        value=(["HRD"] if cohort_select.value=="hrd_status" else []))
     return (cohort_filter,)
 
 
 @app.cell
-def _(mo, summary):
+def _(columns_excluded, mo, summary):
     # Group: select general group
     group_select = mo.ui.dropdown(
         label = "Group: ",
-        options = sorted([c for c in summary.columns]),
+        options = sorted([c for c in summary.columns if c not in columns_excluded]),
         value = "coverage")
     return (group_select,)
 
@@ -405,15 +412,18 @@ def _(mo, summary):
 def _(group_select, mo, summary):
     # Group: user input depends on group type (string vs integer)
     if group_select.value:
+        group_col_cc = group_select.value
         if summary[group_select.value].dtype.kind in "iuf":
             group_input = mo.ui.text(
                 label = "Filter: ",
                 placeholder = ">=115, <115, ==115",
                 value=">=115, <115")
         else:
+            raw_vals_cc = summary[group_col_cc].dropna().astype(str)
+            group_options = raw_vals_cc.str.split(",").explode().str.strip().unique()
             group_input = mo.ui.multiselect(
                 label = "Filter: ",
-                options = sorted(summary[group_select.value].dropna().unique()))
+                options = sorted(group_options))
     else:
         group_input= mo.md("")
     return (group_input,)
@@ -514,6 +524,7 @@ def _(
     colour_bar,
     date_end_cumulative,
     date_start_cumulative,
+    filtered_summary,
     group_filters,
     group_input,
     group_select,
@@ -525,11 +536,25 @@ def _(
     percent_line_cc,
     plt,
     summary,
+    variant_cohort,
+    variant_events,
 ):
     # Putting together plot settings
     df_cc = summary.copy()
     if cohort_select.value and cohort_filter.value:
-        df_cc = df_cc[df_cc[cohort_select.value].isin(cohort_filter.value)]
+        cc_col = cohort_select.value
+        cc_vals = cohort_filter.value
+        if cc_col in variant_cohort:
+            cc_gene_col, cc_type_col = variant_cohort[cc_col]
+            cc_var_matched = []
+            for cc_var_index, cc_var_row in filtered_summary.iterrows():
+                cc_var_pairs = variant_events(filtered_summary.loc[[cc_var_index]], cc_gene_col, cc_type_col)
+                cc_var_events = [e_cc for _, _, e_cc in cc_var_pairs]
+                if any(cc_temp_event in cc_vals for cc_temp_event in cc_var_events):
+                    cc_var_matched.append(cc_var_index)
+            df_cc=df_cc.loc[cc_var_matched]
+        else:
+            df_cc = df_cc[df_cc[cc_col].isin(cc_vals)]
 
     # Handling groups
     group_lines = []
@@ -727,8 +752,8 @@ def _(re):
         return gene_raw
 
     variant_cohort = {
-        "snv_types": ("snv_genes", "snv_types", "snv_proteins"),
-        "snv_proteins": ("snv_genes", "snv_types", "snv_proteins"),
+        "snv_types": ("snv_genes", "snv_types"),
+        "snv_proteins": ("snv_genes", "snv_proteins"),
         "cnv_types": ("cnv_genes", "cnv_types"),
         "fusion_effects": ("fusion_pairs", "fusion_effects")
     }
@@ -743,7 +768,14 @@ def _(re):
                 rows.append((temp_item, g, e))
         return rows
 
-    return italicize_genes, normalize_name, variant_cohort, variant_events
+    columns_excluded = {"report_id", "author", "sequenza_version", "sequenza_solution", "purple_zip"}
+    return (
+        columns_excluded,
+        italicize_genes,
+        normalize_name,
+        variant_cohort,
+        variant_events,
+    )
 
 
 if __name__ == "__main__":
