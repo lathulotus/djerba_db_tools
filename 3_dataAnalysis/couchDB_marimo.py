@@ -171,9 +171,11 @@ def _(cohort_select_desc, mo, summary):
                 label = "Filter: ",
                 placeholder = ">=115, <115, ==115")
         else:
+            cohort_options_raw = summary[cohort_select_desc.value].dropna().astype(str)
+            cohort_options_split = cohort_options_raw.str.split(",").explode().str.strip().unique()
             cohort_input_desc = mo.ui.multiselect(
                 label = "Filter: ",
-                options = sorted(summary[cohort_select_desc.value].dropna().unique()))
+                options = sorted(cohort_options_split))
     else:
         cohort_input_desc= mo.md("")
     return (cohort_input_desc,)
@@ -229,6 +231,8 @@ def _(
     pd,
     plt,
     summary,
+    variant_cohort,
+    variant_events,
     x_axis_content,
     x_max_input,
     x_min_input,
@@ -249,7 +253,17 @@ def _(
         else:
             vals = cohort_input_desc.value
             if vals:
-                filtered_summary=filtered_summary[filtered_summary[col].isin(vals)]
+                if col in variant_cohort:
+                    gene_col, type_col = variant_cohort[col]
+                    var_matched = []
+                    for var_index, var_row in filtered_summary.iterrows():
+                        var_pairs = variant_events(filtered_summary.loc[[var_index]], gene_col, type_col)
+                        var_events = [e for _, _, e in var_pairs]
+                        if any(temp_event in vals for temp_event in var_events):
+                            var_matched.append(var_index)
+                    filtered_summary=filtered_summary.loc[var_matched]
+                else:
+                    filtered_summary=filtered_summary[filtered_summary[col].isin(vals)]
     plots_desc = [] if not filtered_summary.empty else [mo.md("No data in date range")]
 
     # Quantitative plots
@@ -712,7 +726,24 @@ def _(re):
             return f"$\\it{{{gene_raw}}}$"
         return gene_raw
 
-    return italicize_genes, normalize_name
+    variant_cohort = {
+        "snv_types": ("snv_genes", "snv_types", "snv_proteins"),
+        "snv_proteins": ("snv_genes", "snv_types", "snv_proteins"),
+        "cnv_types": ("cnv_genes", "cnv_types"),
+        "fusion_effects": ("fusion_pairs", "fusion_effects")
+    }
+    def variant_events(df, gene_col, event_col):
+        genes = df[gene_col].fillna("").astype(str).str.split(",")
+        events = df[event_col].fillna("").astype(str).str.split(",")
+        rows = []
+        for temp_item, (g_list, e_list) in enumerate(zip(genes, events)):
+            gene_list = [g.strip() for g in g_list if g.strip()]
+            event_list = [e.strip() for e in e_list if e.strip()]
+            for g, e in zip(g_list, e_list):
+                rows.append((temp_item, g, e))
+        return rows
+
+    return italicize_genes, normalize_name, variant_cohort, variant_events
 
 
 if __name__ == "__main__":
