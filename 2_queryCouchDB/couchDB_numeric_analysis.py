@@ -73,6 +73,7 @@ def filter_files(input_dir, criteria):
         "ploidy": (["plugins/sample/results/Estimated Ploidy", "report/sample_info_and_quality/Estimated Ploidy", "config/wgts.cnv_purple/ploidy"], 'float'),
         "djerba_version": (["core/core_version", "report/djerba_version", "plugins/case_overview/version"], 'version'),
         "date_reported": (["plugins/supplement.body/results/extract_date", "last_updated"], 'date'),
+        "date_requested": (["config/case_overview/requisition_approved", "config/input_params_helper/requisition_approved", "config/tar_input_params_helper/requisition_approved", "supplementary/config/inputs/req_approved_date"], 'date'),
 
         "TMB": (["plugins/genomic_landscape/results/genomic_landscape_info/Tumour Mutation Burden", "report/genomic_landscape_info/Tumour Mutation Burden"], 'float'),
         "tmb_value": (["plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker value", "report/genomic_landscape_info/TMB per megabase"], 'float'),
@@ -206,7 +207,8 @@ def main():
     parser.add_argument("--snv_oncogenic", help="Criterion for number of oncogenic SNVs")
     parser.add_argument("--fusion_clinical", help="Criterion for number of clinically relevant fusions")
     parser.add_argument("--djerba_version", help="Criterion for version (e.g. '>1.11.1' or '[1.7.0, 1.12.0]')")
-    parser.add_argument("--date_reported", help="Criterion for date (e.g. '>2025-01-01' or '[2024-01-01, 2025-12-31]')")
+    parser.add_argument("--date_reported", help="Criterion for date of last update (e.g. '>2025-01-01' or '[2024-01-01, 2025-12-31]')")
+    parser.add_argument("--date_requisition", help="Criterion for date of requisition (e.g. '>2025-01-01' or '[2024-01-01, 2025-12-31]')")
     parser.add_argument("--plot", action="store_true", help="Generate a plot of matches over time")
     parser.add_argument(  "--plot_out", help="Path to save the generated plot (e.g. 'plot.png')")
     
@@ -222,7 +224,8 @@ def main():
         "snv_oncogenic": args.snv_oncogenic,
         "fusion_clinical": args.fusion_clinical,
         "djerba_version": args.djerba_version,
-        "date_reported": args.date_reported
+        "date_reported": args.date_reported,
+        "date_requisition": args.date_requisition
     }
 
     matches = filter_files(args.input_dir, criteria)

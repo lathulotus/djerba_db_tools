@@ -36,12 +36,13 @@ string_fields = {
 }
 
 numeric_fields = {
-    "coverage": (["plugins/sample/results/Coverage (mean)", "report/sample_info_and_quality/Coverage (mean)", "plugins/pwgs.sample/results/coverage"], 'float'),
-    "purity": (["config/genomic_landscape/purity", "supplementary/config/discovered/purity", "config/sample/purity", "config/wgts.cnv_purple/purity"], 'float'),
+    "coverage": (["plugins/sample/results/Coverage (mean)", "report/sample_info_and_quality/Coverage (mean)", "plugins/pwgs.sample/results/coverage", "config/tar.sample/collapsed_coverage"], 'float'),
+    "purity": (["config/genomic_landscape/purity", "supplementary/config/discovered/purity", "config/sample/purity", "config/wgts.cnv_purple/purity", "config/tar.sample/purity"], 'float'),
     "callability": (["plugins/sample/results/Callability (%)", "report/sample_info_and_quality/Callability (%)"], 'float'),
     "ploidy": (["plugins/sample/results/Estimated Ploidy", "report/sample_info_and_quality/Estimated Ploidy", "config/wgts.cnv_purple/ploidy"], 'float'),
     "djerba_version": (["core/core_version", "report/djerba_version", "plugins/case_overview/version"], 'version'),
     "date_reported": (["plugins/supplement.body/results/extract_date", "last_updated"], 'date'),
+    "date_requested": (["config/case_overview/requisition_approved", "config/input_params_helper/requisition_approved", "config/tar_input_params_helper/requisition_approved", "supplementary/config/inputs/req_approved_date"], 'date'),
 
     "TMB": (["report/genomic_landscape_info/Tumour Mutation Burden", "plugins/genomic_landscape/results/genomic_landscape_info/Tumour Mutation Burden"], 'float'),
     "tmb_value": (["plugins/genomic_landscape/results/genomic_biomarkers/TMB/Genomic biomarker value", "report/genomic_landscape_info/TMB per megabase"], 'float'),
@@ -278,7 +279,7 @@ def main():
 
     csv_path = f"{args.output_name}.csv"
     
-    column_order = ["report_id", "donor", "project", "study", "date_reported", "djerba_version", "failed", "report_type", "author"]
+    column_order = ["report_id", "donor", "project", "study", "date_reported", "date_requested", "djerba_version", "failed", "report_type", "author"]
     df = df[column_order + [c for c in df.columns if c not in column_order]]
 
     df.to_csv(csv_path, index=False)
