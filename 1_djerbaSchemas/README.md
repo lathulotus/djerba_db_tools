@@ -53,9 +53,3 @@ SNV/Indel, CNV, Fusion
 ![Report Structure Diagram](images/ReportStructure.png)
 
 <br>
-
-# Plugin Schemas
-- wgts.snv_indel
-- wgts.cnv_purple
-- pwgs.
-- tar.
