@@ -4,6 +4,7 @@
 - [Running the Pipeline](./README_pipeline.md)
 - [Running individual scripts](./README_individual_scripts.md)
 - [Examples: How to Format the Pipeline Config YAML](../examples/README.md)
+- [Presentation slides](./GSI_presentation_0427.pdf)
 
 ## Query Workflow
 ![Query Workflow](./query_workflow.png)
