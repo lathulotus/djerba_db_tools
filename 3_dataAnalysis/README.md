@@ -6,19 +6,17 @@ Marimo notebook offers interactive UI for table-viewing and automatic plot gener
 - Generate complex case accrual plots by cohort, group, colour bar, etc
     - Ex: Cumulative case accrual in HRD cases by coverage
 
-## Automate Pipeline
-- Set up Olives to run weekly generation of summary.csv from CouchDB that:
-    - Runs query pipeline
-    - Obtains summary CSV
-    - Inputs summary CSV into Marimo
+## Guide
+Guide on how to use Marimo can be found in the [presentation slides](../2_queryCouchDB/docs/GSI_presentation_0427.pdf). Presentation delivered on April 27th to GSI team with a demo on navigating data analysis. Demo has been annotated directly in the linked [slides](../2_queryCouchDB/docs/GSI_presentation_0427.pdf).
 
 ## Requirements
+### Download Marimo
 ```
 pip install marimo
 pip install "marimo[recommended]"
 ```
 
-## Running the Notebook
+### Run the Notebook
 ```
 marimo run couchDB_marimo.py
 ```
